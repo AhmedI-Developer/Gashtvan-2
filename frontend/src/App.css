@@ -1,0 +1,17 @@
+.brand-page {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #c5c8ce;
+}
+
+.brand-title {
+  margin: 0;
+}
+
+.brand-title img {
+  display: block;
+  width: min(420px, 80vw);
+  height: auto;
+}
