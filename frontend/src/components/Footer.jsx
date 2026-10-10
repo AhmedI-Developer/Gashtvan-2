@@ -16,7 +16,7 @@ export default function Footer() {
           <Link to="/destinations">Destinations</Link>
           <Link to="/about">About</Link>
           <Link to="/contact">Contact</Link>
-          <span>© {new Date().getFullYear()} Gashtvan</span>
+          <span>© 2026 Gashtvan</span>
         </div>
       </div>
     </footer>

@@ -557,6 +557,16 @@
     max-width: 320px;
   }
 
+  .hero {
+    place-items: end stretch;
+  }
+
+  .hero__content {
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
   .nav__inner {
     flex-direction: column;
     align-items: flex-start;
@@ -567,14 +577,6 @@
   .nav__links {
     width: 100%;
     justify-content: flex-start;
-  }
-
-  .hero {
-    place-items: end stretch;
-  }
-
-  .hero__content {
-    max-width: none;
   }
 }
 
