@@ -1,16 +1,69 @@
-# React + Vite
+# Gashtvan Marketing Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Premium travel & tourism marketing site for **Gashtvan** (Erbil, Kurdistan Region, Iraq).
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React + Vite
+- Tailwind CSS v4 (theme tokens via CSS variables + `data-theme`)
+- Framer Motion, GSAP + ScrollTrigger, Lenis
+- React Router, react-helmet-async
+- Offers data from `src/data/offers.json` (or `VITE_API_URL`)
 
-## React Compiler
+## Run
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the Oxlint configuration
+## Build
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm run build
+npm run preview
+```
+
+## Theme
+
+- Controlled by `data-theme="dark|light"` on `<html>`
+- Inline script in `index.html` prevents flash (reads `localStorage` / `prefers-color-scheme`)
+- Toggle lives in the navbar
+
+## Edit contact & brand microcopy
+
+Update **`src/config/site.js`** only (phones, emails, address, hours, social, tagline).
+
+## Edit company profile copy
+
+Update **`src/content/company.js`**.
+
+> Important: the original brief’s “COMPANY CONTENT” block was not pasted. Current copy uses only facts stated in the brief. Replace with your verbatim profile / vision / mission / services / management text when ready.
+
+## Add or edit offers
+
+1. Open **`src/data/offers.json`**
+2. Add an object matching the schema (see existing entries)
+3. Required fields: `id`, `slug`, `title`, `category`, `destination`, `shortDescription`, `fullDescription`, `coverImage`, `gallery`, `validFrom`, `validUntil`, `includes`, `excludes`, `terms`, `contactCTA`
+4. Optional: `price`, `oldPrice`, `currency`, `badge`, `duration`, `itinerary`
+5. Expired offers (`validUntil` in the past) hide automatically
+
+### Remote offers API (optional)
+
+Set in `.env`:
+
+```
+VITE_API_URL=https://example.com/api/offers
+```
+
+The response must be an array of offers (or `{ "offers": [...] }`) matching the same schema.
+
+## Deploy
+
+Build with `npm run build` and deploy the `dist/` folder to any static host (Vercel, Netlify, Cloudflare Pages, S3+CDN). Ensure SPA fallback routes `/offers/*` to `index.html`.
+
+## Brand rules (summary)
+
+- Colors: navy `#04203A`, accent `#A0C23A`, white, navy-tinted grays only
+- Green only for CTAs, hovers, motion accents, active states — never large backgrounds or body text
+- Logo G uses `--logo-g` (white in dark / navy in light); accent shape stays green

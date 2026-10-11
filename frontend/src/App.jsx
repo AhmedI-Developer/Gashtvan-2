@@ -1,22 +1,31 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Layout from './components/Layout'
-import Home from './pages/Home'
-import Destinations from './pages/Destinations'
-import About from './pages/About'
-import Contact from './pages/Contact'
-import './App.css'
+import Layout from '@/components/layout/Layout'
+import Home from '@/pages/Home'
 
-function App() {
+const Offers = lazy(() => import('@/pages/Offers'))
+const OfferDetail = lazy(() => import('@/pages/OfferDetail'))
+const NotFound = lazy(() => import('@/pages/NotFound'))
+
+function RouteFallback() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/destinations" element={<Destinations />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-      </Route>
-    </Routes>
+    <div className="container-shell flex min-h-[50vh] items-center justify-center pt-28 text-[var(--text-muted)]">
+      Loading…
+    </div>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="offers" element={<Offers />} />
+          <Route path="offers/:slug" element={<OfferDetail />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </Suspense>
+  )
+}

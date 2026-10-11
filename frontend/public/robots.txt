@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gashtvan-travel.com/sitemap.xml
