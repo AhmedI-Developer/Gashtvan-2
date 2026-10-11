@@ -105,7 +105,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 + i * 0.08 }}
-                className="glass min-w-0 rounded-[18px] p-3 text-white shadow-[var(--shadow)] sm:rounded-[22px] sm:p-4"
+                className="glass-hero min-w-0 rounded-[18px] p-3 text-white sm:rounded-[22px] sm:p-4"
               >
                 <p className="font-display text-sm font-bold leading-snug sm:text-xl md:text-2xl">
                   {stat.label}

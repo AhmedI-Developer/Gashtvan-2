@@ -6,24 +6,27 @@ import { Menu, X } from 'lucide-react'
 import Logo from '@/components/brand/Logo'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import LanguageSelector from '@/components/ui/LanguageSelector'
+import { useTheme } from '@/hooks/useTheme'
+import { headerControlClass } from '@/components/ui/controlStyles'
 import { site } from '@/config/site'
 import { cn } from '@/lib/cn'
 
-function navLinkClass({ isActive, onHero }) {
+function navLinkClass({ isActive, lightOnHero }) {
   return cn(
     'nav-link relative px-3 py-2 text-sm font-medium transition-all duration-300',
     'after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:origin-center after:scale-x-0 after:rounded-full after:bg-[var(--accent)] after:transition-transform after:duration-300 after:ease-out',
     'hover:-translate-y-0.5 hover:after:scale-x-100',
-    onHero
+    lightOnHero
       ? 'text-white/85 hover:text-white'
       : 'text-[var(--text-muted)] hover:text-[var(--text)]',
     isActive && 'after:scale-x-100',
-    isActive && (onHero ? 'text-white' : 'text-[var(--text)]'),
+    isActive && (lightOnHero ? 'text-white' : 'text-[var(--text)]'),
   )
 }
 
 export default function Navbar() {
   const { t } = useTranslation()
+  const { isDark } = useTheme()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const location = useLocation()
@@ -43,9 +46,10 @@ export default function Navbar() {
     return () => document.body.classList.remove('nav-open')
   }, [open])
 
-  /** Transparent header on home hero; frosted themed bar after scroll / other pages */
   const onHero = onHome && !scrolled && !open
-  const controlTone = onHero ? 'hero-dark' : 'default'
+  /** White text/logo only when dark theme + on hero. Light theme uses navy tokens (no header bg). */
+  const lightOnHero = onHero && isDark
+  const controlTone = lightOnHero ? 'hero-dark' : 'default'
 
   return (
     <header
@@ -65,16 +69,16 @@ export default function Navbar() {
         >
           <Logo
             className={cn(
-              'w-8 shrink-0 transition-[filter] duration-300 sm:w-10',
-              onHero && '[&_path:first-of-type]:fill-white',
+              'w-8 shrink-0 transition-[fill,color] duration-300 sm:w-10',
+              lightOnHero && '[&_path:first-of-type]:fill-white',
             )}
           />
           <span
             className={cn(
               'font-display truncate text-base font-bold tracking-tight transition-colors duration-300 sm:text-lg',
-              onHero ? 'text-white' : 'text-[var(--text)]',
+              lightOnHero ? 'text-white' : 'text-[var(--text)]',
               'group-hover:text-[var(--accent-text)]',
-              onHero && 'group-hover:text-[var(--accent)]',
+              lightOnHero && 'group-hover:text-[var(--accent)]',
             )}
           >
             Gashtvan
@@ -91,7 +95,7 @@ export default function Navbar() {
                   key={item.key}
                   to="/offers"
                   className={({ isActive }) =>
-                    navLinkClass({ isActive, onHero })
+                    navLinkClass({ isActive, lightOnHero })
                   }
                 >
                   {label}
@@ -103,7 +107,7 @@ export default function Navbar() {
               <a
                 key={item.key}
                 href={item.href}
-                className={navLinkClass({ isActive: false, onHero })}
+                className={navLinkClass({ isActive: false, lightOnHero })}
               >
                 {label}
               </a>
@@ -116,12 +120,12 @@ export default function Navbar() {
           <ThemeToggle tone={controlTone} />
           <button
             type="button"
-            className={cn(
-              'inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 lg:hidden',
-              onHero
-                ? 'border-white/35 bg-white/12 text-white hover:border-[var(--accent)]'
-                : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:border-[var(--accent)]',
-            )}
+            className={headerControlClass({
+              tone: controlTone,
+              isDark,
+              className:
+                'inline-flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 lg:hidden',
+            })}
             aria-label={open ? t('common.closeMenu') : t('common.openMenu')}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}

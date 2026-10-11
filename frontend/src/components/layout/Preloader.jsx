@@ -34,7 +34,7 @@ export default function Preloader() {
 
   useEffect(() => {
     if (!show) return undefined
-    const max = window.setTimeout(dismiss, reduced ? 400 : 2800)
+    const max = window.setTimeout(dismiss, reduced ? 400 : 2600)
     return () => window.clearTimeout(max)
   }, [show, reduced])
 

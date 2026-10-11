@@ -1,15 +1,35 @@
 /**
- * Plane preloader — calm fly-in for the large plane,
- * plus a green flight path with a smaller plane riding the line.
+ * Plane preloader — logo reveal + small plane riding above the green path to the end.
+ * Track uses a fixed 420×60 coordinate box scaled to fit, so offset-path matches the SVG on mobile.
  */
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Logo from '@/components/brand/Logo'
 import PlaneIcon from './PlaneIcon'
 
-/** Smooth low arc that fits the path container */
+const TRACK_W = 420
+const TRACK_H = 60
 const FLIGHT_PATH = 'M 8 36 C 90 8, 160 54, 240 28 S 360 8, 412 30'
 
 export default function PlanePreloader({ onSkip, skipLabel = 'Skip' }) {
+  const shellRef = useRef(null)
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    const shell = shellRef.current
+    if (!shell) return
+
+    const update = () => {
+      const width = shell.clientWidth
+      setScale(width > 0 ? Math.min(1, width / TRACK_W) : 1)
+    }
+
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(shell)
+    return () => ro.disconnect()
+  }, [])
+
   return (
     <motion.div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--bg)]"
@@ -25,101 +45,88 @@ export default function PlanePreloader({ onSkip, skipLabel = 'Skip' }) {
         {skipLabel}
       </button>
 
-      <div className="flex w-full max-w-lg flex-col items-center px-6">
-        {/* Large plane — gentle glide in, then soft hover */}
-        <div className="relative mb-2 h-20 w-full sm:h-24">
-          <motion.div
-            className="absolute inset-x-0 top-1/2 flex justify-center"
-            style={{ y: '-50%' }}
-            initial={{ x: '-55%', opacity: 0 }}
-            animate={{ x: '0%', opacity: 1 }}
-            transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <motion.div
-              animate={{ y: [0, -5, 0] }}
-              transition={{
-                delay: 1.15,
-                duration: 2.2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            >
-              <PlaneIcon size={110} className="max-w-[42vw]" />
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Logo reveal */}
+      <div className="flex w-full max-w-xl flex-col items-center px-6">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="w-28 sm:w-36"
+          className="mb-6 w-28 sm:w-36"
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <Logo className="w-full" />
         </motion.div>
 
-        {/* Green flight path + small plane on the line */}
-        <div className="relative mt-8 h-14 w-full max-w-[440px]">
-          <svg
-            className="absolute inset-0 h-full w-full overflow-visible"
-            viewBox="0 0 420 60"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            {/* Soft glow under the route */}
-            <motion.path
-              d={FLIGHT_PATH}
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth="7"
-              strokeLinecap="round"
-              opacity="0.18"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ delay: 0.85, duration: 1.15, ease: 'easeInOut' }}
-            />
-            {/* Dashed guide */}
-            <path
-              d={FLIGHT_PATH}
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeDasharray="3 9"
-              opacity="0.35"
-            />
-            {/* Solid drawn route */}
-            <motion.path
-              d={FLIGHT_PATH}
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth="2.25"
-              strokeLinecap="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ delay: 0.85, duration: 1.15, ease: 'easeInOut' }}
-            />
-          </svg>
-
-          <motion.div
-            className="absolute left-0 top-0 will-change-transform"
-            initial={{ offsetDistance: '0%' }}
-            animate={{ offsetDistance: '100%' }}
-            transition={{ delay: 0.85, duration: 1.15, ease: 'easeInOut' }}
+        <div
+          ref={shellRef}
+          className="relative w-full max-w-[440px] overflow-visible"
+          style={{ height: TRACK_H * scale }}
+        >
+          <div
+            className="absolute left-0 top-0 origin-top-left"
             style={{
-              offsetPath: `path('${FLIGHT_PATH}')`,
-              offsetRotate: 'auto',
-              offsetAnchor: 'center',
-              width: 34,
-              height: 20,
-              marginLeft: -17,
-              marginTop: -10,
+              width: TRACK_W,
+              height: TRACK_H,
+              transform: `scale(${scale})`,
             }}
-            aria-hidden="true"
           >
-            <PlaneIcon size={34} />
-          </motion.div>
+            <svg
+              className="absolute inset-0 h-full w-full overflow-visible"
+              viewBox={`0 0 ${TRACK_W} ${TRACK_H}`}
+              preserveAspectRatio="xMidYMid meet"
+              aria-hidden="true"
+            >
+              <motion.path
+                d={FLIGHT_PATH}
+                fill="none"
+                stroke="var(--accent)"
+                strokeWidth="7"
+                strokeLinecap="round"
+                opacity="0.18"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ delay: 0.25, duration: 1.6, ease: 'easeInOut' }}
+              />
+              <path
+                d={FLIGHT_PATH}
+                fill="none"
+                stroke="var(--accent)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeDasharray="3 9"
+                opacity="0.35"
+              />
+              <motion.path
+                d={FLIGHT_PATH}
+                fill="none"
+                stroke="var(--accent)"
+                strokeWidth="2.25"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ delay: 0.25, duration: 1.6, ease: 'easeInOut' }}
+              />
+            </svg>
+
+            <motion.div
+              className="absolute left-0 top-0 will-change-transform"
+              initial={{ offsetDistance: '0%' }}
+              animate={{ offsetDistance: '100%' }}
+              transition={{ delay: 0.25, duration: 1.6, ease: 'easeInOut' }}
+              style={{
+                offsetPath: `path('${FLIGHT_PATH}')`,
+                offsetRotate: 'auto',
+                offsetAnchor: 'center',
+                width: 36,
+                height: 22,
+                marginLeft: -18,
+                marginTop: -11,
+              }}
+              aria-hidden="true"
+            >
+              <div style={{ transform: 'translateY(-10px)' }}>
+                <PlaneIcon size={36} />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </motion.div>
