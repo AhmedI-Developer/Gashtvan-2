@@ -292,3 +292,8 @@ html.lenis body {
     animation: none;
   }
 }
+
+/* Nav link hover underline helper */
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+}

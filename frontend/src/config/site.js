@@ -4,7 +4,7 @@ export const site = {
   legalName: 'Gashtvan Travel & Tourism',
   tagline: 'Elevating Travel Experiences Beyond Boundaries',
   ctaBanner: 'Your extraordinary adventure awaits!',
-  location: 'Erbil, Kurdistan Region, Iraq',
+  region: 'Erbil, Kurdistan Region, Iraq',
   url: 'https://gashtvan-travel.com',
   whatsapp: '+9647501234567',
   phones: ['+964 750 123 4567', '+964 770 987 6543'],
@@ -12,11 +12,15 @@ export const site = {
   address:
     '5th Floor, Empire Business Tower, 100m Road, Erbil, Kurdistan Region, Iraq',
   hours: 'Sat–Thu, 9:00 AM – 6:00 PM',
+  mapsUrl: 'https://maps.app.goo.gl/PMConNsqqukvrXaG8',
+  location: {
+    lat: 36.194421,
+    lng: 43.9685105,
+    label: 'Gashtvan Travel Agency',
+  },
   social: {
-    facebook: 'https://facebook.com/',
-    instagram: 'https://instagram.com/',
-    linkedin: 'https://linkedin.com/',
-    x: 'https://x.com/',
+    facebook: 'https://www.facebook.com/gashtvan.travel',
+    instagram: 'https://www.instagram.com/gashtvan.travel',
   },
   trustBadges: [
     'IATA Member',
@@ -32,12 +36,12 @@ export const site = {
     { label: '24/7 Support', value: 24, suffix: '/7' },
   ],
   nav: [
-    { label: 'Home', href: '/#home' },
-    { label: 'About', href: '/#about' },
-    { label: 'Services', href: '/#services' },
-    { label: 'Offers', href: '/offers' },
-    { label: 'Team', href: '/#team' },
-    { label: 'Contact', href: '/#contact' },
+    { key: 'home', href: '/#home' },
+    { key: 'about', href: '/#about' },
+    { key: 'services', href: '/#services' },
+    { key: 'offers', href: '/offers' },
+    { key: 'team', href: '/#team' },
+    { key: 'contact', href: '/#contact' },
   ],
 }
 

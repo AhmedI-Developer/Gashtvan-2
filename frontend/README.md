@@ -30,6 +30,20 @@ npm run preview
 - Inline script in `index.html` prevents flash (reads `localStorage` / `prefers-color-scheme`)
 - Toggle lives in the navbar
 
+## Languages
+
+- Selector in the navbar: English, Arabic, Kurdish (Sorani)
+- Choice persists in `localStorage` (`gashtvan-lang`)
+- RTL is applied automatically for `ar` / `ckb`
+- UI strings live in `src/i18n/locales/*.json`
+
+## Preloaders
+
+- Original shape animation: `src/components/layout/preloaders/ShapePreloader.jsx`
+- Plane animation (active): `src/components/layout/preloaders/PlanePreloader.jsx`
+- Switch via `ACTIVE_VARIANT` in `src/components/layout/Preloader.jsx` (`'plane'` | `'shape'`)
+- Shown once per session; clear `sessionStorage.gashtvan-preloader-seen` to preview again
+
 ## Edit contact & brand microcopy
 
 Update **`src/config/site.js`** only (phones, emails, address, hours, social, tagline).

@@ -1,23 +1,29 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, MapPin, Mail, Phone, Clock } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { CheckCircle2, MapPin, Mail, Phone, Clock, ExternalLink } from 'lucide-react'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Button from '@/components/ui/Button'
 import { site } from '@/config/site'
 
 const initial = { name: '', email: '', phone: '', message: '' }
 
+function mapEmbedSrc({ lat, lng }) {
+  return `https://www.google.com/maps?q=${lat},${lng}&z=16&hl=en&output=embed`
+}
+
 export default function Contact() {
+  const { t } = useTranslation()
   const [form, setForm] = useState(initial)
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
 
   const validate = () => {
     const next = {}
-    if (!form.name.trim()) next.name = 'Name is required'
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = 'Valid email required'
-    if (!form.phone.trim()) next.phone = 'Phone is required'
-    if (form.message.trim().length < 10) next.message = 'Please share a bit more detail'
+    if (!form.name.trim()) next.name = 'Required'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = 'Required'
+    if (!form.phone.trim()) next.phone = 'Required'
+    if (form.message.trim().length < 10) next.message = 'Required'
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -41,9 +47,9 @@ export default function Contact() {
       <div className="container-shell grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
         <div className="min-w-0">
           <SectionHeading
-            eyebrow="Contact"
-            title="Let’s plan your next journey"
-            description="Share a season, destination, or corporate brief — we typically reply within one business day."
+            eyebrow={t('contact.eyebrow')}
+            title={t('contact.title')}
+            description={t('contact.description')}
           />
 
           <form
@@ -52,9 +58,9 @@ export default function Contact() {
             noValidate
           >
             {[
-              { name: 'name', label: 'Name', type: 'text' },
-              { name: 'email', label: 'Email', type: 'email' },
-              { name: 'phone', label: 'Phone', type: 'tel' },
+              { name: 'name', label: t('contact.name'), type: 'text' },
+              { name: 'email', label: t('contact.email'), type: 'email' },
+              { name: 'phone', label: t('contact.phone'), type: 'tel' },
             ].map((field) => (
               <label key={field.name} className="block text-sm font-semibold text-[var(--text)]">
                 {field.label}
@@ -76,7 +82,7 @@ export default function Contact() {
             ))}
 
             <label className="block text-sm font-semibold text-[var(--text)]">
-              Message
+              {t('contact.message')}
               <textarea
                 name="message"
                 rows={5}
@@ -91,7 +97,7 @@ export default function Contact() {
               ) : null}
             </label>
 
-            <Button type="submit">Send message</Button>
+            <Button type="submit">{t('common.sendMessage')}</Button>
 
             <AnimatePresence>
               {sent ? (
@@ -101,7 +107,7 @@ export default function Contact() {
                   exit={{ opacity: 0 }}
                   className="flex items-center gap-2 text-[var(--accent-text)]"
                 >
-                  <CheckCircle2 size={18} /> Message prepared — thank you.
+                  <CheckCircle2 size={18} /> {t('contact.success')}
                 </motion.p>
               ) : null}
             </AnimatePresence>
@@ -115,7 +121,11 @@ export default function Contact() {
                 <Phone className="mt-0.5 shrink-0 text-[var(--accent)]" size={18} />
                 <div>
                   {site.phones.map((p) => (
-                    <a key={p} href={`tel:${p.replace(/\s/g, '')}`} className="block hover:text-[var(--accent)]">
+                    <a
+                      key={p}
+                      href={`tel:${p.replace(/\s/g, '')}`}
+                      className="block hover:text-[var(--accent)]"
+                    >
                       {p}
                     </a>
                   ))}
@@ -142,18 +152,31 @@ export default function Contact() {
             </ul>
           </div>
 
-          <div
-            className="flex min-h-[200px] items-end rounded-[22px] border border-[var(--border)] bg-[var(--surface-2)] p-4 sm:min-h-[240px] sm:rounded-[28px] sm:p-5"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(4,32,58,0.55), rgba(4,32,58,0.75)), url(https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=70)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <p className="rounded-[18px] bg-white/10 px-4 py-3 text-sm text-white backdrop-blur">
-              Map placeholder — Empire Business Tower, 100m Road, Erbil
-            </p>
+          <div className="overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface)] sm:rounded-[28px]">
+            <div className="relative aspect-[4/3] min-h-[220px] w-full sm:min-h-[260px]">
+              <iframe
+                title={site.location.label}
+                src={mapEmbedSrc(site.location)}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full border-0"
+              />
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] px-4 py-3">
+              <p className="text-sm font-semibold text-[var(--text)]">
+                {site.location.label}
+              </p>
+              <a
+                href={site.mapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] transition hover:underline"
+              >
+                {t('contact.openMap')}
+                <ExternalLink size={14} />
+              </a>
+            </div>
           </div>
         </aside>
       </div>

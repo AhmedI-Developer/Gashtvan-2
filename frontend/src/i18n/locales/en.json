@@ -1,0 +1,42 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "offers": "Offers",
+    "team": "Team",
+    "contact": "Contact"
+  },
+  "common": {
+    "skip": "Skip",
+    "language": "Language",
+    "viewOffers": "View Offers",
+    "contactUs": "Contact Us",
+    "allOffers": "All offers",
+    "sendMessage": "Send message",
+    "viewDetails": "View Details",
+    "quickLinks": "Quick links",
+    "social": "Social",
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "viewCurrentOffers": "View current offers",
+    "rights": "All rights reserved.",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "switchLight": "Switch to light theme",
+    "switchDark": "Switch to dark theme",
+    "whatsapp": "Chat on WhatsApp"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Let’s plan your next journey",
+    "description": "Share a season, destination, or corporate brief — we typically reply within one business day.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "success": "Message prepared — thank you.",
+    "openMap": "Open in Google Maps",
+    "mapLabel": "Gashtvan Travel Agency"
+  }
+}

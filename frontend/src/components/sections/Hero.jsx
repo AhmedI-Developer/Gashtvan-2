@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import MagneticButton from '@/components/ui/MagneticButton'
 import GreenShape from '@/components/brand/GreenShape'
 import { site } from '@/config/site'
@@ -8,6 +9,7 @@ const HERO_IMG =
   'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2000&q=80'
 
 export default function Hero() {
+  const { t } = useTranslation()
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -83,7 +85,7 @@ export default function Hero() {
               className="mt-6 flex w-full flex-col gap-3 sm:mt-8 sm:w-auto sm:flex-row sm:flex-wrap"
             >
               <MagneticButton to="/offers" className="w-full sm:w-auto">
-                View Offers
+                {t('common.viewOffers')}
               </MagneticButton>
               <MagneticButton
                 href="/#contact"
@@ -91,7 +93,7 @@ export default function Hero() {
                 as="a"
                 className="w-full sm:w-auto"
               >
-                Contact Us
+                {t('common.contactUs')}
               </MagneticButton>
             </motion.div>
           </div>

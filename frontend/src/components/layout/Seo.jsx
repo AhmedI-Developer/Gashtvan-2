@@ -3,7 +3,7 @@ import { site } from '@/config/site'
 
 export default function Seo({
   title,
-  description = `${site.tagline}. Premium travel & tourism in ${site.location}.`,
+  description = `${site.tagline}. Premium travel & tourism in ${site.region}.`,
   path = '/',
   image = '/Gashtvan.svg',
 }) {

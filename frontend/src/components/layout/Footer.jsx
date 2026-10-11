@@ -1,17 +1,26 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Logo from '@/components/brand/Logo'
 import { site } from '@/config/site'
 
-function SocialIcon({ label, children }) {
+function SocialIcon({ children }) {
   return (
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
-      <title>{label}</title>
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      aria-hidden="true"
+      fill="currentColor"
+      className="shrink-0"
+    >
       {children}
     </svg>
   )
 }
 
 export default function Footer() {
+  const { t } = useTranslation()
+
   return (
     <footer className="bg-[var(--footer-bg)] text-white">
       <div className="container-shell grid gap-8 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:gap-10 sm:py-14 md:grid-cols-2 lg:grid-cols-4">
@@ -25,13 +34,16 @@ export default function Footer() {
 
         <div>
           <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
-            Quick links
+            {t('common.quickLinks')}
           </h3>
           <ul className="space-y-2 text-white/80">
             {site.nav.map((item) => (
-              <li key={item.label}>
-                <a href={item.href} className="transition hover:text-[var(--accent)]">
-                  {item.label}
+              <li key={item.key}>
+                <a
+                  href={item.href}
+                  className="inline-block transition-all duration-300 hover:translate-x-1 hover:text-[var(--accent)]"
+                >
+                  {t(`nav.${item.key}`)}
                 </a>
               </li>
             ))}
@@ -40,7 +52,7 @@ export default function Footer() {
 
         <div>
           <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
-            Contact
+            {t('nav.contact')}
           </h3>
           <ul className="space-y-2 text-sm text-white/80">
             {site.phones.map((p) => (
@@ -64,40 +76,35 @@ export default function Footer() {
 
         <div>
           <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
-            Social
+            {t('common.social')}
           </h3>
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3">
             <a
               href={site.social.facebook}
-              aria-label="Facebook"
-              className="rounded-full border border-white/20 p-2 transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-3 rounded-[18px] border border-white/20 px-3 py-2.5 text-sm font-medium text-white/90 transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
-              <SocialIcon label="Facebook">
+              <SocialIcon>
                 <path d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z" />
               </SocialIcon>
+              {t('common.facebook')}
             </a>
             <a
               href={site.social.instagram}
-              aria-label="Instagram"
-              className="rounded-full border border-white/20 p-2 transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-3 rounded-[18px] border border-white/20 px-3 py-2.5 text-sm font-medium text-white/90 transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
-              <SocialIcon label="Instagram">
+              <SocialIcon>
                 <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm5 4.5A4.5 4.5 0 1 0 16.5 12 4.5 4.5 0 0 0 12 7.5zm5.75-.9a1.1 1.1 0 1 0 1.1 1.1 1.1 1.1 0 0 0-1.1-1.1zM12 9.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5z" />
               </SocialIcon>
-            </a>
-            <a
-              href={site.social.linkedin}
-              aria-label="LinkedIn"
-              className="rounded-full border border-white/20 p-2 transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
-            >
-              <SocialIcon label="LinkedIn">
-                <path d="M6.5 9H4v11h2.5zm-1.25-5.5A1.75 1.75 0 1 0 7 5.25 1.75 1.75 0 0 0 5.25 3.5zM20 13.3c0-2.7-1.5-4.3-3.8-4.3a3.3 3.3 0 0 0-3 1.6V9H11v11h2.5v-5.7c0-1.5.7-2.5 2.1-2.5s2 1.1 2 2.6V20H20z" />
-              </SocialIcon>
+              {t('common.instagram')}
             </a>
           </div>
           <p className="mt-6 text-sm text-white/55">
             <Link to="/offers" className="hover:text-[var(--accent)]">
-              View current offers
+              {t('common.viewCurrentOffers')}
             </Link>
           </p>
         </div>
@@ -105,8 +112,10 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="container-shell flex flex-wrap items-center justify-between gap-3 py-5 text-sm text-white/55">
-          <span>© 2026 {site.legalName}. All rights reserved.</span>
-          <span>Erbil · Kurdistan Region · Iraq</span>
+          <span>
+            © 2026 {site.legalName}. {t('common.rights')}
+          </span>
+          <span>{site.region}</span>
         </div>
       </div>
     </footer>
