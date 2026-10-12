@@ -1,8 +1,59 @@
 @import 'tailwindcss';
 
+/* Poppins — English */
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* K24 Kurdish — Kurdish and Arabic. One bold file covers every weight. */
+@font-face {
+  font-family: 'K24 Kurdish';
+  src: url('/fonts/K24KurdishBold.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
-  --font-body: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
   --radius-card: 24px;
   --radius-chip: 20px;
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -60,6 +111,22 @@ html[data-theme='light'] {
 html {
   scroll-behavior: auto;
   color-scheme: dark;
+}
+
+html[lang='ar'],
+html[lang='ckb'] {
+  --font-sans: 'K24 Kurdish', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'K24 Kurdish', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'K24 Kurdish', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Connected Arabic script should not be tracked or forced into Latin case. */
+html[lang='ar'] .eyebrow,
+html[lang='ckb'] .eyebrow,
+html[lang='ar'] :is(.tracking-tight, .tracking-wider, .uppercase),
+html[lang='ckb'] :is(.tracking-tight, .tracking-wider, .uppercase) {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 html[data-theme='light'] {
