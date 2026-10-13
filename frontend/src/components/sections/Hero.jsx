@@ -4,9 +4,7 @@ import { useTranslation } from 'react-i18next'
 import MagneticButton from '@/components/ui/MagneticButton'
 import GreenShape from '@/components/brand/GreenShape'
 import { site } from '@/config/site'
-
-const HERO_IMG =
-  'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2000&q=80'
+import heroImage from '@/assets/backgroundImage/Left-wing-plane.jpg'
 
 export default function Hero() {
   const { t } = useTranslation()
@@ -27,19 +25,19 @@ export default function Hero() {
     >
       <motion.div style={{ y }} className="absolute inset-0">
         <img
-          src={HERO_IMG}
-          alt="Aircraft wing above clouds at sunset"
+          src={heroImage}
+          alt="Airplane wing above the clouds at sunset"
           width={2000}
           height={1333}
           fetchPriority="high"
-          className="h-full w-full object-cover object-[center_30%]"
+          className="h-full w-full object-cover object-[28%_center]"
         />
       </motion.div>
       <div
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(180deg, rgba(4,32,58,0.55) 0%, rgba(4,32,58,0.72) 45%, rgba(4,32,58,0.92) 100%)',
+            'linear-gradient(180deg, rgba(4,32,58,0.38) 0%, rgba(4,32,58,0.48) 42%, rgba(4,32,58,0.88) 100%)',
         }}
       />
 

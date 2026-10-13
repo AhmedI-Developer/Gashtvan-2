@@ -2,6 +2,7 @@ import SectionHeading from '@/components/ui/SectionHeading'
 import CountUp from '@/components/motion/CountUp'
 import Reveal from '@/components/motion/Reveal'
 import { company } from '@/content/company'
+import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
 
 export default function About() {
   const { profile } = company
@@ -24,7 +25,14 @@ export default function About() {
           </div>
         </div>
 
-        <Reveal className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-1">
+        <Reveal className="relative overflow-hidden rounded-[22px] sm:rounded-[28px]">
+          <img
+            src={kurdistanMountain}
+            alt="A mountain village in the Kurdistan highlands"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[rgba(4,32,58,0.28)]" />
+          <div className="relative grid grid-cols-1 gap-3 p-3 sm:grid-cols-3 sm:gap-4 sm:p-4 lg:grid-cols-1 lg:p-5">
           {profile.stats.map((stat) => (
             <div
               key={stat.label}
@@ -42,6 +50,7 @@ export default function About() {
               </p>
             </div>
           ))}
+          </div>
         </Reveal>
       </div>
     </section>

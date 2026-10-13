@@ -1,5 +1,6 @@
 import MagneticButton from '@/components/ui/MagneticButton'
 import { site } from '@/config/site'
+import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
 
 export default function CtaBanner() {
   return (
@@ -12,10 +13,10 @@ export default function CtaBanner() {
         }}
       />
       <img
-        src="https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=1800&q=70"
+        src={globalNetwork}
         alt=""
         loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover opacity-25"
+        className="absolute inset-0 h-full w-full object-cover opacity-55"
       />
       <div className="container-shell relative z-10 text-center text-white">
         <p className="eyebrow !text-[var(--accent)]">Ready when you are</p>

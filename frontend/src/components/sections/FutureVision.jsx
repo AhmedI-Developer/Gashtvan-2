@@ -1,6 +1,7 @@
 import SectionHeading from '@/components/ui/SectionHeading'
 import Reveal from '@/components/motion/Reveal'
 import { company } from '@/content/company'
+import worldMap from '@/assets/backgroundImage/World_map.jpg'
 
 export default function FutureVision() {
   const { future } = company
@@ -18,13 +19,15 @@ export default function FutureVision() {
         <Reveal>
           <div
             className="relative aspect-[4/3] overflow-hidden rounded-[22px] border border-[var(--border)] sm:rounded-[28px]"
-            style={{
-              background:
-                'radial-gradient(circle at 40% 45%, rgba(160,194,58,0.12), transparent 40%), linear-gradient(160deg, #0a2a46, #04203a 55%, #11181f)',
-            }}
             role="img"
             aria-label="Animated map of Gashtvan expansion from Erbil"
           >
+            <img
+              src={worldMap}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-[rgba(4,32,58,0.28)]" />
             <svg
               viewBox="0 0 100 75"
               className="absolute inset-0 h-full w-full opacity-40"
