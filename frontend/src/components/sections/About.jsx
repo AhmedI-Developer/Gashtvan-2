@@ -31,21 +31,21 @@ export default function About() {
             alt="A mountain village in the Kurdistan highlands"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-[rgba(4,32,58,0.28)]" />
-          <div className="relative grid grid-cols-1 gap-3 p-3 sm:grid-cols-3 sm:gap-4 sm:p-4 lg:grid-cols-1 lg:p-5">
+          <div className="absolute inset-0 bg-[rgba(4,32,58,0.22)]" />
+          <div className="relative grid grid-cols-1 gap-3 p-4 sm:grid-cols-3 sm:gap-4 sm:p-5 lg:grid-cols-1 lg:p-6">
           {profile.stats.map((stat) => (
             <div
               key={stat.label}
-              className="surface rounded-[20px] p-4 transition hover:border-[var(--accent)] sm:rounded-[24px] sm:p-6"
+              className="rounded-[20px] border border-white/20 bg-[rgba(4,32,58,0.55)] p-4 backdrop-blur-md transition hover:border-[var(--accent)] sm:rounded-[24px] sm:p-6"
             >
-              <p className="font-display text-3xl font-extrabold text-[var(--text)] sm:text-4xl">
+              <p className="font-display text-3xl font-extrabold text-white sm:text-4xl">
                 <CountUp
                   value={stat.value}
                   prefix={stat.prefix}
                   suffix={stat.suffix}
                 />
               </p>
-              <p className="mt-1 text-sm text-[var(--text-muted)] sm:mt-2 sm:text-base">
+              <p className="mt-1 text-sm text-white/80 sm:mt-2 sm:text-base">
                 {stat.label}
               </p>
             </div>

@@ -154,10 +154,10 @@ export const company = {
     title: 'Growing Beyond Boundaries',
     body: 'Gashtvan is expanding with new branches domestically, across neighboring countries, and globally — extending Erbil-rooted expertise into a wider network of travelers, partners, and destinations.',
     markers: [
-      { id: 'erbil', label: 'Erbil HQ', x: 58, y: 38 },
-      { id: 'domestic', label: 'Domestic branches', x: 54, y: 36 },
-      { id: 'neighbors', label: 'Neighboring countries', x: 63, y: 36 },
-      { id: 'global', label: 'Global reach', x: 72, y: 32 },
+      { id: 'erbil', label: 'Erbil HQ', x: 58, y: 40 },
+      { id: 'domestic', label: 'Domestic branches', x: 50, y: 30 },
+      { id: 'neighbors', label: 'Neighboring countries', x: 68, y: 36 },
+      { id: 'global', label: 'Global reach', x: 80, y: 24 },
     ],
   },
 }

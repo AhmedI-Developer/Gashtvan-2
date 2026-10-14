@@ -26,6 +26,7 @@ export default function FutureVision() {
               src={worldMap}
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
+              style={{ transform: 'scale(1.55)', transformOrigin: 'center 28%' }}
             />
             <div className="absolute inset-0 bg-[rgba(4,32,58,0.28)]" />
             <svg
@@ -52,7 +53,11 @@ export default function FutureVision() {
                   style={{ animationDelay: `${i * 0.35}s` }}
                 />
                 <span className="relative block h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[0_0_16px_rgba(160,194,58,0.8)] sm:h-3 sm:w-3" />
-                <span className="absolute start-3.5 top-1/2 hidden -translate-y-1/2 whitespace-nowrap rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur sm:inline">
+                <span
+                  className={`absolute top-1/2 hidden -translate-y-1/2 whitespace-nowrap rounded-full bg-[rgba(4,32,58,0.72)] px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur sm:inline ${
+                    m.id === 'neighbors' ? 'start-3.5' : 'end-3.5'
+                  }`}
+                >
                   {m.label}
                 </span>
               </span>

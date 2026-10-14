@@ -16,8 +16,9 @@ export default function CtaBanner() {
         src={globalNetwork}
         alt=""
         loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover opacity-55"
+        className="absolute inset-0 h-full w-full object-cover"
       />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.62),rgba(4,32,58,0.78))]" />
       <div className="container-shell relative z-10 text-center text-white">
         <p className="eyebrow !text-[var(--accent)]">Ready when you are</p>
         <h2 className="mx-auto mt-3 max-w-3xl font-display text-[1.65rem] font-bold sm:text-3xl md:text-5xl">
