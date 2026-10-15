@@ -27,7 +27,6 @@ export default function News() {
             className="mb-0"
             eyebrow="News"
             title="Latest from our regions"
-            description="Kurdistan first, then Middle East, then Europe."
           />
 
           <div

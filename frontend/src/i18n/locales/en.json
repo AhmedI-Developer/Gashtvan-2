@@ -40,5 +40,17 @@
     "success": "Message prepared — thank you.",
     "openMap": "Open in Google Maps",
     "mapLabel": "Gashtvan Travel Agency"
+  },
+  "news": {
+    "eyebrow": "News",
+    "title": "Latest from our regions",
+    "readMore": "Read more",
+    "empty": "No news in this region yet.",
+    "regionsLabel": "News regions",
+    "regions": {
+      "Kurdistan": "Kurdistan",
+      "Middle East": "Middle East",
+      "Europe": "Europe"
+    }
   }
 }

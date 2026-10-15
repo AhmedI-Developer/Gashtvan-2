@@ -122,7 +122,7 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-          {site.nav.map((item) => {
+          {site.nav.filter((item) => item.key !== 'news').map((item) => {
             const label = t(`nav.${item.key}`)
 
             if (item.children) {
@@ -233,7 +233,7 @@ export default function Navbar() {
             aria-label="Mobile"
           >
             <div className="container-shell flex flex-col gap-1 py-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
-              {site.nav.map((item) =>
+              {site.nav.filter((item) => item.key !== 'news').map((item) =>
                 item.children ? (
                   <div key={item.key}>
                     <button
