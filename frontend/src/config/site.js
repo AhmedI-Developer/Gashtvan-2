@@ -37,12 +37,19 @@ export const site = {
   ],
   nav: [
     { key: 'home', href: '/#home' },
-    { key: 'about', href: '/#about' },
     { key: 'services', href: '/#services' },
     { key: 'offers', href: '/offers' },
-    { key: 'team', href: '/#team' },
+    { key: 'news', href: '/#news' },
     { key: 'contact', href: '/#contact' },
+    {
+      key: 'about',
+      children: [
+        { key: 'team', href: '/#team' },
+        { key: 'companyProfile', href: '/company' },
+      ],
+    },
   ],
 }
 
-export const apiUrl = import.meta.env.VITE_API_URL || ''
+/** Laravel API base. In dev, Vite proxies `/api` to the backend. */
+export const apiBase = import.meta.env.VITE_API_URL || '/api'

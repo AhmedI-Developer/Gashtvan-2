@@ -7,7 +7,9 @@ import Services from '@/components/sections/Services'
 import WhyGashtvan from '@/components/sections/WhyGashtvan'
 import Team from '@/components/sections/Team'
 import FutureVision from '@/components/sections/FutureVision'
+import Destinations from '@/components/sections/Destinations'
 import FeaturedOffers from '@/components/sections/FeaturedOffers'
+import News from '@/components/sections/News'
 import CtaBanner from '@/components/sections/CtaBanner'
 import Contact from '@/components/sections/Contact'
 
@@ -17,12 +19,14 @@ export default function Home() {
       <Seo path="/" />
       <Hero />
       <TrustStrip />
+      <News />
       <About />
       <VisionMissionValues />
       <Services />
       <WhyGashtvan />
       <Team />
       <FutureVision />
+      <Destinations />
       <FeaturedOffers />
       <CtaBanner />
       <Contact />

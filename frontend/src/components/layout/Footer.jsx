@@ -39,12 +39,39 @@ export default function Footer() {
           <ul className="space-y-2 text-white/80">
             {site.nav.map((item) => (
               <li key={item.key}>
-                <a
-                  href={item.href}
-                  className="inline-block transition-all duration-300 hover:translate-x-1 hover:text-[var(--accent)]"
-                >
-                  {t(`nav.${item.key}`)}
-                </a>
+                {item.children ? (
+                  <div>
+                    <span className="font-medium text-white">{t(`nav.${item.key}`)}</span>
+                    <ul className="mt-2 space-y-2 border-s border-[var(--accent)] ps-3">
+                      {item.children.map((child) => (
+                        <li key={child.key}>
+                          {child.href.includes('#') ? (
+                            <a
+                              href={child.href}
+                              className="inline-block transition-all duration-300 hover:translate-x-1 hover:text-[var(--accent)]"
+                            >
+                              {t(`nav.${child.key}`)}
+                            </a>
+                          ) : (
+                            <Link
+                              to={child.href}
+                              className="inline-block transition-all duration-300 hover:translate-x-1 hover:text-[var(--accent)]"
+                            >
+                              {t(`nav.${child.key}`)}
+                            </Link>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <a
+                    href={item.href}
+                    className="inline-block transition-all duration-300 hover:translate-x-1 hover:text-[var(--accent)]"
+                  >
+                    {t(`nav.${item.key}`)}
+                  </a>
+                )}
               </li>
             ))}
           </ul>

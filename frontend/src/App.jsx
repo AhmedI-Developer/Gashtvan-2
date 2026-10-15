@@ -5,6 +5,7 @@ import Home from '@/pages/Home'
 
 const Offers = lazy(() => import('@/pages/Offers'))
 const OfferDetail = lazy(() => import('@/pages/OfferDetail'))
+const CompanyProfile = lazy(() => import('@/pages/CompanyProfile'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
 function RouteFallback() {
@@ -23,6 +24,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="offers" element={<Offers />} />
           <Route path="offers/:slug" element={<OfferDetail />} />
+          <Route path="company" element={<CompanyProfile />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Menu, X } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import Logo from '@/components/brand/Logo'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import LanguageSelector from '@/components/ui/LanguageSelector'
@@ -24,11 +24,41 @@ function navLinkClass({ isActive, lightOnHero }) {
   )
 }
 
+function childIsActive(child, location) {
+  if (child.href === '/company') return location.pathname === '/company'
+  if (child.href === '/#team') return location.pathname === '/' && location.hash === '#team'
+  return false
+}
+
+function SubLink({ child, location, onNavigate, className }) {
+  const { t } = useTranslation()
+  const active = childIsActive(child, location)
+  const classes = cn(
+    className,
+    active && 'bg-[var(--accent-soft)] text-[var(--text)]',
+  )
+
+  if (child.href.includes('#')) {
+    return (
+      <a href={child.href} className={classes} onClick={onNavigate}>
+        {t(`nav.${child.key}`)}
+      </a>
+    )
+  }
+
+  return (
+    <NavLink to={child.href} className={classes} onClick={onNavigate}>
+      {t(`nav.${child.key}`)}
+    </NavLink>
+  )
+}
+
 export default function Navbar() {
   const { t } = useTranslation()
   const { isDark } = useTheme()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
   const location = useLocation()
   const onHome = location.pathname === '/'
 
@@ -39,13 +69,19 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => setOpen(false), [location])
+  useEffect(() => {
+    setOpen(false)
+    setAboutOpen(false)
+  }, [location])
 
   useEffect(() => {
     document.body.classList.toggle('nav-open', open)
     return () => document.body.classList.remove('nav-open')
   }, [open])
 
+  const aboutActive = site.nav
+    .find((item) => item.key === 'about')
+    ?.children?.some((child) => childIsActive(child, location))
   const onHero = onHome && !scrolled && !open
   /** White text/logo only when dark theme + on hero. Light theme uses navy tokens (no header bg). */
   const lightOnHero = onHero && isDark
@@ -89,7 +125,59 @@ export default function Navbar() {
           {site.nav.map((item) => {
             const label = t(`nav.${item.key}`)
 
-            if (item.href.startsWith('/offers')) {
+            if (item.children) {
+              return (
+                <div
+                  key={item.key}
+                  className="group relative"
+                  onMouseEnter={() => setAboutOpen(true)}
+                  onMouseLeave={(event) => {
+                    if (!event.currentTarget.contains(document.activeElement)) {
+                      setAboutOpen(false)
+                    }
+                  }}
+                  onFocus={() => setAboutOpen(true)}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) {
+                      setAboutOpen(false)
+                    }
+                  }}
+                >
+                  <button
+                    type="button"
+                    className={cn(
+                      navLinkClass({ isActive: aboutActive, lightOnHero }),
+                      'inline-flex items-center gap-1',
+                    )}
+                    aria-haspopup="true"
+                    aria-expanded={aboutOpen}
+                  >
+                    {label}
+                    <ChevronDown
+                      size={14}
+                      className={cn(
+                        'transition duration-300 group-hover:rotate-180 group-focus-within:rotate-180',
+                        aboutOpen && 'rotate-180',
+                      )}
+                    />
+                  </button>
+                  <div className="invisible absolute end-0 top-full z-30 pt-2 opacity-0 transition duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                    <div className="min-w-52 rounded-[18px] border border-[var(--border)] bg-[var(--surface)] p-2 shadow-[var(--shadow)]">
+                      {item.children.map((child) => (
+                        <SubLink
+                          key={child.key}
+                          child={child}
+                          location={location}
+                          className="block rounded-[14px] px-3 py-2.5 text-sm font-medium text-[var(--text-muted)] transition duration-300 hover:bg-[var(--accent-soft)] hover:text-[var(--text)]"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
+            if (item.href === '/offers') {
               return (
                 <NavLink
                   key={item.key}
@@ -145,16 +233,46 @@ export default function Navbar() {
             aria-label="Mobile"
           >
             <div className="container-shell flex flex-col gap-1 py-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
-              {site.nav.map((item) => (
-                <a
-                  key={item.key}
-                  href={item.href.startsWith('/offers') ? '/offers' : item.href}
-                  className="rounded-[18px] px-4 py-3.5 text-base font-medium text-[var(--text)] transition duration-300 hover:translate-x-1 hover:bg-[var(--accent-soft)] hover:text-[var(--text)]"
-                  onClick={() => setOpen(false)}
-                >
-                  {t(`nav.${item.key}`)}
-                </a>
-              ))}
+              {site.nav.map((item) =>
+                item.children ? (
+                  <div key={item.key}>
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between rounded-[18px] px-4 py-3.5 text-base font-medium text-[var(--text)] transition duration-300 hover:bg-[var(--accent-soft)]"
+                      aria-expanded={aboutOpen}
+                      onClick={() => setAboutOpen((value) => !value)}
+                    >
+                      {t(`nav.${item.key}`)}
+                      <ChevronDown
+                        size={16}
+                        className={cn('transition duration-300', aboutOpen && 'rotate-180')}
+                      />
+                    </button>
+                    {aboutOpen ? (
+                      <div className="ms-3 flex flex-col gap-1 border-s border-[var(--accent)] ps-3">
+                        {item.children.map((child) => (
+                          <SubLink
+                            key={child.key}
+                            child={child}
+                            location={location}
+                            onNavigate={() => setOpen(false)}
+                            className="rounded-[14px] px-3 py-3 text-sm font-medium text-[var(--text-muted)] transition duration-300 hover:bg-[var(--accent-soft)] hover:text-[var(--text)]"
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <a
+                    key={item.key}
+                    href={item.href === '/offers' ? '/offers' : item.href}
+                    className="rounded-[18px] px-4 py-3.5 text-base font-medium text-[var(--text)] transition duration-300 hover:translate-x-1 hover:bg-[var(--accent-soft)] hover:text-[var(--text)]"
+                    onClick={() => setOpen(false)}
+                  >
+                    {t(`nav.${item.key}`)}
+                  </a>
+                ),
+              )}
             </div>
           </motion.nav>
         ) : null}

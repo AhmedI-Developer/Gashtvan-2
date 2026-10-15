@@ -1,10 +1,13 @@
 import { Search } from 'lucide-react'
-import { categories } from '@/lib/offers'
 import { cn } from '@/lib/cn'
 
 export default function OfferFilters({
+  categories,
   category,
   setCategory,
+  destinations = [],
+  destination = 'All',
+  setDestination,
   query,
   setQuery,
   sort,
@@ -31,6 +34,28 @@ export default function OfferFilters({
           </button>
         ))}
       </div>
+
+      {destinations.length ? (
+        <div className="chip-scroll" role="listbox" aria-label="Destinations">
+          {['All', ...destinations].map((name) => (
+            <button
+              key={name}
+              type="button"
+              role="option"
+              aria-selected={destination === name}
+              onClick={() => setDestination?.(name)}
+              className={cn(
+                'rounded-full border px-4 py-2 text-sm font-semibold transition whitespace-nowrap',
+                destination === name
+                  ? 'border-[var(--navy)] bg-[var(--navy)] text-white'
+                  : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:border-[var(--accent)]',
+              )}
+            >
+              {name === 'All' ? 'All destinations' : name}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <label className="relative min-w-0 flex-1">

@@ -48,6 +48,8 @@ export default function OfferDetail() {
   }
 
   const days = daysUntil(offer.validUntil)
+  const includes = offer.includes || []
+  const excludes = offer.excludes || []
 
   return (
     <main className="pt-24">
@@ -84,12 +86,16 @@ export default function OfferDetail() {
             <span className="rounded-full border border-[var(--border)] px-3 py-1">
               {formatPrice(offer)}
             </span>
-            <span className="rounded-full border border-[var(--border)] px-3 py-1">
-              {offer.duration}
-            </span>
-            <span className="rounded-full border border-[var(--border)] px-3 py-1">
-              {days < 0 ? 'Expired' : `Valid ${days} days`}
-            </span>
+            {offer.duration ? (
+              <span className="rounded-full border border-[var(--border)] px-3 py-1">
+                {offer.duration}
+              </span>
+            ) : null}
+            {days != null ? (
+              <span className="rounded-full border border-[var(--border)] px-3 py-1">
+                {days < 0 ? 'Expired' : `Valid ${days} days`}
+              </span>
+            ) : null}
           </div>
 
           <section>
@@ -122,24 +128,30 @@ export default function OfferDetail() {
             </section>
           ) : null}
 
-          <section className="grid gap-4 md:grid-cols-2">
-            <div className="surface rounded-[24px] p-5">
-              <h3 className="font-display text-lg font-bold text-[var(--text)]">Includes</h3>
-              <ul className="mt-3 list-disc space-y-1 ps-5 text-[var(--text-muted)]">
-                {offer.includes.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="surface rounded-[24px] p-5">
-              <h3 className="font-display text-lg font-bold text-[var(--text)]">Excludes</h3>
-              <ul className="mt-3 list-disc space-y-1 ps-5 text-[var(--text-muted)]">
-                {offer.excludes.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </section>
+          {includes.length || excludes.length ? (
+            <section className="grid gap-4 md:grid-cols-2">
+              {includes.length ? (
+                <div className="surface rounded-[24px] p-5">
+                  <h3 className="font-display text-lg font-bold text-[var(--text)]">Includes</h3>
+                  <ul className="mt-3 list-disc space-y-1 ps-5 text-[var(--text-muted)]">
+                    {includes.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {excludes.length ? (
+                <div className="surface rounded-[24px] p-5">
+                  <h3 className="font-display text-lg font-bold text-[var(--text)]">Excludes</h3>
+                  <ul className="mt-3 list-disc space-y-1 ps-5 text-[var(--text-muted)]">
+                    {excludes.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </section>
+          ) : null}
 
           {offer.itinerary?.length ? (
             <section>
@@ -171,10 +183,12 @@ export default function OfferDetail() {
             </section>
           ) : null}
 
-          <section className="surface rounded-[24px] p-5">
-            <h3 className="font-display text-lg font-bold text-[var(--text)]">Terms</h3>
-            <p className="mt-2 text-[var(--text-muted)]">{offer.terms}</p>
-          </section>
+          {offer.terms ? (
+            <section className="surface rounded-[24px] p-5">
+              <h3 className="font-display text-lg font-bold text-[var(--text)]">Terms</h3>
+              <p className="mt-2 text-[var(--text-muted)]">{offer.terms}</p>
+            </section>
+          ) : null}
         </div>
 
         <InquirePanel offer={offer} />

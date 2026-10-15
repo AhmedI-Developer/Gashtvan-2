@@ -37,7 +37,7 @@ export default function Team() {
   }, [reduced])
 
   return (
-    <section id="team" className="section-pad bg-[var(--bg)]">
+    <section id="team" className="section-pad scroll-mt-28 bg-[var(--bg)]">
       <div className="container-shell grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-12">
         <div className="min-w-0">
           <SectionHeading

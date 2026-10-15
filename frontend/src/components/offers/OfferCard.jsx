@@ -14,14 +14,18 @@ export default function OfferCard({ offer }) {
       )}
     >
       <div className="relative aspect-[16/11] overflow-hidden">
-        <img
-          src={offer.coverImage}
-          alt={offer.title}
-          loading="lazy"
-          width={640}
-          height={440}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-        />
+        {offer.coverImage ? (
+          <img
+            src={offer.coverImage}
+            alt={offer.title}
+            loading="lazy"
+            width={640}
+            height={440}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+          />
+        ) : (
+          <div className="h-full w-full bg-[var(--navy)]" />
+        )}
         {offer.badge ? (
           <span className="absolute start-3 top-3 rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-bold text-[var(--navy)]">
             {offer.badge}
@@ -53,13 +57,17 @@ export default function OfferCard({ offer }) {
                 {offer.currency} {offer.oldPrice}
               </p>
             ) : null}
-            <p className="mt-1 text-xs text-[var(--text-muted)]">
-              {days < 0
-                ? 'Ended'
-                : days === 0
-                  ? 'Ends today'
-                  : `Ends in ${days} days`}
-            </p>
+            {days != null ? (
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
+                {days < 0
+                  ? 'Ended'
+                  : days === 0
+                    ? 'Ends today'
+                    : `Ends in ${days} days`}
+              </p>
+            ) : offer.duration ? (
+              <p className="mt-1 text-xs text-[var(--text-muted)]">{offer.duration}</p>
+            ) : null}
           </div>
           <Link
             to={`/offers/${offer.slug}`}

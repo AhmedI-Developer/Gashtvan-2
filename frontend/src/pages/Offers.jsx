@@ -1,21 +1,39 @@
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Seo from '@/components/layout/Seo'
 import SectionHeading from '@/components/ui/SectionHeading'
 import OfferCard from '@/components/offers/OfferCard'
 import OfferFilters from '@/components/offers/OfferFilters'
 import Skeleton from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
-import { filterOffers, sortOffers } from '@/lib/offers'
+import { useDestinations } from '@/hooks/useDestinations'
+import { categoriesFrom, filterOffers, sortOffers } from '@/lib/offers'
 
 export default function Offers() {
   const { offers, loading } = useOffers()
+  const { destinations } = useDestinations()
   const [category, setCategory] = useState('All')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const destination = searchParams.get('destination') || 'All'
+
+  const setDestination = (name) => {
+    const next = new URLSearchParams(searchParams)
+    if (!name || name === 'All') next.delete('destination')
+    else next.set('destination', name)
+    setSearchParams(next, { replace: true })
+  }
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('newest')
+  const categories = useMemo(() => categoriesFrom(offers), [offers])
+  const destinationNames = useMemo(() => {
+    const fromFares = destinations.map((item) => item.name)
+    const fromOffers = offers.map((offer) => offer.destination)
+    return [...new Set([...fromFares, ...fromOffers].filter(Boolean))]
+  }, [destinations, offers])
 
   const visible = useMemo(() => {
-    return sortOffers(filterOffers(offers, { category, query }), sort)
-  }, [offers, category, query, sort])
+    return sortOffers(filterOffers(offers, { category, query, destination }), sort)
+  }, [offers, category, query, destination, sort])
 
   return (
     <main className="section-pad pt-24 sm:pt-28">
@@ -28,12 +46,16 @@ export default function Offers() {
         <SectionHeading
           eyebrow="Offers"
           title="Find your next journey"
-          description="Filter by category, search destinations, and sort by timing or price. Expired offers are hidden automatically."
+          description="Live offers from Gashtvan — filter by category or destination, then sort by price."
         />
 
         <OfferFilters
+          categories={categories}
           category={category}
           setCategory={setCategory}
+          destinations={destinationNames}
+          destination={destination}
+          setDestination={setDestination}
           query={query}
           setQuery={setQuery}
           sort={sort}

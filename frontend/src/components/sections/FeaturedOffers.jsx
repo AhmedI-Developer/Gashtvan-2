@@ -7,9 +7,10 @@ import Skeleton from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
 
 export default function FeaturedOffers() {
-  const { offers, loading } = useOffers()
+  const { offers, loading } = useOffers({ limit: 24 })
   const scroller = useRef(null)
-  const featured = offers.slice(0, 6)
+  const featuredSource = offers.filter((offer) => offer.isFeatured)
+  const featured = (featuredSource.length ? featuredSource : offers).slice(0, 6)
 
   return (
     <section id="featured-offers" className="section-pad bg-[var(--bg)]">
@@ -19,7 +20,7 @@ export default function FeaturedOffers() {
             className="mb-0"
             eyebrow="Offers"
             title="Featured journeys"
-            description="Hand-picked sample offers — browse the full board anytime."
+            description="Featured offers from the Gashtvan desk — browse the full board anytime."
           />
           <Button to="/offers" variant="secondary" className="w-full shrink-0 sm:w-auto">
             All offers

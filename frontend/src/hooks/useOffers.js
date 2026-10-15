@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { fetchOffers, getActiveOffers } from '@/lib/offers'
 
-export function useOffers() {
+export function useOffers(options = {}) {
+  const { featured = false, limit = 24 } = options
   const [offers, setOffers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -10,7 +11,7 @@ export function useOffers() {
     let alive = true
     ;(async () => {
       try {
-        const data = await fetchOffers()
+        const data = await fetchOffers({ featured, limit })
         if (alive) setOffers(getActiveOffers(data))
       } catch (err) {
         if (alive) setError(err)
@@ -21,7 +22,7 @@ export function useOffers() {
     return () => {
       alive = false
     }
-  }, [])
+  }, [featured, limit])
 
   return { offers, loading, error }
 }
