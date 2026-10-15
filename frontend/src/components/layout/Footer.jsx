@@ -64,13 +64,20 @@ export default function Footer() {
                       ))}
                     </ul>
                   </div>
-                ) : (
+                ) : item.href.includes('#') ? (
                   <a
                     href={item.href}
                     className="inline-block transition-all duration-300 hover:translate-x-1 hover:text-[var(--accent)]"
                   >
                     {t(`nav.${item.key}`)}
                   </a>
+                ) : (
+                  <Link
+                    to={item.href}
+                    className="inline-block transition-all duration-300 hover:translate-x-1 hover:text-[var(--accent)]"
+                  >
+                    {t(`nav.${item.key}`)}
+                  </Link>
                 )}
               </li>
             ))}

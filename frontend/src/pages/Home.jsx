@@ -2,7 +2,6 @@ import Seo from '@/components/layout/Seo'
 import Hero from '@/components/sections/Hero'
 import TrustStrip from '@/components/sections/TrustStrip'
 import About from '@/components/sections/About'
-import VisionMissionValues from '@/components/sections/VisionMissionValues'
 import Services from '@/components/sections/Services'
 import WhyGashtvan from '@/components/sections/WhyGashtvan'
 import Team from '@/components/sections/Team'
@@ -11,7 +10,6 @@ import Destinations from '@/components/sections/Destinations'
 import FeaturedOffers from '@/components/sections/FeaturedOffers'
 import News from '@/components/sections/News'
 import CtaBanner from '@/components/sections/CtaBanner'
-import Contact from '@/components/sections/Contact'
 
 export default function Home() {
   return (
@@ -21,7 +19,6 @@ export default function Home() {
       <TrustStrip />
       <News />
       <About />
-      <VisionMissionValues />
       <Services />
       <WhyGashtvan />
       <Team />
@@ -29,7 +26,6 @@ export default function Home() {
       <Destinations />
       <FeaturedOffers />
       <CtaBanner />
-      <Contact />
     </main>
   )
 }

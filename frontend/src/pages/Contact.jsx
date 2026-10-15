@@ -1,0 +1,317 @@
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import { CheckCircle2, Clock, ExternalLink, Mail, MapPin, Phone } from 'lucide-react'
+import Seo from '@/components/layout/Seo'
+import Button from '@/components/ui/Button'
+import Reveal from '@/components/motion/Reveal'
+import GreenShape from '@/components/brand/GreenShape'
+import { site } from '@/config/site'
+import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
+import worldMap from '@/assets/backgroundImage/World_map.jpg'
+import planeWing from '@/assets/backgroundImage/Left-wing-plane.jpg'
+import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
+
+const initial = { name: '', email: '', phone: '', message: '' }
+
+function mapEmbedSrc({ lat, lng }) {
+  return `https://www.google.com/maps?q=${lat},${lng}&z=16&hl=en&output=embed`
+}
+
+function telHref(phone) {
+  return `tel:${phone.replace(/\s/g, '')}`
+}
+
+export default function Contact() {
+  const { t } = useTranslation()
+  const [form, setForm] = useState(initial)
+  const [errors, setErrors] = useState({})
+  const [sent, setSent] = useState(false)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  const validate = () => {
+    const next = {}
+    if (!form.name.trim()) next.name = t('contact.required')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = t('contact.required')
+    if (!form.phone.trim()) next.phone = t('contact.required')
+    if (form.message.trim().length < 10) next.message = t('contact.required')
+    setErrors(next)
+    return Object.keys(next).length === 0
+  }
+
+  const onSubmit = (event) => {
+    event.preventDefault()
+    if (!validate()) return
+    const mailto = `mailto:${site.emails[0]}?subject=${encodeURIComponent(
+      `Inquiry from ${form.name}`,
+    )}&body=${encodeURIComponent(
+      `${form.message}\n\nPhone: ${form.phone}\nEmail: ${form.email}`,
+    )}`
+    window.location.href = mailto
+    setSent(true)
+    setForm(initial)
+  }
+
+  const fields = [
+    { name: 'name', label: t('contact.name'), type: 'text' },
+    { name: 'email', label: t('contact.email'), type: 'email' },
+    { name: 'phone', label: t('contact.phone'), type: 'tel' },
+  ]
+
+  return (
+    <main>
+      <Seo
+        title={t('nav.contact')}
+        description={t('contact.heroLead')}
+        path="/contact"
+      />
+
+      <section className="relative min-h-[72svh] overflow-hidden text-white">
+        <img
+          src={kurdistanMountain}
+          alt="Mountains in the Kurdistan Region"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.42)_0%,rgba(4,32,58,0.7)_58%,rgba(4,32,58,0.92)_100%)]" />
+        <div className="container-shell relative z-10 flex min-h-[72svh] flex-col justify-end pb-12 pt-28 sm:pb-16 sm:pt-32">
+          <p className="eyebrow !text-[var(--accent)]">{t('contact.eyebrow')}</p>
+          <h1 className="mt-3 max-w-3xl font-display text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl">
+            {t('contact.title')}
+          </h1>
+          <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">
+            {t('contact.heroLead')}
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-[var(--bg)] py-8 sm:py-10">
+        <div className="container-shell grid gap-4 md:grid-cols-3">
+          {[
+            { href: '#reach', label: t('contact.reachTitle'), detail: t('contact.reachCard') },
+            { href: '#map', label: t('contact.mapTitle'), detail: t('contact.mapCard') },
+            { href: '#message', label: t('contact.formTitle'), detail: t('contact.formCard') },
+          ].map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="surface rounded-[22px] p-5 transition hover:border-[var(--accent)] sm:rounded-[26px] sm:p-6"
+            >
+              <div className="mb-3 flex items-center gap-2">
+                <GreenShape size={10} />
+                <p className="eyebrow">{item.label}</p>
+              </div>
+              <p className="text-sm leading-relaxed text-[var(--text-muted)] sm:text-base">
+                {item.detail}
+              </p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section id="reach" className="section-pad scroll-mt-24">
+        <div className="container-shell grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <Reveal className="overflow-hidden rounded-[22px] sm:rounded-[28px]">
+            <img
+              src={globalNetwork}
+              alt="Earth at night, linked by routes of light"
+              className="aspect-[4/3] w-full object-cover"
+            />
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p className="eyebrow">{t('contact.reachEyebrow')}</p>
+            <h2 className="mt-3 font-display text-[1.75rem] font-bold tracking-tight text-[var(--text)] sm:text-4xl md:text-5xl">
+              {t('contact.reachTitle')}
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
+              {t('contact.reachDescription')}
+            </p>
+            <div className="mt-6 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-text)]">
+                {t('contact.phonesLabel')}
+              </p>
+              {site.phones.map((phone) => (
+                <a
+                  key={phone}
+                  href={telHref(phone)}
+                  className="flex items-center gap-4 rounded-[20px] border border-[var(--border)] bg-[var(--surface)] px-4 py-3.5 transition hover:border-[var(--accent)]"
+                >
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-text)]">
+                    <Phone size={18} />
+                  </span>
+                  <span className="font-display text-base font-bold text-[var(--text)] sm:text-lg">
+                    {phone}
+                  </span>
+                </a>
+              ))}
+            </div>
+            <div className="mt-6 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-text)]">
+                {t('contact.emailsLabel')}
+              </p>
+              {site.emails.map((email) => (
+                <a
+                  key={email}
+                  href={`mailto:${email}`}
+                  className="flex items-center gap-4 rounded-[20px] border border-[var(--border)] bg-[var(--surface)] px-4 py-3.5 transition hover:border-[var(--accent)]"
+                >
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-text)]">
+                    <Mail size={18} />
+                  </span>
+                  <span className="min-w-0 break-all font-display text-base font-bold text-[var(--text)] sm:text-lg">
+                    {email}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section id="map" className="section-pad scroll-mt-24 bg-[var(--bg-alt)]">
+        <div className="container-shell grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <Reveal>
+            <p className="eyebrow">{t('contact.mapEyebrow')}</p>
+            <h2 className="mt-3 font-display text-[1.75rem] font-bold tracking-tight text-[var(--text)] sm:text-4xl md:text-5xl">
+              {t('contact.mapTitle')}
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
+              {t('contact.mapDescription')}
+            </p>
+            <ul className="mt-6 space-y-4">
+              <li className="flex items-start gap-3 text-[var(--text)]">
+                <MapPin className="mt-1 shrink-0 text-[var(--accent)]" size={18} />
+                <span>
+                  <span className="block text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-text)]">
+                    {t('contact.addressLabel')}
+                  </span>
+                  <span className="mt-1 block text-sm leading-relaxed sm:text-base">{site.address}</span>
+                </span>
+              </li>
+              <li className="flex items-start gap-3 text-[var(--text)]">
+                <Clock className="mt-1 shrink-0 text-[var(--accent)]" size={18} />
+                <span>
+                  <span className="block text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-text)]">
+                    {t('contact.hoursLabel')}
+                  </span>
+                  <span className="mt-1 block text-sm leading-relaxed sm:text-base">{site.hours}</span>
+                </span>
+              </li>
+            </ul>
+            <a
+              href={site.mapsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] transition hover:underline"
+            >
+              {t('contact.openMap')}
+              <ExternalLink size={14} />
+            </a>
+          </Reveal>
+          <Reveal delay={0.08} className="overflow-hidden rounded-[22px] sm:rounded-[28px]">
+            <img
+              src={worldMap}
+              alt="A world map marked with connected routes"
+              className="aspect-[4/3] w-full object-cover"
+            />
+          </Reveal>
+        </div>
+        <div className="container-shell mt-8 sm:mt-10">
+          <div className="overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface)] sm:rounded-[28px]">
+            <div className="relative aspect-[16/9] min-h-[240px] w-full sm:min-h-[360px]">
+              <iframe
+                title={site.location.label}
+                src={mapEmbedSrc(site.location)}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full border-0"
+              />
+            </div>
+            <div className="border-t border-[var(--border)] px-4 py-3">
+              <p className="text-sm font-semibold text-[var(--text)]">{site.location.label}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="message" className="section-pad scroll-mt-24">
+        <div className="container-shell grid items-start gap-8 lg:grid-cols-2 lg:gap-12">
+          <Reveal>
+            <p className="eyebrow">{t('contact.formEyebrow')}</p>
+            <h2 className="mt-3 font-display text-[1.75rem] font-bold tracking-tight text-[var(--text)] sm:text-4xl md:text-5xl">
+              {t('contact.formTitle')}
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
+              {t('contact.formDescription')}
+            </p>
+            <form
+              onSubmit={onSubmit}
+              className="surface mt-6 space-y-4 rounded-[22px] p-4 sm:rounded-[28px] sm:p-6 md:p-8"
+              noValidate
+            >
+              {fields.map((field) => (
+                <label key={field.name} className="block text-sm font-semibold text-[var(--text)]">
+                  {field.label}
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    value={form[field.name]}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, [field.name]: event.target.value }))
+                    }
+                    className="mt-1.5 w-full rounded-[16px] border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text)] outline-none transition focus:border-[var(--accent)]"
+                  />
+                  {errors[field.name] ? (
+                    <span className="mt-1 block text-xs text-[var(--accent-text)]">
+                      {errors[field.name]}
+                    </span>
+                  ) : null}
+                </label>
+              ))}
+              <label className="block text-sm font-semibold text-[var(--text)]">
+                {t('contact.message')}
+                <textarea
+                  name="message"
+                  rows={5}
+                  value={form.message}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, message: event.target.value }))
+                  }
+                  className="mt-1.5 w-full rounded-[16px] border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text)] outline-none transition focus:border-[var(--accent)]"
+                />
+                {errors.message ? (
+                  <span className="mt-1 block text-xs text-[var(--accent-text)]">
+                    {errors.message}
+                  </span>
+                ) : null}
+              </label>
+              <Button type="submit">{t('common.sendMessage')}</Button>
+              <AnimatePresence>
+                {sent ? (
+                  <motion.p
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-2 text-[var(--accent-text)]"
+                  >
+                    <CheckCircle2 size={18} /> {t('contact.success')}
+                  </motion.p>
+                ) : null}
+              </AnimatePresence>
+            </form>
+          </Reveal>
+          <Reveal delay={0.08} className="overflow-hidden rounded-[22px] sm:rounded-[28px] lg:sticky lg:top-28">
+            <img
+              src={planeWing}
+              alt="Airplane wing above the clouds at sunset"
+              className="aspect-[4/3] w-full object-cover lg:aspect-[3/4]"
+            />
+          </Reveal>
+        </div>
+      </section>
+    </main>
+  )
+}

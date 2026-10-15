@@ -29,9 +29,8 @@ export default function CtaBanner() {
             View Offers
           </MagneticButton>
           <MagneticButton
-            href="/#contact"
+            to="/contact"
             variant="ghost"
-            as="a"
             className="w-full sm:w-auto"
           >
             Contact Us

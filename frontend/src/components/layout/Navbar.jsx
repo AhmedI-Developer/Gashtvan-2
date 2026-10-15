@@ -25,9 +25,13 @@ function navLinkClass({ isActive, lightOnHero }) {
 }
 
 function childIsActive(child, location) {
-  if (child.href === '/company') return location.pathname === '/company'
-  if (child.href === '/#team') return location.pathname === '/' && location.hash === '#team'
-  return false
+  const hashAt = child.href.indexOf('#')
+  if (hashAt !== -1) {
+    const path = child.href.slice(0, hashAt) || '/'
+    const hash = child.href.slice(hashAt)
+    return location.pathname === path && location.hash === hash
+  }
+  return location.pathname === child.href
 }
 
 function SubLink({ child, location, onNavigate, className }) {
@@ -147,7 +151,9 @@ export default function Navbar() {
                     type="button"
                     className={cn(
                       navLinkClass({ isActive: aboutActive, lightOnHero }),
-                      'inline-flex items-center gap-1',
+                      // Unlayered `button { font: inherit }` and `a { color: inherit }`
+                      // would otherwise leave this trigger larger and dimmer than the links.
+                      'inline-flex cursor-pointer appearance-none items-center gap-1 !text-sm !font-medium !leading-5 !text-inherit',
                     )}
                     aria-haspopup="true"
                     aria-expanded={aboutOpen}
@@ -177,11 +183,11 @@ export default function Navbar() {
               )
             }
 
-            if (item.href === '/offers') {
+            if (item.href.startsWith('/') && !item.href.includes('#')) {
               return (
                 <NavLink
                   key={item.key}
-                  to="/offers"
+                  to={item.href}
                   className={({ isActive }) =>
                     navLinkClass({ isActive, lightOnHero })
                   }
@@ -238,7 +244,7 @@ export default function Navbar() {
                   <div key={item.key}>
                     <button
                       type="button"
-                      className="flex w-full items-center justify-between rounded-[18px] px-4 py-3.5 text-base font-medium text-[var(--text)] transition duration-300 hover:bg-[var(--accent-soft)]"
+                      className="flex w-full cursor-pointer appearance-none items-center justify-between rounded-[18px] px-4 py-3.5 !text-base !font-medium !leading-normal !text-inherit transition duration-300 hover:bg-[var(--accent-soft)]"
                       aria-expanded={aboutOpen}
                       onClick={() => setAboutOpen((value) => !value)}
                     >
@@ -262,10 +268,19 @@ export default function Navbar() {
                       </div>
                     ) : null}
                   </div>
+                ) : item.href.startsWith('/') && !item.href.includes('#') ? (
+                  <Link
+                    key={item.key}
+                    to={item.href}
+                    className="rounded-[18px] px-4 py-3.5 text-base font-medium text-[var(--text)] transition duration-300 hover:translate-x-1 hover:bg-[var(--accent-soft)] hover:text-[var(--text)]"
+                    onClick={() => setOpen(false)}
+                  >
+                    {t(`nav.${item.key}`)}
+                  </Link>
                 ) : (
                   <a
                     key={item.key}
-                    href={item.href === '/offers' ? '/offers' : item.href}
+                    href={item.href}
                     className="rounded-[18px] px-4 py-3.5 text-base font-medium text-[var(--text)] transition duration-300 hover:translate-x-1 hover:bg-[var(--accent-soft)] hover:text-[var(--text)]"
                     onClick={() => setOpen(false)}
                   >

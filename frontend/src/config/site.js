@@ -40,10 +40,11 @@ export const site = {
     { key: 'services', href: '/#services' },
     { key: 'offers', href: '/offers' },
     { key: 'news', href: '/#news' },
-    { key: 'contact', href: '/#contact' },
+    { key: 'contact', href: '/contact' },
     {
       key: 'about',
       children: [
+        { key: 'visionMission', href: '/vision' },
         { key: 'team', href: '/#team' },
         { key: 'companyProfile', href: '/company' },
       ],

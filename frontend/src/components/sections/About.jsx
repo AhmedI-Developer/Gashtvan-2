@@ -1,10 +1,13 @@
+import { useTranslation } from 'react-i18next'
 import SectionHeading from '@/components/ui/SectionHeading'
+import Button from '@/components/ui/Button'
 import CountUp from '@/components/motion/CountUp'
 import Reveal from '@/components/motion/Reveal'
 import { company } from '@/content/company'
 import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
 
 export default function About() {
+  const { t } = useTranslation()
   const { profile } = company
 
   return (
@@ -23,6 +26,9 @@ export default function About() {
               </Reveal>
             ))}
           </div>
+          <Button to="/vision" variant="secondary" className="mt-6">
+            {t('nav.visionMission')}
+          </Button>
         </div>
 
         <Reveal className="relative overflow-hidden rounded-[22px] sm:rounded-[28px]">

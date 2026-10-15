@@ -1,14 +1,39 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import MagneticButton from '@/components/ui/MagneticButton'
 import GreenShape from '@/components/brand/GreenShape'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { site } from '@/config/site'
 import heroImage from '@/assets/backgroundImage/Left-wing-plane.jpg'
+import desktopVideo from '@/assets/backgroundVdeos/Lapbackground-home.mp4'
+import mobileVideo from '@/assets/backgroundVdeos/mobbackground-home.mp4'
+
+const mobileHeroQuery = '(max-width: 767px)'
+
+function useHeroVideo() {
+  const [src, setSrc] = useState(() =>
+    window.matchMedia(mobileHeroQuery).matches ? mobileVideo : desktopVideo,
+  )
+
+  useEffect(() => {
+    const media = window.matchMedia(mobileHeroQuery)
+    const update = () => setSrc(media.matches ? mobileVideo : desktopVideo)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+
+  return src
+}
 
 export default function Hero() {
   const { t } = useTranslation()
   const ref = useRef(null)
+  const reducedMotion = useReducedMotion()
+  const videoSrc = useHeroVideo()
+  const [videoFailed, setVideoFailed] = useState(false)
+  const showVideo = !reducedMotion && !videoFailed
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
@@ -24,14 +49,31 @@ export default function Hero() {
       aria-label="Hero"
     >
       <motion.div style={{ y }} className="absolute inset-0">
-        <img
-          src={heroImage}
-          alt="Airplane wing above the clouds at sunset"
-          width={2000}
-          height={1333}
-          fetchPriority="high"
-          className="h-full w-full object-cover object-[28%_center]"
-        />
+        {showVideo ? (
+          <video
+            key={videoSrc}
+            className="h-full w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={heroImage}
+            aria-hidden="true"
+            onError={() => setVideoFailed(true)}
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+        ) : (
+          <img
+            src={heroImage}
+            alt=""
+            width={2000}
+            height={1333}
+            fetchPriority="high"
+            className="h-full w-full object-cover object-[28%_center]"
+          />
+        )}
       </motion.div>
       <div
         className="absolute inset-0"
@@ -85,12 +127,7 @@ export default function Hero() {
               <MagneticButton to="/offers" className="w-full sm:w-auto">
                 {t('common.viewOffers')}
               </MagneticButton>
-              <MagneticButton
-                href="/#contact"
-                variant="ghost"
-                as="a"
-                className="w-full sm:w-auto"
-              >
+              <MagneticButton to="/contact" variant="ghost" className="w-full sm:w-auto">
                 {t('common.contactUs')}
               </MagneticButton>
             </motion.div>

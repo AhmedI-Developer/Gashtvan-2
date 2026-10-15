@@ -27,11 +27,21 @@ export const company = {
   vision: {
     title: 'Vision',
     body: 'To elevate travel experiences beyond boundaries — connecting Erbil and the Kurdistan Region with the world through trusted expertise, global airline partnerships, and a service standard that grows with every journey.',
+    points: [
+      'Connect Erbil and the Kurdistan Region with the world.',
+      'Build on trusted expertise and global airline partnerships.',
+      'Raise the service standard with every journey.',
+    ],
   },
 
   mission: {
     title: 'Mission',
     body: 'To deliver precise, personalized travel and tourism solutions — from air ticketing and MICE to hotels, tours, corporate programs, visas, and professional GDS training — powered by IATA standards, Royal Jordanian GSA capabilities, and Amadeus, Galileo, and Sabre proficiency.',
+    points: [
+      'Air ticketing, MICE, hotels, tours, and corporate programs.',
+      'Visa services, academic admissions, and GDS training.',
+      'IATA standards, Royal Jordanian GSA capability, and Amadeus, Galileo, and Sabre.',
+    ],
   },
 
   coreValues: {

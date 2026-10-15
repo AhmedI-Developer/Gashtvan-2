@@ -51,7 +51,7 @@ export default function FeaturedOffers() {
         {!loading && !featured.length ? (
           <p className="text-[var(--text-muted)]">
             No active offers right now.{' '}
-            <Link to="/#contact" className="text-[var(--accent-text)] underline">
+            <Link to="/contact" className="text-[var(--accent-text)] underline">
               Contact us
             </Link>{' '}
             for custom quotes.

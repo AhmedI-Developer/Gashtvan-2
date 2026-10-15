@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { cn } from '@/lib/cn'
 
 const base =
-  'inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-[22px] font-semibold transition-all duration-300 will-change-transform focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]'
+  'inline-flex items-center justify-center gap-2 min-h-12 px-6 rounded-[22px] font-semibold transition-all duration-300 will-change-transform focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:pointer-events-none disabled:opacity-55'
 
 const variants = {
   primary:
