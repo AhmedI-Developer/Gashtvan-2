@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { fetchNews, newsByRegion, newsRegions } from '@/lib/news'
+import { useTranslation } from 'react-i18next'
+import { fetchNews, localizeNews, newsByRegion, newsRegions } from '@/lib/news'
 
 const REGION_DELAY_MS = 700
 
@@ -8,6 +9,7 @@ const REGION_DELAY_MS = 700
  * Each region unlocks after a short delay so the UI can reveal progressively.
  */
 export function useNews() {
+  const { i18n } = useTranslation()
   const [allNews, setAllNews] = useState([])
   const [unlockedRegions, setUnlockedRegions] = useState([])
   const [activeRegion, setActiveRegion] = useState(newsRegions[0])
@@ -40,11 +42,13 @@ export function useNews() {
     }
   }, [])
 
+  const articles = localizeNews(allNews, i18n.language)
   const regionReady = unlockedRegions.includes(activeRegion)
-  const items = regionReady ? newsByRegion(allNews, activeRegion) : []
+  const items = regionReady ? newsByRegion(articles, activeRegion) : []
 
   return {
     items,
+    articles,
     loading: loading || !regionReady,
     regions: newsRegions,
     unlockedRegions,

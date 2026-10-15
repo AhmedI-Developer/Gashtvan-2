@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Modal from '@/components/ui/Modal'
 import Skeleton from '@/components/ui/Skeleton'
@@ -16,8 +17,11 @@ export default function News() {
     unlockedRegions,
     activeRegion,
     setActiveRegion,
+    articles,
   } = useNews()
-  const [active, setActive] = useState(null)
+  const { t, i18n } = useTranslation()
+  const [activeId, setActiveId] = useState(null)
+  const active = articles.find((item) => item.id === activeId) || null
 
   return (
     <section id="news" className="border-b border-[var(--border)] bg-[var(--bg)] py-10 sm:py-12">
@@ -25,14 +29,14 @@ export default function News() {
         <div className="mb-5 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
             className="mb-0"
-            eyebrow="News"
-            title="Latest from our regions"
+            eyebrow={t('news.eyebrow')}
+            title={t('news.title')}
           />
 
           <div
             className="flex flex-wrap gap-2"
             role="tablist"
-            aria-label="News regions"
+            aria-label={t('news.regionsLabel')}
           >
             {regions.map((region) => {
               const unlocked = unlockedRegions.includes(region)
@@ -54,7 +58,7 @@ export default function News() {
                         : 'cursor-not-allowed border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-muted)] opacity-55',
                   )}
                 >
-                  {region}
+                  {t(`news.regions.${region}`)}
                   {!unlocked ? (
                     <span className="ms-1 text-xs font-medium opacity-80">…</span>
                   ) : null}
@@ -66,7 +70,7 @@ export default function News() {
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={loading ? `loading-${activeRegion}` : activeRegion}
+            key={loading ? `loading-${activeRegion}` : `${activeRegion}-${i18n.language}`}
             role="tabpanel"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -86,7 +90,7 @@ export default function News() {
                     key={item.id}
                     className="w-[min(200px,68vw)] shrink-0 snap-start sm:w-auto"
                   >
-                    <NewsCard item={item} onOpen={setActive} />
+                    <NewsCard item={item} onOpen={(story) => setActiveId(story.id)} />
                   </div>
                 ))}
           </motion.div>
@@ -94,14 +98,14 @@ export default function News() {
 
         {!loading && !items.length ? (
           <p className="mt-4 text-sm text-[var(--text-muted)]">
-            No news in this region yet.
+            {t('news.empty')}
           </p>
         ) : null}
       </div>
 
       <Modal
         open={Boolean(active)}
-        onClose={() => setActive(null)}
+        onClose={() => setActiveId(null)}
         title={active?.title}
       >
         {active ? (
@@ -114,9 +118,9 @@ export default function News() {
               />
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--accent-text)]">
-              <span>{active.region}</span>
+              <span>{t(`news.regions.${active.region}`)}</span>
               <span aria-hidden="true">·</span>
-              <span>{formatNewsDate(active.date)}</span>
+              <span>{formatNewsDate(active.date, i18n.language)}</span>
               <span aria-hidden="true">·</span>
               <span>{active.tag}</span>
             </div>

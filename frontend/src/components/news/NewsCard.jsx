@@ -19,6 +19,7 @@ import {
   Briefcase,
   Newspaper,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { formatNewsDate } from '@/lib/news'
 import { cn } from '@/lib/cn'
 
@@ -45,6 +46,7 @@ const icons = {
 }
 
 export default function NewsCard({ item, onOpen }) {
+  const { t, i18n } = useTranslation()
   const Icon = icons[item.icon] || Newspaper
 
   return (
@@ -73,13 +75,16 @@ export default function NewsCard({ item, onOpen }) {
 
       <div className="flex flex-1 flex-col p-3 sm:p-3.5">
         <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-[var(--accent-text)]">
-          {formatNewsDate(item.date)}
+          {formatNewsDate(item.date, i18n.language)}
         </p>
         <h3 className="mt-1 line-clamp-2 font-display text-sm font-bold leading-snug text-[var(--text)] sm:text-[0.95rem]">
           {item.title}
         </h3>
-        <span className="mt-auto inline-flex pt-2.5 text-xs font-semibold text-[var(--accent-text)]">
-          Read more →
+        <span className="mt-auto inline-flex items-center gap-1 pt-2.5 text-xs font-semibold text-[var(--accent-text)]">
+          {t('news.readMore')}
+          <span aria-hidden="true" className="rtl:-scale-x-100">
+            →
+          </span>
         </span>
       </div>
     </button>
