@@ -32,6 +32,7 @@ class UpdateOfferRequest extends FormRequest
             }
         }
 
+        $this->mergeCategoriesInput();
         $this->mergeSlugFromTitle();
     }
 
@@ -55,7 +56,8 @@ class UpdateOfferRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('offers', 'slug')->ignore($offerId)],
-            'category' => ['required', Rule::enum(OfferCategory::class)],
+            'categories' => ['required', 'array', 'min:1'],
+            'categories.*' => ['required', 'string', Rule::enum(OfferCategory::class)],
             'destination' => ['nullable', 'string', 'max:255'],
             'summary' => ['nullable', 'string', 'max:1000'],
             'description' => ['nullable', 'string'],
@@ -70,6 +72,20 @@ class UpdateOfferRequest extends FormRequest
             'is_active' => ['sometimes', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ];
+    }
+
+    private function mergeCategoriesInput(): void
+    {
+        if ($this->has('categories') && is_string($this->input('categories'))) {
+            $decoded = json_decode($this->input('categories'), true);
+            if (is_array($decoded)) {
+                $this->merge(['categories' => $decoded]);
+            }
+        }
+
+        if ((! $this->has('categories') || blank($this->input('categories'))) && $this->filled('category')) {
+            $this->merge(['categories' => [(string) $this->input('category')]]);
+        }
     }
 
     private function mergeSlugFromTitle(): void

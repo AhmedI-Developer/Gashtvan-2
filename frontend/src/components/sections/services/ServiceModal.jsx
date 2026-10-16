@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { site } from '@/config/site'
+import { startLenis, stopLenis } from '@/lib/lenis'
 
 export default function ServiceModal({ open, onClose, service }) {
   const { t } = useTranslation()
@@ -35,11 +36,13 @@ export default function ServiceModal({ open, onClose, service }) {
 
     document.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
+    stopLenis()
     requestAnimationFrame(() => closeRef.current?.focus())
 
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = ''
+      startLenis()
       if (previous instanceof HTMLElement) previous.focus()
     }
   }, [open, onClose])
@@ -75,21 +78,22 @@ export default function ServiceModal({ open, onClose, service }) {
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            initial={{ opacity: 0, y: 28, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 18, scale: 0.98 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 max-h-[88svh] w-full max-w-3xl overflow-y-auto rounded-[28px] border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-[var(--shadow)]"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            data-lenis-prevent
+            className="relative z-10 max-h-[88svh] w-full max-w-3xl overflow-y-auto overscroll-contain rounded-[28px] border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-[var(--shadow)]"
           >
-            <div className="relative aspect-[16/9] w-full overflow-hidden">
+            <div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--navy)]">
               <img
-                src={service.image}
+                src={service.imageOpen || service.image}
                 alt={service.imageAlt}
                 width={1000}
                 height={562}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,#04203Ab8_100%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,#04203Aa0_100%)]" />
               <button
                 ref={closeRef}
                 type="button"

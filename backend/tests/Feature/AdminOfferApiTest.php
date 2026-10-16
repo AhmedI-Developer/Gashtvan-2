@@ -27,7 +27,7 @@ it('logs in and manages offers with image upload', function () {
 
     $create = $this->withToken($token)->post('/api/admin/offers', [
         'title' => 'Erbil Fare Deal',
-        'category' => 'ticket',
+        'categories' => json_encode(['ticket', 'visa']),
         'destination' => 'Istanbul',
         'price' => 199,
         'currency' => 'USD',
@@ -36,6 +36,8 @@ it('logs in and manages offers with image upload', function () {
         'includes' => json_encode(['ticket']),
         'image' => UploadedFile::fake()->image('deal.jpg'),
     ])->assertCreated();
+
+    expect($create->json('data.categories'))->toBe(['ticket', 'visa']);
 
     $id = $create->json('data.id');
     expect($create->json('data.image_url'))->not->toBeNull();
@@ -48,7 +50,7 @@ it('logs in and manages offers with image upload', function () {
     $this->withToken($token)
         ->post("/api/admin/offers/{$id}", [
             'title' => 'Erbil Fare Deal Updated',
-            'category' => 'ticket',
+            'categories' => json_encode(['ticket', 'hotel']),
             'destination' => 'Istanbul',
             'price' => 189,
             'is_active' => '1',
@@ -87,7 +89,7 @@ it('rejects a second offer when the title reuses an existing name', function () 
 
     $payload = [
         'title' => 'Erbil Fare Deal',
-        'category' => 'ticket',
+        'categories' => ['ticket'],
         'destination' => 'Istanbul',
         'price' => 199,
     ];

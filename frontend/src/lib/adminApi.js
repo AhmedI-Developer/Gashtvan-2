@@ -148,8 +148,6 @@ export const OFFER_CATEGORIES = [
   { value: 'ticket', label: 'Tickets' },
   { value: 'hotel', label: 'Hotels' },
   { value: 'visa', label: 'Visa' },
-  { value: 'tour', label: 'Tours' },
-  { value: 'bundle', label: 'Bundles' },
 ]
 
 export const OFFER_INCLUDES = [

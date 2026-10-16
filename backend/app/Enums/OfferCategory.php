@@ -7,8 +7,6 @@ enum OfferCategory: string
     case Ticket = 'ticket';
     case Hotel = 'hotel';
     case Visa = 'visa';
-    case Tour = 'tour';
-    case Bundle = 'bundle';
 
     public function label(): string
     {
@@ -16,8 +14,14 @@ enum OfferCategory: string
             self::Ticket => 'Tickets',
             self::Hotel => 'Hotels',
             self::Visa => 'Visa',
-            self::Tour => 'Tours',
-            self::Bundle => 'Bundles',
         };
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
     }
 }

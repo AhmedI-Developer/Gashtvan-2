@@ -9,6 +9,7 @@ export default function SectionHeading({
   align = 'start',
   light = false,
   className,
+  titleId,
 }) {
   return (
     <motion.div
@@ -25,15 +26,16 @@ export default function SectionHeading({
       {eyebrow ? (
         <div
           className={cn(
-            'mb-3 inline-flex items-center gap-2',
+            'mb-3 inline-flex items-center gap-2.5',
             align === 'center' && 'justify-center',
           )}
         >
-          <GreenShape size={10} />
+          <GreenShape size={14} />
           <p className="eyebrow">{eyebrow}</p>
         </div>
       ) : null}
       <h2
+        id={titleId}
         className={cn(
           'font-display text-balance text-[1.65rem] font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl',
           light ? 'text-white' : 'text-[var(--text)]',

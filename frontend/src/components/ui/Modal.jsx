@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
+import { startLenis, stopLenis } from '@/lib/lenis'
 
 export default function Modal({ open, onClose, title, children }) {
   useEffect(() => {
@@ -9,9 +10,11 @@ export default function Modal({ open, onClose, title, children }) {
     const onKey = (e) => e.key === 'Escape' && onClose()
     document.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
+    stopLenis()
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = ''
+      startLenis()
     }
   }, [open, onClose])
 
@@ -40,7 +43,8 @@ export default function Modal({ open, onClose, title, children }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 max-h-[88svh] w-full max-w-2xl overflow-y-auto rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 text-[var(--text)] shadow-[var(--shadow)] sm:rounded-[28px] sm:p-6 md:p-8"
+            data-lenis-prevent
+            className="relative z-10 max-h-[88svh] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 text-[var(--text)] shadow-[var(--shadow)] sm:rounded-[28px] sm:p-6 md:p-8"
           >
             <div className="mb-4 flex items-start justify-between gap-3">
               <h3

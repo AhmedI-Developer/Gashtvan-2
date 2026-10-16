@@ -11,10 +11,10 @@
 export const company = {
   profile: {
     eyebrow: 'Company Profile',
-    title: 'Premium travel, rooted in Erbil',
+    title: 'Premium travel, worldwide reach',
     paragraphs: [
-      'Gashtvan is a premium travel and tourism company based in Erbil, Kurdistan Region, Iraq.',
-      'With more than twelve years of experience, Gashtvan operates as an IATA Member and serves as Royal Jordanian Airlines – GSA Kurdistan, while distributing through the Amadeus GDS and maintaining proficiency in Galileo and Sabre.',
+      'Gashtvan is a premium travel and tourism company with headquarters in Erbil, Kurdistan Region, Iraq — arranging flights, hotels, and journeys across the world, not only from Erbil.',
+      'With more than twelve years of experience, Gashtvan operates as an IATA Member and serves as Royal Jordanian Airlines – GSA Kurdistan, while distributing through the Amadeus GDS and maintaining proficiency in Galileo and Sabre — so travelers can book routes such as Dubai and other global cities to destinations worldwide.',
       'Recognized among the Top 5 in Kurdistan, the company delivers air ticketing, MICE, hospitality and tour arrangements, corporate travel management, visa and academic admissions support, and travel & tourism training — with 24/7 support for travelers and partners.',
     ],
     stats: [
@@ -26,9 +26,9 @@ export const company = {
 
   vision: {
     title: 'Vision',
-    body: 'To elevate travel experiences beyond boundaries — connecting Erbil and the Kurdistan Region with the world through trusted expertise, global airline partnerships, and a service standard that grows with every journey.',
+    body: 'To elevate travel experiences beyond boundaries — connecting travelers everywhere through trusted expertise, global airline partnerships, and a service standard that grows with every journey.',
     points: [
-      'Connect Erbil and the Kurdistan Region with the world.',
+      'Connect travelers to destinations worldwide.',
       'Build on trusted expertise and global airline partnerships.',
       'Raise the service standard with every journey.',
     ],
@@ -85,10 +85,10 @@ export const company = {
     },
     {
       id: 'hospitality-tours',
-      title: 'Hotels, Lodge Reservations, Tours & Transfers',
+      title: 'Hotels, Lodge Reservations, Tours, Car Rental & Transfers',
       summary:
         'End-to-end ground arrangements for leisure and business journeys.',
-      body: 'From hotel and lodge reservations to curated tours and transfers, Gashtvan arranges the ground experience around each itinerary — so arrival, movement, and stay feel connected rather than fragmented.',
+      body: 'From hotel and lodge reservations to curated tours, car rental, and transfers, Gashtvan arranges the ground experience around each itinerary — so arrival, movement, and stay feel connected rather than fragmented.',
       icon: 'Hotel',
     },
     {
@@ -120,7 +120,7 @@ export const company = {
   why: [
     {
       title: 'Global Network, Local Expertise',
-      body: 'An Erbil-based team with international airline and GDS reach — including Royal Jordanian Airlines – GSA Kurdistan and Amadeus distribution — combining local market knowledge with global connectivity.',
+      body: 'A team headquartered in Erbil with international airline and GDS reach — including Royal Jordanian Airlines – GSA Kurdistan and Amadeus distribution — booking travel worldwide with local care and global connectivity.',
     },
     {
       title: 'Unrivaled Personalization',
@@ -162,7 +162,7 @@ export const company = {
   future: {
     eyebrow: 'Future Vision',
     title: 'Growing Beyond Boundaries',
-    body: 'Gashtvan is expanding with new branches domestically, across neighboring countries, and globally — extending Erbil-rooted expertise into a wider network of travelers, partners, and destinations.',
+    body: 'Gashtvan is expanding with new branches domestically, across neighboring countries, and globally — growing a wider network of travelers, partners, and destinations while our headquarters remains in Erbil.',
     markers: [
       { id: 'erbil', label: 'Erbil HQ', x: 58, y: 40 },
       { id: 'domestic', label: 'Domestic branches', x: 50, y: 30 },

@@ -45,7 +45,12 @@ export default function OfferDetail() {
   const related = useMemo(() => {
     if (!offer) return []
     return offers
-      .filter((o) => o.category === offer.category && o.id !== offer.id)
+      .filter((o) => {
+        if (o.id === offer.id) return false
+        const mine = offer.categories || (offer.category ? [offer.category] : [])
+        const theirs = o.categories || (o.category ? [o.category] : [])
+        return mine.some((cat) => theirs.includes(cat))
+      })
       .slice(0, 3)
   }, [offers, offer])
 
@@ -79,7 +84,7 @@ export default function OfferDetail() {
   const excludes = offer.excludes || []
 
   return (
-    <main className="pt-24">
+    <main>
       <Seo
         title={offer.title}
         description={offer.shortDescription}
@@ -97,12 +102,21 @@ export default function OfferDetail() {
         ) : (
           <div className="absolute inset-0 bg-[var(--navy)]" />
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.35),rgba(4,32,58,0.88))]" />
-        <div className="container-shell relative z-10 flex min-h-[42svh] flex-col justify-end pb-8 pt-24 sm:min-h-[46vh] sm:pb-10">
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.45),rgba(4,32,58,0.88))]" />
+        <div className="container-shell relative z-10 flex min-h-[42svh] flex-col justify-end pb-8 pt-28 sm:min-h-[46vh] sm:pb-10 sm:pt-32">
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)] sm:text-sm">
-            {t(`offers.categories.${offer.category}`, {
-              defaultValue: offer.categoryLabel || offer.category,
-            })}
+            {(offer.categories?.length
+              ? offer.categories
+              : offer.category
+                ? [offer.category]
+                : []
+            )
+              .map((key) =>
+                t(`offers.categories.${key}`, {
+                  defaultValue: offer.categoryLabel || key,
+                }),
+              )
+              .join(' · ')}
             {offer.destination ? ` · ${cityLabel(offer.destination, t)}` : ''}
           </p>
           <h1 className="mt-2 max-w-3xl font-display text-[1.75rem] font-bold leading-tight sm:text-4xl md:text-5xl">

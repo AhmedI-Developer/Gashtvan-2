@@ -1,17 +1,16 @@
 /**
- * Homepage Services — editorial list data.
+ * Homepage Services — bento grid data.
  *
- * Swap images: edit only `image`, `imageAlt`, and `imageCredit` here.
- * Keep `id` in sync with `company.services` for localized titles/bodies.
+ * Swap images: edit `image` (card), optional `imageOpen` (modal), `imageAlt`, `imageCredit`.
+ * Keep `id` in sync with `company.services` for localized full titles/bodies.
  *
- * List size: tune `clamp(...)` on `.services-title` in Services.jsx.
- * Panel size: tune sticky panel classes in ServiceImagePanel.jsx.
+ * Grid spans: `gridClass` below + `.services-bento` in Services.jsx.
+ * Card chrome: `ServiceCard.jsx`. CTA card is rendered in Services.jsx.
  */
 
-function summary(text, maxSentences = 2) {
-  const parts = text.match(/[^.!?]+[.!?]+/g) || [text]
-  return parts.slice(0, maxSentences).join(' ').trim()
-}
+import airTicketImage from '@/assets/backgroundImage/services/airTicket.jpg'
+import airTicketOpenImage from '@/assets/backgroundImage/services/airTicketOpen.jpg'
+import teamTrainingImage from '@/assets/backgroundImage/services/teamTraining.jpg'
 
 const bodies = {
   'air-ticketing':
@@ -19,7 +18,7 @@ const bodies = {
   mice:
     'Gashtvan designs and coordinates MICE programs — meetings, incentives, conferences, and exhibitions — combining venue insight, travel logistics, and on-ground support so corporate and institutional events run with clarity from brief to close.',
   'hospitality-tours':
-    'From hotel and lodge reservations to curated tours and transfers, Gashtvan arranges the ground experience around each itinerary — so arrival, movement, and stay feel connected rather than fragmented.',
+    'From hotel and lodge reservations to curated tours, car rental, and transfers, Gashtvan arranges the ground experience around each itinerary — so arrival, movement, and stay feel connected rather than fragmented.',
   corporate:
     'Gashtvan supports corporate travel management with policy-aware booking, multi-GDS capability, and responsive coordination — helping companies move teams efficiently while maintaining service quality and cost visibility.',
   'visa-admissions':
@@ -28,83 +27,96 @@ const bodies = {
     'Gashtvan delivers travel and tourism training with a focus on GDS proficiency — Amadeus, Galileo, and Sabre — preparing professionals with practical skills that mirror real booking and operations workflows.',
 }
 
+/**
+ * Desktop (lg): 12 cols × 3 rows
+ * Air 5×3 | CTA 2×2 + MICE 5 | Hotels 5 | Corp 2 + Visa 2 + Training 3
+ */
 export const services = [
   {
     id: 'air-ticketing',
-    number: '01',
-    shortLabel: 'AIR TICKETING',
-    title: 'Air Ticketing',
-    summary: summary(bodies['air-ticketing']),
+    cardTitle: 'Air Ticketing',
+    fullTitle: 'Air Ticketing',
     fullText: bodies['air-ticketing'],
     icon: 'Plane',
-    image:
-      'https://images.unsplash.com/photo-1474302770737-173a5371ce91?auto=format&fit=crop&w=1000&q=80',
-    imageAlt: 'Airplane wing above clouds at sunset',
-    imageCredit: 'Unsplash',
+    layout: 'photo',
+    image: airTicketImage,
+    imageOpen: airTicketOpenImage,
+    imageAlt: 'Airplane wing and winglet above clouds at sunset',
+    imageCredit: '',
+    gridClass:
+      'order-1 col-span-1 min-h-[320px] sm:col-span-2 sm:min-h-[340px] lg:col-span-5 lg:row-span-3 lg:min-h-0',
   },
   {
     id: 'mice',
-    number: '02',
-    shortLabel: 'MICE',
-    title: 'MICE',
-    summary: summary(bodies.mice),
+    cardTitle: 'MICE',
+    fullTitle: 'MICE',
     fullText: bodies.mice,
-    icon: 'Users',
+    icon: 'Handshake',
+    layout: 'wide',
     image:
-      'https://images.unsplash.com/photo-1519167758481-83f29da8f2f5?auto=format&fit=crop&w=1000&q=80',
-    imageAlt: 'Grand event hall with banquet tables under a high ceiling',
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
+    imageAlt: 'Conference hall with a stage and blue lighting',
     imageCredit: 'Unsplash',
+    gridClass:
+      'order-2 col-span-1 min-h-[160px] sm:col-span-1 sm:min-h-[180px] lg:order-none lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:min-h-0',
   },
   {
     id: 'hospitality-tours',
-    number: '03',
-    shortLabel: 'HOTELS & TOURS',
-    title: 'Hotels, Lodge Reservations, Tours & Transfers',
-    summary: summary(bodies['hospitality-tours']),
+    cardTitle: 'Hotels, Tours & Car Rental',
+    fullTitle: 'Hotels, Lodge Reservations, Tours, Car Rental & Transfers',
     fullText: bodies['hospitality-tours'],
     icon: 'Hotel',
+    layout: 'wide',
     image:
-      'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80',
     imageAlt: 'Luxury hotel lobby with warm lighting',
     imageCredit: 'Unsplash',
+    gridClass:
+      'order-3 col-span-1 min-h-[160px] sm:col-span-1 sm:min-h-[180px] lg:order-none lg:col-span-5 lg:col-start-8 lg:row-start-2 lg:min-h-0',
   },
   {
     id: 'corporate',
-    number: '04',
-    shortLabel: 'CORPORATE TRAVEL',
-    title: 'Corporate Travel Management',
-    summary: summary(bodies.corporate),
+    cardTitle: 'Corporate Travel',
+    fullTitle: 'Corporate Travel Management',
     fullText: bodies.corporate,
     icon: 'Briefcase',
+    layout: 'small',
     image:
-      'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=80',
     imageAlt: 'Business traveler walking through an airport terminal',
     imageCredit: 'Unsplash',
+    gridClass:
+      'order-4 col-span-1 min-h-[160px] sm:col-span-1 sm:min-h-[180px] lg:order-none lg:col-span-2 lg:col-start-6 lg:row-start-3 lg:min-h-0',
   },
   {
     id: 'visa-admissions',
-    number: '05',
-    shortLabel: 'VISA SERVICES',
-    title: 'Visa Services & Academic Admissions',
-    summary: summary(bodies['visa-admissions']),
+    cardTitle: 'Visa Services',
+    fullTitle: 'Visa Services & Academic Admissions',
     fullText: bodies['visa-admissions'],
     icon: 'FileCheck',
+    layout: 'small',
     image:
-      'https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?auto=format&fit=crop&w=1200&q=80',
     imageAlt: 'Passport, boarding pass, and a globe on a desk',
     imageCredit: 'Unsplash',
+    gridClass:
+      'order-5 col-span-1 min-h-[160px] sm:col-span-1 sm:min-h-[180px] lg:order-none lg:col-span-2 lg:col-start-8 lg:row-start-3 lg:min-h-0',
   },
   {
     id: 'training',
-    number: '06',
-    shortLabel: 'TRAINING',
-    title: 'Travel & Tourism Training',
-    summary: summary(bodies.training),
+    cardTitle: 'Training',
+    fullTitle: 'Travel & Tourism Training',
     fullText: bodies.training,
     icon: 'GraduationCap',
-    image:
-      'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1000&q=80',
-    imageAlt: 'Training room with people working at laptops',
-    imageCredit: 'Unsplash',
+    layout: 'small',
+    image: teamTrainingImage,
+    imageAlt: 'Gashtvan team training session around a conference table',
+    imageCredit: '',
+    gridClass:
+      'order-6 col-span-1 min-h-[160px] sm:col-span-2 sm:min-h-[180px] lg:order-none lg:col-span-3 lg:col-start-10 lg:row-start-3 lg:min-h-0',
   },
 ]
+
+/** CTA card grid placement (rendered separately in Services.jsx). */
+export const ctaGridClass =
+  'order-7 col-span-1 min-h-[200px] sm:order-2 sm:col-span-2 sm:min-h-[200px] lg:order-none lg:col-span-2 lg:col-start-6 lg:row-start-1 lg:row-span-2 lg:min-h-0'

@@ -14,7 +14,7 @@ import {
 const empty = {
   title: '',
   slug: '',
-  category: 'ticket',
+  categories: ['ticket'],
   destination: '',
   summary: '',
   description: '',
@@ -46,10 +46,16 @@ export default function AdminOfferForm() {
       try {
         const offer = await fetchAdminOffer(id)
         if (!alive) return
+        const categories =
+          Array.isArray(offer.categories) && offer.categories.length
+            ? offer.categories
+            : offer.category
+              ? [offer.category]
+              : ['ticket']
         setForm({
           title: offer.title || '',
           slug: offer.slug || '',
-          category: offer.category || 'ticket',
+          categories,
           destination: offer.destination || '',
           summary: offer.summary || '',
           description: offer.description || '',
@@ -88,6 +94,17 @@ export default function AdminOfferForm() {
     })
   }
 
+  const toggleCategory = (value) => {
+    setForm((current) => {
+      const selected = current.categories.includes(value)
+      if (selected && current.categories.length === 1) return current
+      const next = selected
+        ? current.categories.filter((item) => item !== value)
+        : [...current.categories, value]
+      return { ...current, categories: next }
+    })
+  }
+
   const onImageChange = (e) => {
     const file = e.target.files?.[0]
     setImage(file || null)
@@ -103,7 +120,7 @@ export default function AdminOfferForm() {
     const data = new FormData()
     data.append('title', form.title.trim())
     if (form.slug.trim()) data.append('slug', form.slug.trim())
-    data.append('category', form.category)
+    data.append('categories', JSON.stringify(form.categories))
     data.append('destination', form.destination.trim())
     data.append('summary', form.summary.trim())
     data.append('description', form.description.trim())
@@ -179,19 +196,23 @@ export default function AdminOfferForm() {
             error={errors.slug?.[0]}
             placeholder="auto-from-title"
           />
-          <Field label="Category" error={errors.category?.[0]}>
-            <select
-              name="category"
-              className={controlClass}
-              value={form.category}
-              onChange={(e) => setField('category', e.target.value)}
-            >
+          <Field
+            label="Categories"
+            error={errors.categories?.[0] || errors['categories.0']?.[0]}
+          >
+            <div className="flex flex-wrap gap-3 pt-1">
               {OFFER_CATEGORIES.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
+                <CheckboxField
+                  key={item.value}
+                  label={item.label}
+                  checked={form.categories.includes(item.value)}
+                  onChange={() => toggleCategory(item.value)}
+                />
               ))}
-            </select>
+            </div>
+            <p className="mt-2 text-xs text-[var(--text-muted)]">
+              Select one or more — tickets, hotel, and visa can all apply to the same offer.
+            </p>
           </Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">

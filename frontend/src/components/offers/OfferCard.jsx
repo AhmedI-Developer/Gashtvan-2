@@ -8,9 +8,18 @@ import { cn } from '@/lib/cn'
 export default function OfferCard({ offer }) {
   const { t } = useTranslation()
   const days = daysUntil(offer.validUntil)
-  const categoryLabel = t(`offers.categories.${offer.category}`, {
-    defaultValue: offer.categoryLabel || offer.category,
-  })
+  const categoryKeys = Array.isArray(offer.categories) && offer.categories.length
+    ? offer.categories
+    : offer.category
+      ? [offer.category]
+      : []
+  const categoryLabel = categoryKeys
+    .map((key) =>
+      t(`offers.categories.${key}`, {
+        defaultValue: offer.categoryLabel || key,
+      }),
+    )
+    .join(' · ')
 
   return (
     <article

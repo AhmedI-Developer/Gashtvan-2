@@ -116,7 +116,10 @@ export default function AdminOffersList() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-[var(--text-muted)]">
-                    {offer.category_label || offer.category}
+                    {(offer.category_labels || []).join(' · ') ||
+                      offer.category_label ||
+                      offer.category ||
+                      '—'}
                   </td>
                   <td className="px-4 py-3 text-[var(--text)]">{formatPrice(offer)}</td>
                   <td className="px-4 py-3">

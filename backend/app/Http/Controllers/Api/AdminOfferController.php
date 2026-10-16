@@ -75,6 +75,12 @@ class AdminOfferController extends Controller
             $validated['includes'] = $this->normalizeIncludes($validated['includes']);
         }
 
+        if (array_key_exists('categories', $validated)) {
+            $validated['categories'] = Offer::normalizeCategories($validated['categories']);
+        }
+
+        unset($validated['category']);
+
         $validated['slug'] = filled($validated['slug'] ?? null)
             ? Str::slug($validated['slug'])
             : Str::slug($validated['title']);

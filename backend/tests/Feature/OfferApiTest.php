@@ -3,18 +3,18 @@
 use App\Models\Offer;
 
 it('lists active offers and can filter by category', function () {
-    Offer::factory()->create(['category' => 'ticket', 'title' => 'Flight A', 'slug' => 'flight-a', 'is_active' => true]);
-    Offer::factory()->create(['category' => 'hotel', 'title' => 'Hotel B', 'slug' => 'hotel-b', 'is_active' => true]);
-    Offer::factory()->create(['category' => 'visa', 'title' => 'Hidden Visa', 'slug' => 'hidden-visa', 'is_active' => false]);
+    Offer::factory()->create(['categories' => ['ticket'], 'title' => 'Flight A', 'slug' => 'flight-a', 'is_active' => true]);
+    Offer::factory()->create(['categories' => ['hotel'], 'title' => 'Hotel B', 'slug' => 'hotel-b', 'is_active' => true]);
+    Offer::factory()->create(['categories' => ['ticket', 'visa'], 'title' => 'Combo', 'slug' => 'combo-offer', 'is_active' => true]);
+    Offer::factory()->create(['categories' => ['visa'], 'title' => 'Hidden Visa', 'slug' => 'hidden-visa', 'is_active' => false]);
 
     $this->getJson('/api/offers')
         ->assertOk()
-        ->assertJsonCount(2, 'data');
+        ->assertJsonCount(3, 'data');
 
     $this->getJson('/api/offers?category=ticket')
         ->assertOk()
-        ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.slug', 'flight-a');
+        ->assertJsonCount(2, 'data');
 });
 
 it('returns featured offers with limit', function () {

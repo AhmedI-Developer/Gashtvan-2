@@ -9,33 +9,35 @@ import OfferFilters from '@/components/offers/OfferFilters'
 import Skeleton from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
 import { useDestinations } from '@/hooks/useDestinations'
-import { filterOffers, sortOffers } from '@/lib/offers'
+import { categories as categoryKeys, filterOffers, sortOffers } from '@/lib/offers'
 import { cityLabel, formatFromPrice } from '@/lib/destinations'
-
-const categoryKeys = ['all', 'ticket', 'hotel', 'visa', 'tour', 'bundle']
 
 export default function Offers() {
   const { t } = useTranslation()
   const { offers, loading, error } = useOffers()
   const { destinations } = useDestinations()
-  const [category, setCategory] = useState('all')
   const [searchParams, setSearchParams] = useSearchParams()
-  const destination = searchParams.get('destination') || 'All'
-
-  const setDestination = (name) => {
-    const next = new URLSearchParams(searchParams)
-    if (!name || name === 'All') next.delete('destination')
-    else next.set('destination', name)
-    setSearchParams(next, { replace: true })
-  }
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('newest')
-  const categories = useMemo(() => {
-    const extras = [...new Set(offers.map((offer) => offer.category).filter(Boolean))].filter(
-      (key) => !categoryKeys.includes(key),
-    )
-    return [...categoryKeys, ...extras]
-  }, [offers])
+
+  const categoryParam = searchParams.get('category') || 'all'
+  const category = categoryKeys.includes(categoryParam) ? categoryParam : 'all'
+  const destination = searchParams.get('destination') || 'All'
+
+  const setCategory = (next) => {
+    const params = new URLSearchParams(searchParams)
+    if (!next || next === 'all') params.delete('category')
+    else params.set('category', next)
+    setSearchParams(params, { replace: true })
+  }
+
+  const setDestination = (name) => {
+    const params = new URLSearchParams(searchParams)
+    if (!name || name === 'All') params.delete('destination')
+    else params.set('destination', name)
+    setSearchParams(params, { replace: true })
+  }
+
   const destinationNames = useMemo(() => {
     const fromFares = destinations.map((item) => item.name)
     const fromOffers = offers.map((offer) => offer.destination)
@@ -53,6 +55,7 @@ export default function Offers() {
       sort,
     )
   }, [offers, category, query, destination, sort, t])
+
   const selectedFare =
     destination !== 'All' ? destinations.find((item) => item.name === destination) : null
 
@@ -71,7 +74,7 @@ export default function Offers() {
         />
 
         <OfferFilters
-          categories={categories}
+          categories={categoryKeys}
           category={category}
           setCategory={setCategory}
           destinations={destinationNames}

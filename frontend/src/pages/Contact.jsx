@@ -5,8 +5,9 @@ import { CheckCircle2, Clock, ExternalLink, Mail, MapPin, Phone } from 'lucide-r
 import Seo from '@/components/layout/Seo'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/motion/Reveal'
-import GreenShape from '@/components/brand/GreenShape'
+import { useTheme } from '@/hooks/useTheme'
 import { site, apiBase } from '@/config/site'
+import { cn } from '@/lib/cn'
 import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
 import worldMap from '@/assets/backgroundImage/World_map.jpg'
 import planeWing from '@/assets/backgroundImage/Left-wing-plane.jpg'
@@ -14,8 +15,10 @@ import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
 
 const initial = { name: '', email: '', phone: '', message: '' }
 
-function mapEmbedSrc({ lat, lng }) {
-  return `https://www.google.com/maps?q=${lat},${lng}&z=16&hl=en&output=embed`
+/** Named place query loads a proper pin; bare lat/lng often breaks “Place info”. */
+function mapEmbedSrc({ lat, lng, label }) {
+  const query = encodeURIComponent(`${label} @${lat},${lng}`)
+  return `https://www.google.com/maps?q=${query}&z=16&hl=en&output=embed`
 }
 
 function telHref(phone) {
@@ -24,6 +27,7 @@ function telHref(phone) {
 
 export default function Contact() {
   const { t } = useTranslation()
+  const { theme, isDark } = useTheme()
   const [form, setForm] = useState(initial)
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
@@ -103,30 +107,6 @@ export default function Contact() {
           <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">
             {t('contact.heroLead')}
           </p>
-        </div>
-      </section>
-
-      <section className="bg-[var(--bg)] py-8 sm:py-10">
-        <div className="container-shell grid gap-4 md:grid-cols-3">
-          {[
-            { href: '#reach', label: t('contact.reachTitle'), detail: t('contact.reachCard') },
-            { href: '#map', label: t('contact.mapTitle'), detail: t('contact.mapCard') },
-            { href: '#message', label: t('contact.formTitle'), detail: t('contact.formCard') },
-          ].map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="surface rounded-[22px] p-5 transition hover:border-[var(--accent)] sm:rounded-[26px] sm:p-6"
-            >
-              <div className="mb-3 flex items-center gap-2">
-                <GreenShape size={10} />
-                <p className="eyebrow">{item.label}</p>
-              </div>
-              <p className="text-sm leading-relaxed text-[var(--text-muted)] sm:text-base">
-                {item.detail}
-              </p>
-            </a>
-          ))}
         </div>
       </section>
 
@@ -239,14 +219,25 @@ export default function Contact() {
         </div>
         <div className="container-shell mt-8 sm:mt-10">
           <div className="overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface)] sm:rounded-[28px]">
-            <div className="relative aspect-[16/9] min-h-[240px] w-full sm:min-h-[360px]">
+            <div className="relative aspect-[16/9] min-h-[240px] w-full overflow-hidden bg-[var(--navy)] sm:min-h-[360px]">
               <iframe
+                key={theme}
                 title={site.location.label}
                 src={mapEmbedSrc(site.location)}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
                 className="absolute inset-0 h-full w-full border-0"
+              />
+              {/* Tint only — invert filters break Google’s place-info panel */}
+              <div
+                aria-hidden="true"
+                className={cn(
+                  'pointer-events-none absolute inset-0 transition-opacity duration-300',
+                  isDark
+                    ? 'bg-[color-mix(in_srgb,var(--navy)_28%,transparent)] opacity-100'
+                    : 'opacity-0',
+                )}
               />
             </div>
             <div className="border-t border-[var(--border)] px-4 py-3">

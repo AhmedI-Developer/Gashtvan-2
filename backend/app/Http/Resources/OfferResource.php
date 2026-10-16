@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\OfferCategory;
 use App\Enums\OfferInclude;
 use App\Models\Offer;
 use Illuminate\Http\Request;
@@ -15,6 +16,11 @@ class OfferResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $categories = collect($this->categories ?? [])
+            ->map(fn ($value) => OfferCategory::tryFrom((string) $value))
+            ->filter()
+            ->values();
+
         $includes = collect($this->includes ?? [])
             ->map(function (string $value) {
                 $enum = OfferInclude::tryFrom($value);
@@ -27,12 +33,17 @@ class OfferResource extends JsonResource
             ->values()
             ->all();
 
+        $primary = $categories->first();
+
         return [
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
-            'category' => $this->category?->value,
-            'category_label' => $this->category?->label(),
+            'categories' => $categories->map(fn (OfferCategory $category) => $category->value)->all(),
+            'category_labels' => $categories->map(fn (OfferCategory $category) => $category->label())->all(),
+            /** @deprecated Use categories — kept for older clients */
+            'category' => $primary?->value,
+            'category_label' => $primary?->label(),
             'destination' => $this->destination,
             'summary' => $this->summary,
             'description' => $this->description,

@@ -1,11 +1,21 @@
 import { apiBase } from '@/config/site'
 
+export const OFFER_CATEGORY_KEYS = ['ticket', 'hotel', 'visa']
+
 const CATEGORY_LABELS = {
   ticket: 'Tickets',
   hotel: 'Hotels',
   visa: 'Visa',
-  tour: 'Tours',
-  bundle: 'Bundles',
+}
+
+function normalizeCategories(raw) {
+  if (Array.isArray(raw?.categories) && raw.categories.length) {
+    return raw.categories.filter((key) => OFFER_CATEGORY_KEYS.includes(key))
+  }
+  if (raw?.category && OFFER_CATEGORY_KEYS.includes(raw.category)) {
+    return [raw.category]
+  }
+  return []
 }
 
 function includeLabel(item) {
@@ -20,12 +30,23 @@ export function mapOffer(raw) {
   const includes = (raw.includes || []).map(includeLabel).filter(Boolean)
   const days = raw.duration_days
 
+  const categories = normalizeCategories(raw)
+  const category = categories[0] || raw.category || null
+
   return {
     id: raw.id,
     slug: raw.slug,
     title: raw.title,
-    category: raw.category || raw.category_label,
-    categoryLabel: raw.category_label || CATEGORY_LABELS[raw.category] || raw.category,
+    categories,
+    category,
+    categoryLabels: raw.category_labels?.length
+      ? raw.category_labels
+      : categories.map((key) => CATEGORY_LABELS[key] || key),
+    categoryLabel:
+      raw.category_label ||
+      CATEGORY_LABELS[category] ||
+      categories.map((key) => CATEGORY_LABELS[key] || key).join(' · ') ||
+      category,
     destination: raw.destination,
     shortDescription: raw.summary || '',
     fullDescription: raw.description || raw.summary || '',
@@ -132,13 +153,19 @@ export function sortOffers(offers, mode) {
   }
 }
 
+export function offerHasCategory(offer, category) {
+  if (!category || category === 'all' || category === 'All') return true
+  const list = Array.isArray(offer.categories) ? offer.categories : []
+  if (list.includes(category)) return true
+  return offer.category === category
+}
+
 export function filterOffers(offers, { category, query, destination, destinationLabel }) {
   return offers.filter((offer) => {
-    const catOk =
-      !category || category === 'all' || category === 'All' || offer.category === category
+    const catOk = offerHasCategory(offer, category)
     const destOk =
       !destination || destination === 'All' || offer.destination === destination
-    const q = query.trim().toLowerCase()
+    const q = (query || '').trim().toLowerCase()
     const textOk =
       !q ||
       [
@@ -146,6 +173,8 @@ export function filterOffers(offers, { category, query, destination, destination
         offer.destination,
         destinationLabel?.(offer.destination),
         offer.shortDescription,
+        ...(offer.categories || []),
+        ...(offer.categoryLabels || []),
         offer.category,
         offer.categoryLabel,
       ]
@@ -157,13 +186,4 @@ export function filterOffers(offers, { category, query, destination, destination
   })
 }
 
-const baseCategories = ['All', 'Tickets', 'Hotels', 'Visa', 'Tours', 'Bundles']
-
-export function categoriesFrom(offers) {
-  const extra = [...new Set(offers.map((offer) => offer.category).filter(Boolean))].filter(
-    (category) => !baseCategories.includes(category),
-  )
-  return [...baseCategories, ...extra]
-}
-
-export const categories = baseCategories
+export const categories = ['all', ...OFFER_CATEGORY_KEYS]

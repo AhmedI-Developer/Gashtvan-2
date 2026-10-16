@@ -21,7 +21,7 @@ class OfferFactory extends Factory
         return [
             'title' => $title,
             'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(1, 9999),
-            'category' => fake()->randomElement(OfferCategory::cases()),
+            'categories' => [fake()->randomElement(OfferCategory::cases())->value],
             'destination' => fake()->city(),
             'summary' => fake()->sentence(12),
             'description' => fake()->paragraphs(3, true),

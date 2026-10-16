@@ -259,24 +259,79 @@ select {
   inset-inline-end: calc(1.25rem + env(safe-area-inset-right, 0px));
 }
 
-.branch-card-pixels {
+.branch-section-sky {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 350ms ease;
-  background-image:
-    radial-gradient(circle, color-mix(in srgb, var(--accent) 85%, white) 1.1px, transparent 1.2px),
-    radial-gradient(circle, color-mix(in srgb, var(--accent) 55%, transparent) 0.9px, transparent 1px),
-    radial-gradient(circle, color-mix(in srgb, var(--accent) 35%, transparent) 0.7px, transparent 0.8px);
-  background-size: 14px 14px, 22px 22px, 18px 18px;
-  background-position: 0 0, 7px 11px, 3px 5px;
-  mask-image: radial-gradient(ellipse 70% 65% at 50% 50%, black 20%, transparent 75%);
+  overflow: hidden;
+  z-index: 0;
 }
 
-.branch-card:hover .branch-card-pixels {
-  opacity: 1;
+.branch-bg-plane {
+  position: absolute;
+  opacity: 0.28;
+  filter: drop-shadow(0 0 12px rgba(160, 194, 58, 0.35));
+}
+
+.branch-bg-plane--a {
+  top: 18%;
+  left: -4rem;
+  animation: branch-sky-fly 18s linear infinite;
+}
+
+.branch-bg-plane--b {
+  top: 72%;
+  left: -3rem;
+  opacity: 0.18;
+  animation: branch-sky-fly 26s linear infinite;
+  animation-delay: -9s;
+}
+
+@keyframes branch-sky-fly {
+  0% {
+    transform: translateX(0) translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateX(55vw) translateY(-18px) rotate(4deg);
+  }
+  100% {
+    transform: translateX(110vw) translateY(8px) rotate(-4deg);
+  }
+}
+
+html[dir='rtl'] .branch-bg-plane--a,
+html[dir='rtl'] .branch-bg-plane--b {
+  left: auto;
+  right: -4rem;
+  animation-name: branch-sky-fly-rtl;
+}
+
+html[dir='rtl'] .branch-bg-plane--b {
+  right: -3rem;
+}
+
+@keyframes branch-sky-fly-rtl {
+  0% {
+    transform: translateX(0) translateY(0) scaleX(-1) rotate(-6deg);
+  }
+  50% {
+    transform: translateX(-55vw) translateY(-18px) scaleX(-1) rotate(4deg);
+  }
+  100% {
+    transform: translateX(-110vw) translateY(8px) scaleX(-1) rotate(-4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .branch-bg-plane {
+    animation: none !important;
+    opacity: 0.12;
+    left: 12%;
+  }
+
+  .branch-bg-plane--b {
+    left: 68%;
+  }
 }
 
 /* Touch: disable hover-tilt transforms unless fine pointer */
@@ -288,9 +343,9 @@ select {
 
 .eyebrow {
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent-text);
 }
@@ -414,3 +469,4 @@ html.lenis body {
 .nav-link:focus-visible::after {
   transform: scaleX(1);
 }
+

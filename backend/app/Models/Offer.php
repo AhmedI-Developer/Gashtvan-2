@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 #[Fillable([
     'title',
     'slug',
-    'category',
+    'categories',
     'destination',
     'summary',
     'description',
@@ -36,7 +36,7 @@ class Offer extends Model
     protected function casts(): array
     {
         return [
-            'category' => OfferCategory::class,
+            'categories' => 'array',
             'includes' => 'array',
             'price' => 'decimal:2',
             'duration_days' => 'integer',
@@ -52,6 +52,8 @@ class Offer extends Model
             if (blank($offer->slug) && filled($offer->title)) {
                 $offer->slug = Str::slug($offer->title);
             }
+
+            $offer->categories = self::normalizeCategories($offer->categories);
         });
     }
 
@@ -73,6 +75,43 @@ class Offer extends Model
         return url(Storage::disk('public')->url($this->image_path));
     }
 
+    /**
+     * Primary category for legacy clients (first selected).
+     */
+    public function primaryCategory(): ?OfferCategory
+    {
+        $first = $this->categories[0] ?? null;
+
+        return is_string($first) ? OfferCategory::tryFrom($first) : null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function normalizeCategories(mixed $categories): array
+    {
+        if (is_string($categories)) {
+            $decoded = json_decode($categories, true);
+            $categories = is_array($decoded) ? $decoded : [$categories];
+        }
+
+        if (! is_array($categories)) {
+            return [OfferCategory::Ticket->value];
+        }
+
+        $allowed = OfferCategory::values();
+        $normalized = [];
+
+        foreach ($categories as $value) {
+            $value = is_string($value) ? strtolower(trim($value)) : '';
+            if ($value !== '' && in_array($value, $allowed, true) && ! in_array($value, $normalized, true)) {
+                $normalized[] = $value;
+            }
+        }
+
+        return $normalized !== [] ? $normalized : [OfferCategory::Ticket->value];
+    }
+
     #[Scope]
     protected function active(Builder $query): Builder
     {
@@ -90,6 +129,6 @@ class Offer extends Model
     {
         $value = $category instanceof OfferCategory ? $category->value : $category;
 
-        return $query->where('category', $value);
+        return $query->whereJsonContains('categories', $value);
     }
 }
