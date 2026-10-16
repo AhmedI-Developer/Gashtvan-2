@@ -1,58 +1,57 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Seo from '@/components/layout/Seo'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/motion/Reveal'
 import GreenShape from '@/components/brand/GreenShape'
-import { company } from '@/content/company'
+import { useCompanyContent } from '@/hooks/useCompanyContent'
 import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
 import worldMap from '@/assets/backgroundImage/World_map.jpg'
 import planeWing from '@/assets/backgroundImage/Left-wing-plane.jpg'
 import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
 
-const statements = [
-  {
-    ...company.vision,
-    kicker: 'Where we are going',
-    image: worldMap,
-    imageAlt: 'A world map marked with connected routes',
-    imageFirst: false,
-  },
-  {
-    ...company.mission,
-    kicker: 'What we do every day',
-    image: planeWing,
-    imageAlt: 'Airplane wing above the clouds at sunset',
-    imageFirst: true,
-  },
-]
-
 export default function VisionMission() {
+  const { t } = useTranslation()
+  const company = useCompanyContent()
+  const statements = [
+    {
+      ...company.vision,
+      kicker: t('vision.visionKicker'),
+      image: worldMap,
+      imageAlt: t('vision.worldAlt'),
+      imageFirst: false,
+    },
+    {
+      ...company.mission,
+      kicker: t('vision.missionKicker'),
+      image: planeWing,
+      imageAlt: t('vision.wingAlt'),
+      imageFirst: true,
+    },
+  ]
+
   return (
     <main>
       <Seo
-        title="Vision & Mission"
-        description="Gashtvan’s vision connects Erbil with the world. Our mission is precise, personalized travel — ticketing, MICE, tours, visas, and training."
+        title={t('vision.title')}
+        description={t('vision.description')}
         path="/vision"
       />
 
       <section className="relative min-h-[78svh] overflow-hidden text-white">
         <img
           src={globalNetwork}
-          alt="Earth at night, linked by routes of light"
+          alt={t('vision.earthAlt')}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.45)_0%,rgba(4,32,58,0.72)_55%,rgba(4,32,58,0.92)_100%)]" />
         <div className="container-shell relative z-10 flex min-h-[78svh] flex-col justify-end pb-12 pt-28 sm:pb-16 sm:pt-32">
-          <p className="eyebrow !text-[var(--accent)]">About Gashtvan</p>
+          <p className="eyebrow !text-[var(--accent)]">{t('vision.kicker')}</p>
           <h1 className="mt-3 max-w-3xl font-display text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl">
-            Vision & Mission
+            {t('vision.title')}
           </h1>
-          <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">
-            Two ideas guide every journey we plan. The vision is the future we
-            are building from Erbil. The mission is the work we do for travelers
-            and partners today.
-          </p>
+          <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">{t('vision.lead')}</p>
         </div>
       </section>
 
@@ -122,8 +121,8 @@ export default function VisionMission() {
         <div className="container-shell">
           <SectionHeading
             eyebrow={company.coreValues.title}
-            title="The standards behind both"
-            description="Vision sets the direction. Mission sets the work. These values keep both honest."
+            title={t('vision.standardsTitle')}
+            description={t('vision.standardsLead')}
           />
           <div className="grid gap-4 sm:grid-cols-2">
             {company.coreValues.items.map((item, index) => (
@@ -150,20 +149,20 @@ export default function VisionMission() {
         />
         <div className="absolute inset-0 bg-[rgba(4,32,58,0.72)]" />
         <div className="container-shell relative z-10 max-w-3xl text-center">
-          <p className="eyebrow !text-[var(--accent)]">From Erbil, beyond boundaries</p>
+          <p className="eyebrow !text-[var(--accent)]">{t('vision.closingEyebrow')}</p>
           <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl md:text-5xl">
-            Ready to travel with that standard?
+            {t('vision.closingTitle')}
           </h2>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button to="/offers">View Offers</Button>
+            <Button to="/offers">{t('common.viewOffers')}</Button>
             <Button to="/contact" variant="ghost">
-              Contact Us
+              {t('common.contactUs')}
             </Button>
           </div>
           <p className="mt-6 text-sm text-white/75">
-            Or read the full{' '}
+            {t('vision.closingBefore')}{' '}
             <Link to="/company" className="font-semibold text-[var(--accent)] hover:underline">
-              company profile
+              {t('vision.profileLink')}
             </Link>
             .
           </p>

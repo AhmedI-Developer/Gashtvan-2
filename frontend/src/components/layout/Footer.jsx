@@ -29,7 +29,7 @@ export default function Footer() {
             <Logo className="w-11 shrink-0 [&_path:first-of-type]:fill-white" />
             <strong className="font-display text-xl">Gashtvan</strong>
           </div>
-          <p className="max-w-xs text-white/75">{site.tagline}</p>
+          <p className="max-w-xs text-white/75">{t('home.tagline')}</p>
         </div>
 
         <div>
@@ -103,8 +103,8 @@ export default function Footer() {
                 </a>
               </li>
             ))}
-            <li>{site.address}</li>
-            <li>{site.hours}</li>
+            <li>{t('home.address')}</li>
+            <li>{t('home.hours')}</li>
           </ul>
         </div>
 

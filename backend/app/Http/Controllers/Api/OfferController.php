@@ -29,7 +29,7 @@ class OfferController extends Controller
             $query->featured();
         }
 
-        $limit = min(max((int) $request->integer('limit', 0), 0), 24);
+        $limit = min(max((int) $request->integer('limit', 0), 0), 100);
         if ($limit > 0) {
             return OfferResource::collection($query->limit($limit)->get());
         }

@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import MagneticButton from '@/components/ui/MagneticButton'
 import GreenShape from '@/components/brand/GreenShape'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { site } from '@/config/site'
 import heroImage from '@/assets/backgroundImage/Left-wing-plane.jpg'
 import desktopVideo from '@/assets/backgroundVdeos/Lapbackground-home.mp4'
 import mobileVideo from '@/assets/backgroundVdeos/mobbackground-home.mp4'
@@ -96,7 +95,7 @@ export default function Hero() {
               className="mb-3 inline-flex max-w-full items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs backdrop-blur sm:mb-4 sm:text-sm"
             >
               <GreenShape size={8} />
-              <span className="truncate">Erbil · Kurdistan Region</span>
+              <span className="truncate">{t('home.place')}</span>
             </motion.div>
 
             <motion.h1
@@ -105,7 +104,7 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="font-display max-w-3xl text-balance text-[1.85rem] font-extrabold leading-[1.08] tracking-tight text-white xs:text-3xl sm:text-4xl md:text-6xl lg:text-7xl"
             >
-              {site.tagline}
+              {t('home.tagline')}
             </motion.h1>
 
             <motion.p
@@ -114,8 +113,7 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="mt-4 max-w-xl text-[0.95rem] leading-relaxed text-white/80 sm:mt-5 sm:text-lg"
             >
-              Premium travel & tourism from Erbil — air ticketing, MICE, corporate
-              programs, and curated journeys with IATA-grade care.
+              {t('home.lead')}
             </motion.p>
 
             <motion.div
@@ -134,16 +132,16 @@ export default function Hero() {
           </div>
 
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            {site.heroStats.map((stat, i) => (
+            {['years', 'iata', 'rank', 'support'].map((key, i) => (
               <motion.div
-                key={stat.label}
+                key={key}
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 + i * 0.08 }}
                 className="glass-hero min-w-0 rounded-[18px] p-3 text-white sm:rounded-[22px] sm:p-4"
               >
                 <p className="font-display text-sm font-bold leading-snug sm:text-xl md:text-2xl">
-                  {stat.label}
+                  {t(`home.stats.${key}`)}
                 </p>
               </motion.div>
             ))}

@@ -73,3 +73,30 @@ it('logs in and manages offers with image upload', function () {
 
     expect($user->fresh()->api_token)->toBeNull();
 });
+
+it('rejects a second offer when the title reuses an existing name', function () {
+    User::factory()->create([
+        'email' => 'slug-admin@test.com',
+        'password' => 'password',
+    ]);
+
+    $token = $this->postJson('/api/admin/login', [
+        'email' => 'slug-admin@test.com',
+        'password' => 'password',
+    ])->json('token');
+
+    $payload = [
+        'title' => 'Erbil Fare Deal',
+        'category' => 'ticket',
+        'destination' => 'Istanbul',
+        'price' => 199,
+    ];
+
+    $this->withToken($token)->postJson('/api/admin/offers', $payload)->assertCreated();
+
+    $this->withToken($token)
+        ->postJson('/api/admin/offers', $payload)
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('slug')
+        ->assertJsonPath('errors.slug.0', 'This name is already used.');
+});

@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Button from '@/components/ui/Button'
 import OfferCard from '@/components/offers/OfferCard'
@@ -7,7 +8,8 @@ import Skeleton from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
 
 export default function FeaturedOffers() {
-  const { offers, loading } = useOffers({ limit: 24 })
+  const { t } = useTranslation()
+  const { offers, loading, error } = useOffers()
   const scroller = useRef(null)
   const featuredSource = offers.filter((offer) => offer.isFeatured)
   const featured = (featuredSource.length ? featuredSource : offers).slice(0, 6)
@@ -18,12 +20,12 @@ export default function FeaturedOffers() {
         <div className="mb-2 flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-end">
           <SectionHeading
             className="mb-0"
-            eyebrow="Offers"
-            title="Featured journeys"
-            description="Featured offers from the Gashtvan desk — browse the full board anytime."
+            eyebrow={t('offers.eyebrow')}
+            title={t('offers.featuredTitle')}
+            description={t('offers.featuredLead')}
           />
           <Button to="/offers" variant="secondary" className="w-full shrink-0 sm:w-auto">
-            All offers
+            {t('offers.allOffers')}
           </Button>
         </div>
 
@@ -48,13 +50,17 @@ export default function FeaturedOffers() {
               ))}
         </div>
 
-        {!loading && !featured.length ? (
+        {!loading && error ? (
+          <p className="text-[var(--text-muted)]">{t('offers.loadError')}</p>
+        ) : null}
+
+        {!loading && !error && !featured.length ? (
           <p className="text-[var(--text-muted)]">
-            No active offers right now.{' '}
+            {t('offers.emptyFeatured')}{' '}
             <Link to="/contact" className="text-[var(--accent-text)] underline">
-              Contact us
+              {t('offers.contactLink')}
             </Link>{' '}
-            for custom quotes.
+            {t('offers.customQuotes')}
           </p>
         ) : null}
       </div>

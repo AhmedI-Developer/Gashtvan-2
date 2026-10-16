@@ -39,8 +39,19 @@ export async function fetchDestinations() {
   return [...grouped.values()]
 }
 
-export function formatFromPrice(destination) {
-  if (destination.fromPrice == null) return 'Ask for fare'
+export function cityLabel(name, t) {
+  if (!name) return ''
+  if (!t) return name
+  const key = `destinations.cities.${name}`
+  const label = t(key)
+  return label === key ? name : label
+}
+
+export function formatFromPrice(destination, t) {
+  if (destination.fromPrice == null) return t ? t('destinations.ask') : 'Ask for fare'
   const amount = new Intl.NumberFormat('en-US').format(destination.fromPrice)
-  return `From ${destination.currency || 'USD'} ${amount}`
+  const currency = destination.currency || 'USD'
+  return t
+    ? t('destinations.fromPrice', { currency, amount })
+    : `From ${currency} ${amount}`
 }

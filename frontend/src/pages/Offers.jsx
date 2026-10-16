@@ -1,18 +1,24 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Seo from '@/components/layout/Seo'
 import SectionHeading from '@/components/ui/SectionHeading'
+import Button from '@/components/ui/Button'
 import OfferCard from '@/components/offers/OfferCard'
 import OfferFilters from '@/components/offers/OfferFilters'
 import Skeleton from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
 import { useDestinations } from '@/hooks/useDestinations'
-import { categoriesFrom, filterOffers, sortOffers } from '@/lib/offers'
+import { filterOffers, sortOffers } from '@/lib/offers'
+import { cityLabel, formatFromPrice } from '@/lib/destinations'
+
+const categoryKeys = ['all', 'ticket', 'hotel', 'visa', 'tour', 'bundle']
 
 export default function Offers() {
-  const { offers, loading } = useOffers()
+  const { t } = useTranslation()
+  const { offers, loading, error } = useOffers()
   const { destinations } = useDestinations()
-  const [category, setCategory] = useState('All')
+  const [category, setCategory] = useState('all')
   const [searchParams, setSearchParams] = useSearchParams()
   const destination = searchParams.get('destination') || 'All'
 
@@ -24,7 +30,12 @@ export default function Offers() {
   }
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('newest')
-  const categories = useMemo(() => categoriesFrom(offers), [offers])
+  const categories = useMemo(() => {
+    const extras = [...new Set(offers.map((offer) => offer.category).filter(Boolean))].filter(
+      (key) => !categoryKeys.includes(key),
+    )
+    return [...categoryKeys, ...extras]
+  }, [offers])
   const destinationNames = useMemo(() => {
     const fromFares = destinations.map((item) => item.name)
     const fromOffers = offers.map((offer) => offer.destination)
@@ -32,21 +43,31 @@ export default function Offers() {
   }, [destinations, offers])
 
   const visible = useMemo(() => {
-    return sortOffers(filterOffers(offers, { category, query, destination }), sort)
-  }, [offers, category, query, destination, sort])
+    return sortOffers(
+      filterOffers(offers, {
+        category,
+        query,
+        destination,
+        destinationLabel: (name) => cityLabel(name, t),
+      }),
+      sort,
+    )
+  }, [offers, category, query, destination, sort, t])
+  const selectedFare =
+    destination !== 'All' ? destinations.find((item) => item.name === destination) : null
 
   return (
     <main className="section-pad pt-24 sm:pt-28">
       <Seo
-        title="Offers"
-        description="Current Gashtvan travel offers — flights, packages, tours, MICE, visa assistance, and more."
+        title={t('offers.eyebrow')}
+        description={t('offers.seoDescription')}
         path="/offers"
       />
       <div className="container-shell">
         <SectionHeading
-          eyebrow="Offers"
-          title="Find your next journey"
-          description="Live offers from Gashtvan — filter by category or destination, then sort by price."
+          eyebrow={t('offers.eyebrow')}
+          title={t('offers.title')}
+          description={t('offers.description')}
         />
 
         <OfferFilters
@@ -70,14 +91,37 @@ export default function Offers() {
             : visible.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
         </div>
 
-        {!loading && !visible.length ? (
+        {!loading && error ? (
+          <p className="mt-8 text-[var(--text-muted)]">{t('offers.loadError')}</p>
+        ) : null}
+
+        {!loading && !error && !visible.length ? (
           <div className="mt-10 rounded-[22px] border border-dashed border-[var(--border)] bg-[var(--surface)] p-6 text-center sm:mt-12 sm:rounded-[28px] sm:p-10">
-            <h2 className="font-display text-xl font-bold text-[var(--text)] sm:text-2xl">
-              No offers match right now
-            </h2>
-            <p className="mt-2 text-sm text-[var(--text-muted)] sm:text-base">
-              Try another category, clear search, or contact us for a custom quote.
-            </p>
+            {selectedFare ? (
+              <>
+                <h2 className="font-display text-xl font-bold text-[var(--text)] sm:text-2xl">
+                  {t('offers.fareTitle', { city: cityLabel(selectedFare.name, t) })}
+                </h2>
+                <p className="mt-2 text-sm text-[var(--text-muted)] sm:text-base">
+                  {t('offers.fareLead', {
+                    price: formatFromPrice(selectedFare, t),
+                    airlines: selectedFare.airlines.join(' · '),
+                  })}
+                </p>
+                <Button to="/contact" className="mt-5">
+                  {t('offers.askFare')}
+                </Button>
+              </>
+            ) : (
+              <>
+                <h2 className="font-display text-xl font-bold text-[var(--text)] sm:text-2xl">
+                  {t('offers.empty')}
+                </h2>
+                <p className="mt-2 text-sm text-[var(--text-muted)] sm:text-base">
+                  {t('offers.emptyLead')}
+                </p>
+              </>
+            )}
           </div>
         ) : null}
       </div>

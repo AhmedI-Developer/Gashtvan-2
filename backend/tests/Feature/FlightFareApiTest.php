@@ -65,3 +65,25 @@ it('allows admin to create and delete fares', function () {
 
     expect(FlightFare::query()->count())->toBe(0);
 });
+
+it('stores an airline logo url longer than 64 characters', function () {
+    $token = $this->postJson('/api/admin/login', [
+        'email' => User::factory()->create([
+            'email' => 'logo-admin@test.com',
+            'password' => 'password',
+        ])->email,
+        'password' => 'password',
+    ])->json('token');
+
+    $logo = 'https://cdn.example.com/airlines/'.str_repeat('a', 120).'.png';
+    expect(strlen($logo))->toBeGreaterThan(64);
+
+    $this->withToken($token)->postJson('/api/admin/fares', [
+        'destination' => 'Cairo',
+        'destination_code' => 'CAI',
+        'airline' => 'EgyptAir',
+        'airline_logo' => $logo,
+        'price' => 265,
+    ])->assertCreated()
+        ->assertJsonPath('data.airline_logo', $logo);
+});

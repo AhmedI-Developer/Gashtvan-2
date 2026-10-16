@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import GreenShape from '@/components/brand/GreenShape'
 import { daysUntil, formatPrice } from '@/lib/offers'
+import { cityLabel } from '@/lib/destinations'
 import { cn } from '@/lib/cn'
 
 export default function OfferCard({ offer }) {
+  const { t } = useTranslation()
   const days = daysUntil(offer.validUntil)
+  const categoryLabel = t(`offers.categories.${offer.category}`, {
+    defaultValue: offer.categoryLabel || offer.category,
+  })
 
   return (
     <article
@@ -26,9 +32,9 @@ export default function OfferCard({ offer }) {
         ) : (
           <div className="h-full w-full bg-[var(--navy)]" />
         )}
-        {offer.badge ? (
+        {offer.isFeatured ? (
           <span className="absolute start-3 top-3 rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-bold text-[var(--navy)]">
-            {offer.badge}
+            {t('offers.featured')}
           </span>
         ) : null}
         <span className="absolute end-3 top-3 hidden opacity-0 transition group-hover:opacity-100 sm:block">
@@ -38,7 +44,8 @@ export default function OfferCard({ offer }) {
 
       <div className="flex flex-1 flex-col p-4 sm:p-5">
         <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-text)]">
-          {offer.destination}
+          {categoryLabel}
+          {offer.destination ? ` · ${cityLabel(offer.destination, t)}` : ''}
         </p>
         <h3 className="mt-1 font-display text-lg font-bold text-[var(--text)] sm:text-xl">
           {offer.title}
@@ -50,7 +57,7 @@ export default function OfferCard({ offer }) {
         <div className="mt-auto flex flex-col gap-3 pt-4 sm:flex-row sm:items-end sm:justify-between sm:pt-5">
           <div className="min-w-0">
             <p className="font-display text-lg font-bold text-[var(--text)]">
-              {formatPrice(offer)}
+              {formatPrice(offer, t('offers.contactForPrice'))}
             </p>
             {offer.oldPrice ? (
               <p className="text-xs text-[var(--text-muted)] line-through">
@@ -60,20 +67,24 @@ export default function OfferCard({ offer }) {
             {days != null ? (
               <p className="mt-1 text-xs text-[var(--text-muted)]">
                 {days < 0
-                  ? 'Ended'
+                  ? t('offers.ended')
                   : days === 0
-                    ? 'Ends today'
-                    : `Ends in ${days} days`}
+                    ? t('offers.endsToday')
+                    : t('offers.endsIn', { count: days })}
               </p>
-            ) : offer.duration ? (
-              <p className="mt-1 text-xs text-[var(--text-muted)]">{offer.duration}</p>
+            ) : offer.durationDays ? (
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
+                {t(offer.durationDays === 1 ? 'offers.durationDay' : 'offers.durationDays', {
+                  count: offer.durationDays,
+                })}
+              </p>
             ) : null}
           </div>
           <Link
             to={`/offers/${offer.slug}`}
             className="inline-flex min-h-10 items-center justify-center rounded-full bg-[var(--accent)] px-4 py-2 text-center text-sm font-semibold text-[var(--navy)] transition hover:bg-[var(--accent-hover)]"
           >
-            View Details
+            {t('common.viewDetails')}
           </Link>
         </div>
       </div>

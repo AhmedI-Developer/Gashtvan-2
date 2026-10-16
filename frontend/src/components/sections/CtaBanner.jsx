@@ -1,8 +1,9 @@
+import { useTranslation } from 'react-i18next'
 import MagneticButton from '@/components/ui/MagneticButton'
-import { site } from '@/config/site'
 import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
 
 export default function CtaBanner() {
+  const { t } = useTranslation()
   return (
     <section className="relative overflow-hidden py-12 sm:py-16 md:py-20">
       <div
@@ -20,20 +21,20 @@ export default function CtaBanner() {
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.62),rgba(4,32,58,0.78))]" />
       <div className="container-shell relative z-10 text-center text-white">
-        <p className="eyebrow !text-[var(--accent)]">Ready when you are</p>
+        <p className="eyebrow !text-[var(--accent)]">{t('home.ctaEyebrow')}</p>
         <h2 className="mx-auto mt-3 max-w-3xl font-display text-[1.65rem] font-bold sm:text-3xl md:text-5xl">
-          {site.ctaBanner}
+          {t('home.cta')}
         </h2>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
           <MagneticButton to="/offers" className="w-full sm:w-auto">
-            View Offers
+            {t('common.viewOffers')}
           </MagneticButton>
           <MagneticButton
             to="/contact"
             variant="ghost"
             className="w-full sm:w-auto"
           >
-            Contact Us
+            {t('common.contactUs')}
           </MagneticButton>
         </div>
       </div>

@@ -6,7 +6,7 @@ import Seo from '@/components/layout/Seo'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/motion/Reveal'
 import GreenShape from '@/components/brand/GreenShape'
-import { site } from '@/config/site'
+import { site, apiBase } from '@/config/site'
 import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
 import worldMap from '@/assets/backgroundImage/World_map.jpg'
 import planeWing from '@/assets/backgroundImage/Left-wing-plane.jpg'
@@ -27,6 +27,8 @@ export default function Contact() {
   const [form, setForm] = useState(initial)
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [formError, setFormError] = useState('')
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -42,17 +44,34 @@ export default function Contact() {
     return Object.keys(next).length === 0
   }
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault()
     if (!validate()) return
-    const mailto = `mailto:${site.emails[0]}?subject=${encodeURIComponent(
-      `Inquiry from ${form.name}`,
-    )}&body=${encodeURIComponent(
-      `${form.message}\n\nPhone: ${form.phone}\nEmail: ${form.email}`,
-    )}`
-    window.location.href = mailto
-    setSent(true)
-    setForm(initial)
+    setSending(true)
+    setFormError('')
+    setSent(false)
+    try {
+      const res = await fetch(`${apiBase}/contact`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          message: form.message.trim(),
+        }),
+      })
+      if (!res.ok) throw new Error('Failed to send')
+      setSent(true)
+      setForm(initial)
+    } catch {
+      setFormError(t('contact.sendFailed'))
+    } finally {
+      setSending(false)
+    }
   }
 
   const fields = [
@@ -187,7 +206,7 @@ export default function Contact() {
                   <span className="block text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-text)]">
                     {t('contact.addressLabel')}
                   </span>
-                  <span className="mt-1 block text-sm leading-relaxed sm:text-base">{site.address}</span>
+                  <span className="mt-1 block text-sm leading-relaxed sm:text-base">{t('home.address')}</span>
                 </span>
               </li>
               <li className="flex items-start gap-3 text-[var(--text)]">
@@ -196,7 +215,7 @@ export default function Contact() {
                   <span className="block text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-text)]">
                     {t('contact.hoursLabel')}
                   </span>
-                  <span className="mt-1 block text-sm leading-relaxed sm:text-base">{site.hours}</span>
+                  <span className="mt-1 block text-sm leading-relaxed sm:text-base">{t('home.hours')}</span>
                 </span>
               </li>
             </ul>
@@ -288,7 +307,12 @@ export default function Contact() {
                   </span>
                 ) : null}
               </label>
-              <Button type="submit">{t('common.sendMessage')}</Button>
+              <Button type="submit" disabled={sending}>
+                {sending ? t('contact.sending') : t('common.sendMessage')}
+              </Button>
+              {formError ? (
+                <p className="text-sm text-red-400">{formError}</p>
+              ) : null}
               <AnimatePresence>
                 {sent ? (
                   <motion.p

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\OfferCategory;
 use App\Enums\OfferInclude;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class UpdateOfferRequest extends FormRequest
@@ -30,6 +31,18 @@ class UpdateOfferRequest extends FormRequest
                 $this->merge(['includes' => $decoded]);
             }
         }
+
+        $this->mergeSlugFromTitle();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'slug.unique' => 'This name is already used.',
+        ];
     }
 
     /**
@@ -57,6 +70,25 @@ class UpdateOfferRequest extends FormRequest
             'is_active' => ['sometimes', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ];
+    }
+
+    private function mergeSlugFromTitle(): void
+    {
+        $slug = $this->input('slug');
+        $title = $this->input('title');
+
+        if (filled($slug)) {
+            $this->merge(['slug' => Str::slug((string) $slug)]);
+
+            return;
+        }
+
+        if (filled($title)) {
+            $generated = Str::slug((string) $title);
+            if ($generated !== '') {
+                $this->merge(['slug' => $generated]);
+            }
+        }
     }
 
     private function toBoolean(mixed $value, bool $default): bool

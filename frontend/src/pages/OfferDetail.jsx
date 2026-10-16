@@ -1,19 +1,46 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import Seo from '@/components/layout/Seo'
 import InquirePanel from '@/components/offers/InquirePanel'
 import OfferCard from '@/components/offers/OfferCard'
 import Skeleton from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
-import { daysUntil, formatPrice } from '@/lib/offers'
+import { daysUntil, fetchOffer, formatPrice } from '@/lib/offers'
+import { cityLabel } from '@/lib/destinations'
 
 export default function OfferDetail() {
+  const { t } = useTranslation()
   const { slug } = useParams()
-  const { offers, loading } = useOffers()
-  const offer = offers.find((o) => o.slug === slug)
+  const { offers } = useOffers()
+  const [offer, setOffer] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [lightbox, setLightbox] = useState(null)
   const [openDay, setOpenDay] = useState(0)
+
+  useEffect(() => {
+    let alive = true
+    setLoading(true)
+    setError(null)
+    ;(async () => {
+      try {
+        const next = await fetchOffer(slug)
+        if (alive) setOffer(next)
+      } catch (err) {
+        if (alive) {
+          setOffer(null)
+          setError(err)
+        }
+      } finally {
+        if (alive) setLoading(false)
+      }
+    })()
+    return () => {
+      alive = false
+    }
+  }, [slug])
 
   const related = useMemo(() => {
     if (!offer) return []
@@ -35,13 +62,13 @@ export default function OfferDetail() {
     return (
       <main className="container-shell section-pad pt-28 text-center">
         <h1 className="font-display text-3xl font-bold text-[var(--text)]">
-          Offer not found
+          {error ? t('offers.loadError') : t('offers.notFound')}
         </h1>
-        <p className="mt-3 text-[var(--text-muted)]">
-          It may have expired or the link is incorrect.
-        </p>
+        {error ? null : (
+          <p className="mt-3 text-[var(--text-muted)]">{t('offers.notFoundLead')}</p>
+        )}
         <Link to="/offers" className="mt-6 inline-block text-[var(--accent-text)] underline">
-          Back to offers
+          {t('offers.back')}
         </Link>
       </main>
     )
@@ -61,15 +88,22 @@ export default function OfferDetail() {
       />
 
       <section className="relative min-h-[42svh] overflow-hidden text-white sm:min-h-[46vh]">
-        <img
-          src={offer.coverImage}
-          alt={offer.title}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        {offer.coverImage ? (
+          <img
+            src={offer.coverImage}
+            alt={offer.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-[var(--navy)]" />
+        )}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.35),rgba(4,32,58,0.88))]" />
         <div className="container-shell relative z-10 flex min-h-[42svh] flex-col justify-end pb-8 pt-24 sm:min-h-[46vh] sm:pb-10">
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)] sm:text-sm">
-            {offer.category} · {offer.destination}
+            {t(`offers.categories.${offer.category}`, {
+              defaultValue: offer.categoryLabel || offer.category,
+            })}
+            {offer.destination ? ` · ${cityLabel(offer.destination, t)}` : ''}
           </p>
           <h1 className="mt-2 max-w-3xl font-display text-[1.75rem] font-bold leading-tight sm:text-4xl md:text-5xl">
             {offer.title}
@@ -84,29 +118,31 @@ export default function OfferDetail() {
         <div className="min-w-0 space-y-6 sm:space-y-8">
           <div className="flex flex-wrap gap-2 text-sm text-[var(--text-muted)] sm:gap-4">
             <span className="rounded-full border border-[var(--border)] px-3 py-1">
-              {formatPrice(offer)}
+              {formatPrice(offer, t('offers.contactForPrice'))}
             </span>
-            {offer.duration ? (
+            {offer.durationDays ? (
               <span className="rounded-full border border-[var(--border)] px-3 py-1">
-                {offer.duration}
+                {t(offer.durationDays === 1 ? 'offers.durationDay' : 'offers.durationDays', {
+                  count: offer.durationDays,
+                })}
               </span>
             ) : null}
             {days != null ? (
               <span className="rounded-full border border-[var(--border)] px-3 py-1">
-                {days < 0 ? 'Expired' : `Valid ${days} days`}
+                {days < 0 ? t('offers.expired') : t('offers.validDays', { count: days })}
               </span>
             ) : null}
           </div>
 
           <section>
-            <h2 className="font-display text-2xl font-bold text-[var(--text)]">Overview</h2>
+            <h2 className="font-display text-2xl font-bold text-[var(--text)]">{t('offers.overview')}</h2>
             <p className="mt-3 text-[var(--text-muted)]">{offer.fullDescription}</p>
           </section>
 
           {offer.gallery?.length ? (
             <section>
               <h2 className="mb-3 font-display text-2xl font-bold text-[var(--text)]">
-                Gallery
+                {t('offers.gallery')}
               </h2>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                 {offer.gallery.map((src) => (
@@ -132,7 +168,7 @@ export default function OfferDetail() {
             <section className="grid gap-4 md:grid-cols-2">
               {includes.length ? (
                 <div className="surface rounded-[24px] p-5">
-                  <h3 className="font-display text-lg font-bold text-[var(--text)]">Includes</h3>
+                  <h3 className="font-display text-lg font-bold text-[var(--text)]">{t('offers.includes')}</h3>
                   <ul className="mt-3 list-disc space-y-1 ps-5 text-[var(--text-muted)]">
                     {includes.map((item) => (
                       <li key={item}>{item}</li>
@@ -142,7 +178,7 @@ export default function OfferDetail() {
               ) : null}
               {excludes.length ? (
                 <div className="surface rounded-[24px] p-5">
-                  <h3 className="font-display text-lg font-bold text-[var(--text)]">Excludes</h3>
+                  <h3 className="font-display text-lg font-bold text-[var(--text)]">{t('offers.excludes')}</h3>
                   <ul className="mt-3 list-disc space-y-1 ps-5 text-[var(--text-muted)]">
                     {excludes.map((item) => (
                       <li key={item}>{item}</li>
@@ -156,7 +192,7 @@ export default function OfferDetail() {
           {offer.itinerary?.length ? (
             <section>
               <h2 className="mb-3 font-display text-2xl font-bold text-[var(--text)]">
-                Itinerary
+                {t('offers.itinerary')}
               </h2>
               <div className="space-y-2">
                 {offer.itinerary.map((day, i) => (
@@ -168,7 +204,7 @@ export default function OfferDetail() {
                       aria-expanded={openDay === i}
                     >
                       <span>
-                        Day {day.day}: {day.title}
+                        {t('offers.dayLabel', { day: day.day, title: day.title })}
                       </span>
                       <span className="text-[var(--accent-text)]">{openDay === i ? '−' : '+'}</span>
                     </button>
@@ -185,7 +221,7 @@ export default function OfferDetail() {
 
           {offer.terms ? (
             <section className="surface rounded-[24px] p-5">
-              <h3 className="font-display text-lg font-bold text-[var(--text)]">Terms</h3>
+              <h3 className="font-display text-lg font-bold text-[var(--text)]">{t('offers.terms')}</h3>
               <p className="mt-2 text-[var(--text-muted)]">{offer.terms}</p>
             </section>
           ) : null}
@@ -197,7 +233,7 @@ export default function OfferDetail() {
       {related.length ? (
         <section className="container-shell pb-16">
           <h2 className="mb-5 font-display text-2xl font-bold text-[var(--text)]">
-            Related offers
+            {t('offers.related')}
           </h2>
           <div className="grid gap-5 md:grid-cols-3">
             {related.map((item) => (
@@ -216,7 +252,7 @@ export default function OfferDetail() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setLightbox(null)}
-            aria-label="Close lightbox"
+            aria-label={t('offers.closeLightbox')}
           >
             <img
               src={lightbox}

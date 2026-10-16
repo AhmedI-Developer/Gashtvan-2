@@ -1,19 +1,21 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Skeleton from '@/components/ui/Skeleton'
 import { useDestinations } from '@/hooks/useDestinations'
-import { formatFromPrice } from '@/lib/destinations'
+import { cityLabel, formatFromPrice } from '@/lib/destinations'
 
 export default function Destinations() {
+  const { t } = useTranslation()
   const { destinations, loading, error } = useDestinations()
 
   return (
     <section id="destinations" className="section-pad bg-[var(--bg-alt)]">
       <div className="container-shell">
         <SectionHeading
-          eyebrow="Destinations"
-          title="Cities we fly from Erbil"
-          description="Live fares from the Gashtvan desk — Istanbul, the Gulf, and nearby capitals."
+          eyebrow={t('destinations.eyebrow')}
+          title={t('destinations.title')}
+          description={t('destinations.description')}
         />
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -33,11 +35,11 @@ export default function Destinations() {
                         {destination.originCode} → {destination.code}
                       </p>
                       <h3 className="mt-1 font-display text-xl font-bold text-[var(--text)]">
-                        {destination.name}
+                        {cityLabel(destination.name, t)}
                       </h3>
                     </div>
                     <p className="shrink-0 text-sm font-semibold text-[var(--text)]">
-                      {formatFromPrice(destination)}
+                      {formatFromPrice(destination, t)}
                     </p>
                   </div>
                   <p className="mt-3 line-clamp-2 text-sm text-[var(--text-muted)]">
@@ -49,7 +51,7 @@ export default function Destinations() {
 
         {!loading && error ? (
           <p className="mt-6 text-[var(--text-muted)]">
-            Destinations could not be loaded from the backend.
+            {t('destinations.error')}
           </p>
         ) : null}
       </div>

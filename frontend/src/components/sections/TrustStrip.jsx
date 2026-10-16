@@ -1,18 +1,22 @@
+import { useTranslation } from 'react-i18next'
 import { site } from '@/config/site'
 
 /** Enough repeats that one half stays wider than a large desktop, so the loop has no empty gap. */
 const COPIES_PER_HALF = 4
 
 export default function TrustStrip() {
-  const sequence = Array.from({ length: COPIES_PER_HALF }, () => site.trustBadges).flat()
+  const { t } = useTranslation()
+  const translated = t('home.trust', { returnObjects: true })
+  const badges = Array.isArray(translated) ? translated : site.trustBadges
+  const sequence = Array.from({ length: COPIES_PER_HALF }, () => badges).flat()
 
   return (
     <section
       className="w-full overflow-hidden border-y border-[var(--border)] bg-[var(--bg-alt)] py-5"
-      aria-label="Credentials"
+      aria-label={t('home.credentialsLabel')}
     >
       <ul className="sr-only">
-        {site.trustBadges.map((badge) => (
+        {badges.map((badge) => (
           <li key={badge}>{badge}</li>
         ))}
       </ul>

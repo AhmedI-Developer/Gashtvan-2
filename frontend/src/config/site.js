@@ -41,14 +41,7 @@ export const site = {
     { key: 'offers', href: '/offers' },
     { key: 'news', href: '/#news' },
     { key: 'contact', href: '/contact' },
-    {
-      key: 'about',
-      children: [
-        { key: 'visionMission', href: '/vision' },
-        { key: 'team', href: '/#team' },
-        { key: 'companyProfile', href: '/company' },
-      ],
-    },
+    { key: 'about', href: '/about' },
   ],
 }
 

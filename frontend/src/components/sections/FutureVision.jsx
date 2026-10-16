@@ -1,10 +1,12 @@
 import SectionHeading from '@/components/ui/SectionHeading'
 import Reveal from '@/components/motion/Reveal'
-import { company } from '@/content/company'
+import { useTranslation } from 'react-i18next'
+import { useCompanyContent } from '@/hooks/useCompanyContent'
 import worldMap from '@/assets/backgroundImage/World_map.jpg'
 
 export default function FutureVision() {
-  const { future } = company
+  const { t } = useTranslation()
+  const { future } = useCompanyContent()
 
   return (
     <section id="future" className="section-pad bg-[var(--bg-alt)]">
@@ -20,7 +22,7 @@ export default function FutureVision() {
           <div
             className="relative aspect-[4/3] overflow-hidden rounded-[22px] border border-[var(--border)] sm:rounded-[28px]"
             role="img"
-            aria-label="Animated map of Gashtvan expansion from Erbil"
+            aria-label={t('home.mapLabel')}
           >
             <img
               src={worldMap}

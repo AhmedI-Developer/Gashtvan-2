@@ -1,15 +1,19 @@
+import { useTranslation } from 'react-i18next'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Reveal from '@/components/motion/Reveal'
 import GreenShape from '@/components/brand/GreenShape'
-import { company } from '@/content/company'
+import { useCompanyContent } from '@/hooks/useCompanyContent'
 
 export default function WhyGashtvan() {
+  const { t } = useTranslation()
+  const company = useCompanyContent()
+
   return (
     <section id="why" className="section-pad bg-[var(--bg-alt)]">
       <div className="container-shell">
         <SectionHeading
-          eyebrow="Why Gashtvan"
-          title="Three reasons travelers stay with us"
+          eyebrow={t('home.whyEyebrow')}
+          title={t('home.whyTitle')}
         />
         <div className="grid gap-4 sm:gap-5 lg:grid-cols-3">
           {company.why.map((item, i) => (

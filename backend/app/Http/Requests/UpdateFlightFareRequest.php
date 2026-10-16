@@ -32,7 +32,7 @@ class UpdateFlightFareRequest extends FormRequest
             'destination' => ['required', 'string', 'max:120'],
             'destination_code' => ['nullable', 'string', 'max:8'],
             'airline' => ['required', 'string', 'max:120'],
-            'airline_logo' => ['nullable', 'string', 'max:64'],
+            'airline_logo' => ['nullable', 'string', 'max:2048'],
             'price' => ['required', 'numeric', 'min:0'],
             'currency' => ['nullable', 'string', 'max:8'],
             'trip_type' => ['nullable', Rule::in(['one_way', 'round_trip'])],

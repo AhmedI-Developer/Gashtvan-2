@@ -1,13 +1,12 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import Layout from '@/components/layout/Layout'
 import AdminLayout from '@/components/admin/AdminLayout'
 import Home from '@/pages/Home'
 
 const Offers = lazy(() => import('@/pages/Offers'))
 const OfferDetail = lazy(() => import('@/pages/OfferDetail'))
-const CompanyProfile = lazy(() => import('@/pages/CompanyProfile'))
-const VisionMission = lazy(() => import('@/pages/VisionMission'))
+const AboutUs = lazy(() => import('@/pages/AboutUs'))
 const Contact = lazy(() => import('@/pages/Contact'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
@@ -45,8 +44,9 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="offers" element={<Offers />} />
           <Route path="offers/:slug" element={<OfferDetail />} />
-          <Route path="company" element={<CompanyProfile />} />
-          <Route path="vision" element={<VisionMission />} />
+          <Route path="about" element={<AboutUs />} />
+          <Route path="company" element={<Navigate to="/about" replace />} />
+          <Route path="vision" element={<Navigate to="/about" replace />} />
           <Route path="contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Route>

@@ -3,13 +3,13 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import SectionHeading from '@/components/ui/SectionHeading'
 import GreenShape from '@/components/brand/GreenShape'
-import { company } from '@/content/company'
+import { useCompanyContent } from '@/hooks/useCompanyContent'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Team() {
-  const { management } = company
+  const { management } = useCompanyContent()
   const lineRef = useRef(null)
   const wrapRef = useRef(null)
   const reduced = useReducedMotion()

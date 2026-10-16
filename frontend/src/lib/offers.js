@@ -1,4 +1,3 @@
-import localOffers from '@/data/offers.json'
 import { apiBase } from '@/config/site'
 
 const CATEGORY_LABELS = {
@@ -25,7 +24,8 @@ export function mapOffer(raw) {
     id: raw.id,
     slug: raw.slug,
     title: raw.title,
-    category: raw.category_label || CATEGORY_LABELS[raw.category] || raw.category,
+    category: raw.category || raw.category_label,
+    categoryLabel: raw.category_label || CATEGORY_LABELS[raw.category] || raw.category,
     destination: raw.destination,
     shortDescription: raw.summary || '',
     fullDescription: raw.description || raw.summary || '',
@@ -37,7 +37,7 @@ export function mapOffer(raw) {
     badge: raw.is_featured ? 'Featured' : null,
     validFrom: raw.created_at || null,
     validUntil: null,
-    duration: days ? `${days} ${days === 1 ? 'day' : 'days'}` : null,
+    durationDays: days || null,
     includes,
     excludes: [],
     itinerary: [],
@@ -47,21 +47,43 @@ export function mapOffer(raw) {
   }
 }
 
-export async function fetchOffers({ featured = false, limit = 24 } = {}) {
-  const params = new URLSearchParams()
-  if (limit) params.set('limit', String(limit))
-  if (featured) params.set('featured', '1')
-
-  try {
-    const res = await fetch(`${apiBase}/offers?${params}`)
-    if (!res.ok) throw new Error('Failed to fetch offers')
-    const payload = await res.json()
-    const rows = Array.isArray(payload) ? payload : payload.data || payload.offers || []
-    return rows.map(mapOffer)
-  } catch (error) {
-    console.warn('Offers API failed, falling back to local JSON', error)
-    return featured ? localOffers.filter((o) => o.isFeatured || o.badge) : localOffers
+async function readOfferPage(url) {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Failed to fetch offers')
+  const payload = await res.json()
+  const rows = Array.isArray(payload) ? payload : payload.data || payload.offers || []
+  return {
+    rows,
+    lastPage: payload.meta?.last_page || 1,
+    paginated: Boolean(payload.meta),
   }
+}
+
+/** Load every active offer. Follows API pages so nothing past the first page is dropped. */
+export async function fetchOffers({ featured = false } = {}) {
+  const rows = []
+  let page = 1
+  let lastPage = 1
+
+  while (page <= lastPage && page <= 50) {
+    const params = new URLSearchParams({ page: String(page) })
+    if (featured) params.set('featured', '1')
+    const result = await readOfferPage(`${apiBase}/offers?${params}`)
+    rows.push(...result.rows)
+    if (!result.paginated) break
+    lastPage = result.lastPage
+    page += 1
+  }
+
+  return rows.map(mapOffer)
+}
+
+export async function fetchOffer(slug) {
+  const res = await fetch(`${apiBase}/offers/${encodeURIComponent(slug)}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to fetch offer')
+  const payload = await res.json()
+  return mapOffer(payload.data ?? payload)
 }
 
 export function isOfferActive(offer, now = new Date()) {
@@ -81,8 +103,8 @@ export function daysUntil(date) {
   return Math.ceil((end - now) / (1000 * 60 * 60 * 24))
 }
 
-export function formatPrice(offer) {
-  if (offer.price == null) return 'Contact for price'
+export function formatPrice(offer, contactLabel = 'Contact for price') {
+  if (offer.price == null) return contactLabel
   const amount = new Intl.NumberFormat('en-US').format(offer.price)
   return `${offer.currency || 'USD'} ${amount}`
 }
@@ -110,15 +132,24 @@ export function sortOffers(offers, mode) {
   }
 }
 
-export function filterOffers(offers, { category, query, destination }) {
+export function filterOffers(offers, { category, query, destination, destinationLabel }) {
   return offers.filter((offer) => {
-    const catOk = !category || category === 'All' || offer.category === category
+    const catOk =
+      !category || category === 'all' || category === 'All' || offer.category === category
     const destOk =
       !destination || destination === 'All' || offer.destination === destination
     const q = query.trim().toLowerCase()
     const textOk =
       !q ||
-      [offer.title, offer.destination, offer.shortDescription, offer.category]
+      [
+        offer.title,
+        offer.destination,
+        destinationLabel?.(offer.destination),
+        offer.shortDescription,
+        offer.category,
+        offer.categoryLabel,
+      ]
+        .filter(Boolean)
         .join(' ')
         .toLowerCase()
         .includes(q)
