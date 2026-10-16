@@ -1,12 +1,22 @@
+import { lazy, Suspense } from 'react'
 import Seo from '@/components/layout/Seo'
 import Hero from '@/components/sections/Hero'
 import TrustStrip from '@/components/sections/TrustStrip'
-import Services from '@/components/sections/Services'
 import Branches from '@/components/sections/Branches'
 import Destinations from '@/components/sections/Destinations'
 import FeaturedOffers from '@/components/sections/FeaturedOffers'
 import News from '@/components/sections/News'
 import CtaBanner from '@/components/sections/CtaBanner'
+
+const Services = lazy(() => import('@/components/sections/Services'))
+
+function ServicesFallback() {
+  return (
+    <section id="services" className="section-pad bg-[var(--bg)]" aria-hidden="true">
+      <div className="container-shell h-48 animate-pulse rounded-[28px] bg-[var(--surface)]" />
+    </section>
+  )
+}
 
 export default function Home() {
   return (
@@ -15,7 +25,9 @@ export default function Home() {
       <Hero />
       <TrustStrip />
       <News />
-      <Services />
+      <Suspense fallback={<ServicesFallback />}>
+        <Services />
+      </Suspense>
       <Branches />
       <Destinations />
       <FeaturedOffers />

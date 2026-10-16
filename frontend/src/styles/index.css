@@ -118,6 +118,8 @@ html[lang='ckb'] {
   --font-sans: 'K24 Kurdish', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'K24 Kurdish', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'K24 Kurdish', ui-sans-serif, system-ui, sans-serif;
+  /* K24 reads smaller than Poppins at the same px — lift root size so rem/clamp match English. */
+  font-size: 112.5%;
 }
 
 /* Connected Arabic script should not be tracked or forced into Latin case. */
@@ -127,6 +129,11 @@ html[lang='ar'] :is(.tracking-tight, .tracking-wider, .uppercase),
 html[lang='ckb'] :is(.tracking-tight, .tracking-wider, .uppercase) {
   letter-spacing: 0;
   text-transform: none;
+}
+
+html[lang='ar'] .eyebrow,
+html[lang='ckb'] .eyebrow {
+  font-size: 0.95rem;
 }
 
 html[data-theme='light'] {
@@ -250,6 +257,26 @@ select {
 
 .safe-end {
   inset-inline-end: calc(1.25rem + env(safe-area-inset-right, 0px));
+}
+
+.branch-card-pixels {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 350ms ease;
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 85%, white) 1.1px, transparent 1.2px),
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 55%, transparent) 0.9px, transparent 1px),
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 35%, transparent) 0.7px, transparent 0.8px);
+  background-size: 14px 14px, 22px 22px, 18px 18px;
+  background-position: 0 0, 7px 11px, 3px 5px;
+  mask-image: radial-gradient(ellipse 70% 65% at 50% 50%, black 20%, transparent 75%);
+}
+
+.branch-card:hover .branch-card-pixels {
+  opacity: 1;
 }
 
 /* Touch: disable hover-tilt transforms unless fine pointer */

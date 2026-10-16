@@ -74,7 +74,6 @@ function buildItems(company, t) {
       kicker: company.future.eyebrow,
       title: company.future.title,
       paragraphs: [company.future.body],
-      markers: company.future.markers,
       image: worldMap,
       imageAlt: t('home.mapLabel'),
     },
@@ -263,18 +262,6 @@ export default function AboutUs() {
                             </li>
                           ))}
                         </ol>
-                      ) : null}
-                      {item.markers ? (
-                        <ul className="mt-5 flex flex-wrap gap-2">
-                          {item.markers.map((marker) => (
-                            <li
-                              key={marker.id}
-                              className="rounded-full border border-[var(--accent)] px-3 py-1 text-sm font-medium text-[var(--accent-text)]"
-                            >
-                              {marker.label}
-                            </li>
-                          ))}
-                        </ul>
                       ) : null}
                     </>
                   )}

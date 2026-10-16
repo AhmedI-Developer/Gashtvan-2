@@ -85,10 +85,10 @@ export const company = {
     },
     {
       id: 'hospitality-tours',
-      title: 'Hotels, Lodge Reservations, Tours, Car Rental & Transfers',
+      title: 'Hotels, Lodge Reservations, Tours & Transfers',
       summary:
         'End-to-end ground arrangements for leisure and business journeys.',
-      body: 'From hotel and lodge reservations to curated tours, car rental, and transfers, Gashtvan arranges the ground experience around each itinerary — so arrival, movement, and stay feel connected rather than fragmented.',
+      body: 'From hotel and lodge reservations to curated tours and transfers, Gashtvan arranges the ground experience around each itinerary — so arrival, movement, and stay feel connected rather than fragmented.',
       icon: 'Hotel',
     },
     {

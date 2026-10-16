@@ -24,17 +24,18 @@ export default function News() {
   const active = articles.find((item) => item.id === activeId) || null
 
   return (
-    <section id="news" className="border-b border-[var(--border)] bg-[var(--bg)] py-10 sm:py-12">
+    <section id="news" className="border-b border-[var(--border)] bg-[var(--bg)] py-10 sm:py-14">
       <div className="container-shell">
-        <div className="mb-5 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mx-auto mb-6 flex max-w-3xl flex-col items-center text-center sm:mb-8">
           <SectionHeading
-            className="mb-0"
+            className="mb-4"
+            align="center"
             eyebrow={t('news.eyebrow')}
             title={t('news.title')}
           />
 
           <div
-            className="flex flex-wrap gap-2"
+            className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] p-1.5 shadow-[var(--shadow)]"
             role="tablist"
             aria-label={t('news.regionsLabel')}
           >
@@ -50,12 +51,12 @@ export default function News() {
                   disabled={!unlocked}
                   onClick={() => unlocked && setActiveRegion(region)}
                   className={cn(
-                    'rounded-full border px-3 py-1.5 text-xs font-semibold transition duration-300 sm:text-sm',
+                    'rounded-full px-3.5 py-1.5 text-xs font-semibold transition duration-300 sm:px-4 sm:text-sm',
                     selected
-                      ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--navy)]'
+                      ? 'bg-[var(--accent)] text-[var(--navy)] shadow-sm'
                       : unlocked
-                        ? 'border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:border-[var(--accent)]'
-                        : 'cursor-not-allowed border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-muted)] opacity-55',
+                        ? 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
+                        : 'cursor-not-allowed text-[var(--text-muted)] opacity-45',
                   )}
                 >
                   {t(`news.regions.${region}`)}
@@ -76,28 +77,26 @@ export default function News() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="-mx-2 flex gap-3 overflow-x-auto px-2 pb-1 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 [scrollbar-width:thin]"
+            className="mx-auto flex max-w-5xl justify-center"
           >
-            {loading
-              ? Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton
-                    key={i}
-                    className="h-[210px] w-[min(200px,68vw)] shrink-0 sm:h-[230px] sm:w-auto"
-                  />
-                ))
-              : items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="w-[min(200px,68vw)] shrink-0 snap-start sm:w-auto"
-                  >
-                    <NewsCard item={item} onOpen={(story) => setActiveId(story.id)} />
-                  </div>
-                ))}
+            <div className="grid w-full grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {loading
+                ? Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="aspect-[3/4] w-full rounded-[22px]" />
+                  ))
+                : items.map((item) => (
+                    <NewsCard
+                      key={item.id}
+                      item={item}
+                      onOpen={(story) => setActiveId(story.id)}
+                    />
+                  ))}
+            </div>
           </motion.div>
         </AnimatePresence>
 
         {!loading && !items.length ? (
-          <p className="mt-4 text-sm text-[var(--text-muted)]">
+          <p className="mt-6 text-center text-sm text-[var(--text-muted)]">
             {t('news.empty')}
           </p>
         ) : null}
