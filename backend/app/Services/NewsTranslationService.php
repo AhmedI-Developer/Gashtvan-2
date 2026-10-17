@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -27,129 +27,210 @@ class NewsTranslationService
         }
 
         $target = self::TARGETS[$lang];
-        $cacheKey = 'travel-news.tr.'.$lang.'.'.md5(json_encode(array_column($articles, 'id')));
+        $cacheKey = 'travel-news.lang.v2.'.$lang.'.'.md5((string) json_encode(array_column($articles, 'id')));
 
         $cached = Cache::get($cacheKey);
-        if (is_array($cached) && $cached !== []) {
+        if (is_array($cached) && $this->isTranslated($cached, $articles)) {
             return $cached;
         }
 
-        $translated = [];
-
+        $strings = [];
         foreach ($articles as $article) {
-            $translated[] = $this->translateArticle($article, $target, $lang);
+            foreach (['title', 'excerpt', 'body'] as $field) {
+                $text = trim((string) ($article[$field] ?? ''));
+                if ($text !== '') {
+                    $strings[$text] = true;
+                }
+            }
         }
 
-        Cache::put($cacheKey, $translated, now()->addHours(6));
+        $translatedMap = $this->translateMany(array_keys($strings), $target);
+        $result = [];
+        $translatedTitles = 0;
 
-        return $translated;
+        foreach ($articles as $article) {
+            $copy = $article;
+
+            foreach (['title', 'excerpt', 'body'] as $field) {
+                $text = trim((string) ($article[$field] ?? ''));
+                if ($text === '') {
+                    continue;
+                }
+
+                $translated = $translatedMap[$text] ?? null;
+                if (! is_string($translated) || $translated === '' || $translated === $text) {
+                    continue;
+                }
+
+                $copy[$field] = $translated;
+                if ($field === 'title') {
+                    $translatedTitles++;
+                }
+            }
+
+            $result[] = $copy;
+        }
+
+        if ($translatedTitles === count($articles)) {
+            Cache::put($cacheKey, $result, now()->addHours(6));
+        }
+
+        return $result;
     }
 
     /**
-     * @param  array<string, mixed>  $article
-     * @return array<string, mixed>
+     * @param  list<array<string, mixed>>  $cached
+     * @param  list<array<string, mixed>>  $articles
      */
-    private function translateArticle(array $article, string $target, string $lang): array
+    private function isTranslated(array $cached, array $articles): bool
     {
-        $fields = ['title', 'excerpt', 'body'];
-        $itemCacheKey = 'travel-news.item.'.$lang.'.'.($article['id'] ?? md5(($article['url'] ?? '').($article['title'] ?? '')));
-
-        $cachedItem = Cache::get($itemCacheKey);
-        if (is_array($cachedItem)) {
-            return array_merge($article, $cachedItem);
+        if (count($cached) !== count($articles)) {
+            return false;
         }
 
-        $overlay = [];
-
-        foreach ($fields as $field) {
-            $text = trim((string) ($article[$field] ?? ''));
-            if ($text === '') {
-                continue;
+        foreach ($articles as $index => $article) {
+            $original = trim((string) ($article['title'] ?? ''));
+            $cachedTitle = trim((string) ($cached[$index]['title'] ?? ''));
+            if ($original === '' || $cachedTitle === '' || $cachedTitle === $original) {
+                return false;
             }
-
-            $overlay[$field] = $this->translateText($text, $target) ?: $text;
         }
 
-        if ($overlay !== []) {
-            Cache::put($itemCacheKey, $overlay, now()->addHours(12));
-        }
-
-        return array_merge($article, $overlay);
+        return true;
     }
 
-    private function translateText(string $text, string $target): ?string
+    /**
+     * @param  list<string>  $texts
+     * @return array<string, string|null>
+     */
+    private function translateMany(array $texts, string $target): array
     {
-        // Keep requests small — free endpoints truncate long payloads.
-        $chunks = $this->chunkText($text, 450);
-        $parts = [];
+        $map = [];
 
-        foreach ($chunks as $chunk) {
-            $translated = $this->requestTranslation($chunk, $target);
-            if ($translated === null) {
-                return null;
+        foreach ($texts as $text) {
+            $parts = [];
+
+            foreach ($this->chunkText($text, 450) as $chunk) {
+                $translated = $this->requestTranslation($chunk, $target);
+                if ($translated === null) {
+                    $parts = [];
+                    break;
+                }
+                $parts[] = $translated;
             }
-            $parts[] = $translated;
+
+            $map[$text] = $parts === [] ? null : trim(implode(' ', $parts));
         }
 
-        return trim(implode(' ', $parts));
+        return $map;
     }
 
     private function requestTranslation(string $text, string $target): ?string
     {
-        try {
-            $request = Http::timeout(12)
-                ->withHeaders([
-                    'User-Agent' => 'Mozilla/5.0 (compatible; GashtvanNews/1.0)',
-                ]);
+        $translated = $this->googleTranslate($text, $target);
+        if ($translated !== null) {
+            return $translated;
+        }
 
-            $verify = config('services.news.verify_ssl');
-            $skipVerify = $verify === false
-                || ($verify === null && app()->environment(['local', 'development']));
+        return $this->myMemoryTranslate($text, $target);
+    }
 
-            if ($skipVerify) {
-                $request = $request->withoutVerifying();
+    private function googleTranslate(string $text, string $target): ?string
+    {
+        foreach ([0, 600000] as $pause) {
+            if ($pause > 0) {
+                usleep($pause);
             }
 
-            $response = $request->get('https://translate.googleapis.com/translate_a/single', [
-                'client' => 'gtx',
-                'sl' => 'en',
-                'tl' => $target,
-                'dt' => 't',
-                'q' => $text,
-            ]);
-
-            if (! $response->successful()) {
-                Log::warning('News translation HTTP error', [
-                    'status' => $response->status(),
+            try {
+                $response = NewsHttp::request(12, [
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                    'Accept' => 'application/json,text/plain,*/*',
+                ])->get('https://translate.googleapis.com/translate_a/single', [
+                    'client' => 'gtx',
+                    'sl' => 'en',
+                    'tl' => $target,
+                    'dt' => 't',
+                    'q' => $text,
+                ]);
+            } catch (Throwable $e) {
+                Log::warning('News translation failed', [
                     'target' => $target,
+                    'message' => $e->getMessage(),
                 ]);
 
                 return null;
             }
 
-            $payload = $response->json();
-            if (! is_array($payload) || ! isset($payload[0]) || ! is_array($payload[0])) {
-                return null;
+            if ($response->status() === 429) {
+                continue;
             }
 
-            $out = '';
-            foreach ($payload[0] as $segment) {
-                if (is_array($segment) && isset($segment[0]) && is_string($segment[0])) {
-                    $out .= $segment[0];
-                }
-            }
+            return $this->readGoogleTranslation($response);
+        }
 
-            $out = trim($out);
+        Log::warning('News translation rate limited', ['target' => $target]);
 
-            return $out !== '' ? $out : null;
+        return null;
+    }
+
+    private function myMemoryTranslate(string $text, string $target): ?string
+    {
+        try {
+            $response = NewsHttp::request(12, [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept' => 'application/json',
+            ])->get('https://api.mymemory.translated.net/get', [
+                'q' => $text,
+                'langpair' => 'en|'.$target,
+            ]);
         } catch (Throwable $e) {
-            Log::warning('News translation failed', [
+            Log::warning('News translation fallback failed', [
                 'target' => $target,
                 'message' => $e->getMessage(),
             ]);
 
             return null;
         }
+
+        if (! $response->successful()) {
+            return null;
+        }
+
+        $translated = trim((string) $response->json('responseData.translatedText'));
+        if ($translated === '' || str_contains(strtoupper($translated), 'MYMEMORY WARNING')) {
+            return null;
+        }
+
+        return $translated;
+    }
+
+    private function readGoogleTranslation(Response $response): ?string
+    {
+        if (! $response->successful()) {
+            Log::warning('News translation HTTP error', [
+                'status' => $response->status(),
+            ]);
+
+            return null;
+        }
+
+        $payload = $response->json();
+        if (! is_array($payload) || ! isset($payload[0]) || ! is_array($payload[0])) {
+            return null;
+        }
+
+        $out = '';
+
+        foreach ($payload[0] as $segment) {
+            if (is_array($segment) && isset($segment[0]) && is_string($segment[0])) {
+                $out .= $segment[0];
+            }
+        }
+
+        $out = trim(html_entity_decode($out, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+        return $out !== '' ? $out : null;
     }
 
     /**

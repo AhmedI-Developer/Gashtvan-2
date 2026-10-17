@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
@@ -146,22 +145,10 @@ class TravelNewsService
 
     private function http(): PendingRequest
     {
-        $request = Http::timeout(15)
-            ->withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept' => 'application/rss+xml, application/xml, text/xml, */*',
-            ]);
-
-        // Local Windows OpenSSL often lacks a CA bundle (cURL error 60).
-        $verify = config('services.news.verify_ssl');
-        $skipVerify = $verify === false
-            || ($verify === null && app()->environment(['local', 'development']));
-
-        if ($skipVerify) {
-            return $request->withoutVerifying();
-        }
-
-        return $request;
+        return NewsHttp::request(15, [
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept' => 'application/rss+xml, application/xml, text/xml, */*',
+        ]);
     }
 
     /**

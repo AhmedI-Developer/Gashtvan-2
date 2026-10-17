@@ -193,16 +193,37 @@ body.nav-open {
   touch-action: none;
 }
 
-img,
-svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
+/* Keep this in the base layer so utilities like h-full and object-cover win.
+   An unlayered height:auto was leaving empty bands inside image frames. */
+@layer base {
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  video {
+    display: block;
+    max-width: 100%;
+  }
 }
 
-video {
-  display: block;
-  max-width: 100%;
+/* Reliable multi-line ellipsis (Tailwind line-clamp can resolve to flow-root and skip “…”) */
+.clamp-2,
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.clamp-3 {
+  -webkit-line-clamp: 3;
 }
 
 /* Full-bleed background videos (hero / CTA / about) */

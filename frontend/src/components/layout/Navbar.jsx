@@ -67,11 +67,31 @@ export default function Navbar() {
   const onHome = location.pathname === '/'
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    // Home: stay transparent until the hero video section fully leaves the top.
+    // Other pages: tighten padding after a short scroll.
+    const update = () => {
+      if (!onHome) {
+        setScrolled(window.scrollY > 24)
+        return
+      }
+
+      const hero = document.getElementById('home')
+      if (!hero) {
+        setScrolled(window.scrollY > 24)
+        return
+      }
+
+      setScrolled(hero.getBoundingClientRect().bottom <= 72)
+    }
+
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [onHome])
 
   useEffect(() => {
     setOpen(false)
@@ -86,9 +106,9 @@ export default function Navbar() {
   const aboutActive = site.nav
     .find((item) => item.key === 'about')
     ?.children?.some((child) => childIsActive(child, location))
+  /** Home only: transparent header + white chrome over the hero video. */
   const onHero = onHome && !scrolled && !open
-  /** White text/logo only when dark theme + on hero. Light theme uses navy tokens (no header bg). */
-  const lightOnHero = onHero && isDark
+  const lightOnHero = onHero
   const controlTone = lightOnHero ? 'hero-dark' : 'default'
 
   return (

@@ -185,7 +185,7 @@ export function ServiceCard({ service, index, reduced, entered, onOpen }) {
               >
                 {service.cardTitle}
               </h3>
-              <p className="mt-2.5 text-[0.95rem] leading-relaxed text-pretty text-white/85 sm:text-base">
+              <p className="clamp-3 mt-2.5 text-[0.95rem] leading-relaxed text-white/85 sm:text-base">
                 {service.shortText}
               </p>
               <a
@@ -212,7 +212,7 @@ export function ServiceCard({ service, index, reduced, entered, onOpen }) {
             <div
               className={cn(
                 'relative z-[1] min-w-0 flex-1',
-                isSmall ? 'pb-12 pe-1' : 'pb-12 pe-2 sm:pb-0 sm:pe-12',
+                isSmall ? 'pb-12 pe-12' : 'pb-12 pe-2 sm:pb-0 sm:pe-12',
               )}
             >
               <h3
@@ -226,7 +226,7 @@ export function ServiceCard({ service, index, reduced, entered, onOpen }) {
               </h3>
               <p
                 className={cn(
-                  'mt-1.5 leading-relaxed text-pretty text-white/80',
+                  'clamp-2 mt-1.5 leading-relaxed text-white/80',
                   isWide && 'text-[0.95rem] sm:text-base',
                   isSmall && 'text-sm sm:text-[0.95rem]',
                 )}

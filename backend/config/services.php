@@ -36,7 +36,8 @@ return [
     ],
 
     'news' => [
-        // Set NEWS_SSL_VERIFY=true in production when a CA bundle is available.
+        // Leave unset to verify only when PHP has a CA bundle.
+        // Set NEWS_SSL_VERIFY=true to force verification, or false to skip it.
         'verify_ssl' => env('NEWS_SSL_VERIFY'),
     ],
 
