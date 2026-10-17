@@ -252,9 +252,12 @@ body.nav-open {
   }
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* Keep in @layer base so Tailwind color utilities on <a> (e.g. hero nav white) can win. */
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 button,

@@ -16,11 +16,12 @@ function navLinkClass({ isActive, lightOnHero }) {
     'nav-link relative px-3 py-2 text-sm font-medium transition-all duration-300',
     'after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:origin-center after:scale-x-0 after:rounded-full after:bg-[var(--accent)] after:transition-transform after:duration-300 after:ease-out',
     'hover:-translate-y-0.5 hover:after:scale-x-100',
+    // Important on hero so light-theme body/link inherit cannot darken chrome over the video.
     lightOnHero
-      ? 'text-white/85 hover:text-white'
+      ? '!text-white/85 hover:!text-white'
       : 'text-[var(--text-muted)] hover:text-[var(--text)]',
     isActive && 'after:scale-x-100',
-    isActive && (lightOnHero ? 'text-white' : 'text-[var(--text)]'),
+    isActive && (lightOnHero ? '!text-white' : 'text-[var(--text)]'),
   )
 }
 
@@ -93,10 +94,15 @@ export default function Navbar() {
     }
   }, [onHome])
 
-  useEffect(() => {
+  const [navLocationKey, setNavLocationKey] = useState(
+    () => `${location.pathname}${location.search}${location.hash}`,
+  )
+  const locationKey = `${location.pathname}${location.search}${location.hash}`
+  if (navLocationKey !== locationKey) {
+    setNavLocationKey(locationKey)
     setOpen(false)
     setAboutOpen(false)
-  }, [location])
+  }
 
   useEffect(() => {
     document.body.classList.toggle('nav-open', open)
@@ -173,9 +179,9 @@ export default function Navbar() {
                     type="button"
                     className={cn(
                       navLinkClass({ isActive: aboutActive, lightOnHero }),
-                      // Unlayered `button { font: inherit }` and `a { color: inherit }`
-                      // would otherwise leave this trigger larger and dimmer than the links.
-                      'inline-flex cursor-pointer appearance-none items-center gap-1 !text-sm !font-medium !leading-5 !text-inherit',
+                      // Match link size; keep hero white (do not force inherit over light-on-hero).
+                      'inline-flex cursor-pointer appearance-none items-center gap-1 !text-sm !font-medium !leading-5',
+                      !lightOnHero && '!text-inherit',
                     )}
                     aria-haspopup="true"
                     aria-expanded={aboutOpen}

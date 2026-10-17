@@ -45,11 +45,22 @@ export function cityLabel(name, t) {
   return label === key ? name : label
 }
 
+export function destinationPriceParts(destination) {
+  if (destination?.fromPrice == null) {
+    return { hasPrice: false, currency: null, amount: null }
+  }
+
+  return {
+    hasPrice: true,
+    currency: destination.currency || 'USD',
+    amount: new Intl.NumberFormat('en-US').format(destination.fromPrice),
+  }
+}
+
 export function formatFromPrice(destination, t) {
-  if (destination.fromPrice == null) return t ? t('destinations.ask') : 'Ask for fare'
-  const amount = new Intl.NumberFormat('en-US').format(destination.fromPrice)
-  const currency = destination.currency || 'USD'
+  const parts = destinationPriceParts(destination)
+  if (!parts.hasPrice) return t ? t('destinations.ask') : 'Ask for fare'
   return t
-    ? t('destinations.fromPrice', { currency, amount })
-    : `From ${currency} ${amount}`
+    ? t('destinations.fromPrice', { currency: parts.currency, amount: parts.amount })
+    : `From ${parts.currency} ${parts.amount}`
 }

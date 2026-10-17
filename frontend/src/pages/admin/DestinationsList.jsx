@@ -29,7 +29,10 @@ export default function AdminDestinationsList() {
   }
 
   useEffect(() => {
-    load()
+    void (async () => {
+      await Promise.resolve()
+      await load()
+    })()
   }, [])
 
   const onDelete = async (fare) => {

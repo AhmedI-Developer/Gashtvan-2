@@ -4,7 +4,9 @@ namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -21,7 +23,7 @@ class TravelNewsService
             'feeds' => [],
             'icon' => 'Mountain',
             'tag' => 'Kurdistan',
-            'image' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+            'image' => 'news/kurdistan.jpg',
         ],
         'Middle East' => [
             'queries' => [
@@ -34,7 +36,7 @@ class TravelNewsService
             ],
             'icon' => 'Globe2',
             'tag' => 'Middle East',
-            'image' => 'https://images.unsplash.com/photo-1512453979798-5ea8523dba54?auto=format&fit=crop&w=1200&q=80',
+            'image' => 'news/middle-east.jpg',
         ],
         'Europe' => [
             'queries' => [
@@ -48,7 +50,7 @@ class TravelNewsService
             ],
             'icon' => 'Landmark',
             'tag' => 'Europe',
-            'image' => 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1200&q=80',
+            'image' => 'news/europe.jpg',
         ],
     ];
 
@@ -57,7 +59,9 @@ class TravelNewsService
      */
     public function fetch(): array
     {
-        $cached = Cache::get('travel-news.v1');
+        $this->ensureRegionImages();
+
+        $cached = Cache::get('travel-news.v3');
         if (is_array($cached) && $cached !== []) {
             return $cached;
         }
@@ -72,13 +76,33 @@ class TravelNewsService
 
         // Never cache an empty payload — that locks the UI on failure for 30 minutes.
         if ($items !== []) {
-            Cache::put('travel-news.v1', $items, now()->addMinutes(30));
+            Cache::put('travel-news.v3', $items, now()->addMinutes(30));
         } else {
-            Cache::forget('travel-news.v1');
+            Cache::forget('travel-news.v3');
             Log::warning('Travel news fetch returned no items.');
         }
 
         return $items;
+    }
+
+    /**
+     * Copy seeded region fallbacks into public storage when missing.
+     */
+    private function ensureRegionImages(): void
+    {
+        $source = database_path('seeders/assets/news');
+        if (! is_dir($source)) {
+            return;
+        }
+
+        Storage::disk('public')->makeDirectory('news');
+
+        foreach (File::files($source) as $file) {
+            $target = 'news/'.$file->getFilename();
+            if (! Storage::disk('public')->exists($target)) {
+                Storage::disk('public')->put($target, File::get($file->getPathname()));
+            }
+        }
     }
 
     /**
@@ -151,6 +175,14 @@ class TravelNewsService
         ]);
     }
 
+    private function imageHttp(): PendingRequest
+    {
+        return NewsHttp::request(20, [
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept' => 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+        ]);
+    }
+
     /**
      * @param  array{queries: list<string>, feeds: list<string>, icon: string, tag: string, image: string}  $meta
      * @return list<array<string, mixed>>
@@ -171,6 +203,7 @@ class TravelNewsService
         }
 
         $items = [];
+        $fallback = $this->publicUrl($meta['image']);
 
         foreach ($feed->channel->item as $item) {
             if (count($items) >= 6) {
@@ -181,7 +214,8 @@ class TravelNewsService
             $link = trim((string) $item->link);
             $rawDescription = (string) $item->description;
             $excerpt = $this->plainText($rawDescription);
-            $image = $this->firstImage($rawDescription) ?: $meta['image'];
+            $remoteImage = $this->firstImage($rawDescription);
+            $image = $this->localizeCover($remoteImage, $meta['image']) ?: $fallback;
             $published = (string) ($item->pubDate ?? '');
             $date = $published !== '' ? date('Y-m-d', strtotime($published) ?: time()) : date('Y-m-d');
             $source = trim((string) ($item->source ?? ''));
@@ -210,6 +244,89 @@ class TravelNewsService
         }
 
         return $items;
+    }
+
+    /**
+     * Download a remote cover into public storage (cached by URL hash), or use the region fallback.
+     */
+    private function localizeCover(?string $remoteUrl, string $fallbackPath): string
+    {
+        $fallback = $this->publicUrl($fallbackPath);
+
+        if ($remoteUrl === null || $remoteUrl === '') {
+            return $fallback;
+        }
+
+        if (Str::startsWith($remoteUrl, ['/storage/', 'storage/'])) {
+            return Str::startsWith($remoteUrl, '/') ? $remoteUrl : '/'.$remoteUrl;
+        }
+
+        if (! filter_var($remoteUrl, FILTER_VALIDATE_URL)) {
+            return $fallback;
+        }
+
+        $extension = $this->guessExtension($remoteUrl);
+        $hash = substr(hash('sha256', $remoteUrl), 0, 24);
+        $path = "news/covers/{$hash}.{$extension}";
+
+        if (Storage::disk('public')->exists($path)) {
+            return $this->publicUrl($path);
+        }
+
+        try {
+            $response = $this->imageHttp()->get($remoteUrl);
+            if (! $response->successful()) {
+                return $fallback;
+            }
+
+            $body = $response->body();
+            if (strlen($body) < 500) {
+                return $fallback;
+            }
+
+            $contentType = strtolower((string) $response->header('Content-Type'));
+            if ($contentType !== '' && ! str_contains($contentType, 'image') && ! str_contains($contentType, 'octet-stream')) {
+                return $fallback;
+            }
+
+            if (str_contains($contentType, 'png')) {
+                $path = "news/covers/{$hash}.png";
+            } elseif (str_contains($contentType, 'webp')) {
+                $path = "news/covers/{$hash}.webp";
+            } elseif (str_contains($contentType, 'gif')) {
+                $path = "news/covers/{$hash}.gif";
+            }
+
+            Storage::disk('public')->put($path, $body);
+
+            return $this->publicUrl($path);
+        } catch (Throwable $e) {
+            Log::debug('News cover localize failed', [
+                'url' => $remoteUrl,
+                'message' => $e->getMessage(),
+            ]);
+
+            return $fallback;
+        }
+    }
+
+    private function publicUrl(string $path): string
+    {
+        // Served via /api/media/... so SPA hosts cannot swallow /storage routes.
+        $path = ltrim(str_replace('\\', '/', $path), '/');
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, strlen('storage/'));
+        }
+
+        return '/api/media/'.$path;
+    }
+
+    private function guessExtension(string $url): string
+    {
+        $path = parse_url($url, PHP_URL_PATH) ?: '';
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+        return in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true) ? ($ext === 'jpeg' ? 'jpg' : $ext) : 'jpg';
     }
 
     private function looksTravelRelated(string $text): bool

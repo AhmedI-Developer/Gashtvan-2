@@ -15,14 +15,20 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!token) {
-      setUser(null)
-      setBooting(false)
+      queueMicrotask(() => {
+        setUser(null)
+        setBooting(false)
+      })
       return undefined
     }
 
     let alive = true
-    setBooting(true)
+
     ;(async () => {
+      await Promise.resolve()
+      if (!alive) return
+      setBooting(true)
+
       try {
         const me = await fetchAdminMe()
         if (alive) setUser(me)

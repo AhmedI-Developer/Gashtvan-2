@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Button from '@/components/ui/Button'
-import { CheckboxField, Field, controlClass } from '@/components/admin/Field'
+import { CheckboxField, Field } from '@/components/admin/Field'
+import { controlClass } from '@/components/admin/fieldStyles'
 import {
   AdminApiError,
   OFFER_CATEGORIES,

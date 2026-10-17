@@ -29,7 +29,6 @@ export default function Services() {
   const sectionRef = useRef(null)
   const pathRef = useRef(null)
   const [modalIndex, setModalIndex] = useState(null)
-  const [entered, setEntered] = useState(reduced)
 
   const items = useMemo(
     () =>
@@ -59,9 +58,7 @@ export default function Services() {
   }
 
   const inView = useInView(sectionRef, { once: true, amount: 0.18 })
-  useEffect(() => {
-    if (inView) setEntered(true)
-  }, [inView])
+  const entered = reduced || inView
 
   useEffect(() => {
     const section = sectionRef.current

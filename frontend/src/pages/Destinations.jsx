@@ -1,19 +1,24 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search } from 'lucide-react'
 import Seo from '@/components/layout/Seo'
 import PageHero from '@/components/ui/PageHero'
 import Button from '@/components/ui/Button'
+import Pagination from '@/components/ui/Pagination'
 import DestinationCard from '@/components/destinations/DestinationCard'
 import { DestinationCardSkeleton } from '@/components/ui/Skeleton'
 import { useDestinations } from '@/hooks/useDestinations'
+import { usePagination } from '@/hooks/usePagination'
 import { cityLabel } from '@/lib/destinations'
 import destinationsHero from '@/assets/backgroundImage/view.jpg'
+
+const PAGE_SIZE = 12
 
 export default function Destinations() {
   const { t } = useTranslation()
   const { destinations, loading, error } = useDestinations()
   const [query, setQuery] = useState('')
+  const listRef = useRef(null)
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -27,6 +32,16 @@ export default function Destinations() {
       return haystack.includes(q)
     })
   }, [destinations, query, t])
+
+  const { page, setPage, totalPages, pageItems, hasPagination } = usePagination(visible, {
+    pageSize: PAGE_SIZE,
+    resetKey: query,
+  })
+
+  useEffect(() => {
+    if (!listRef.current || page === 1) return
+    listRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [page])
 
   return (
     <main>
@@ -62,16 +77,23 @@ export default function Destinations() {
           />
         </label>
 
-        <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div
+          ref={listRef}
+          className="mt-6 grid scroll-mt-28 gap-4 sm:mt-8 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3"
+        >
           {loading
-            ? Array.from({ length: 6 }).map((_, i) => <DestinationCardSkeleton key={i} />)
-            : visible.map((destination) => (
+            ? Array.from({ length: PAGE_SIZE }).map((_, i) => <DestinationCardSkeleton key={i} />)
+            : pageItems.map((destination) => (
                 <DestinationCard
                   key={destination.code || destination.name}
                   destination={destination}
                 />
               ))}
         </div>
+
+        {!loading && hasPagination ? (
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        ) : null}
 
         {!loading && error ? (
           <p className="mt-8 text-[var(--text-muted)]">{t('destinations.error')}</p>

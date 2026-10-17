@@ -3,7 +3,7 @@ import { apiBase } from '@/config/site'
 
 /** Shared Axios client for the Laravel API (`/api` in dev via Vite proxy). */
 export const api = axios.create({
-  baseURL: apiBase,
+  baseURL: 'https://gashtvan.ahmed-dev.org/api',
   headers: {
     Accept: 'application/json',
   },

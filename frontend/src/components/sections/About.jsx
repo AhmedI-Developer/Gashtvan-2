@@ -43,8 +43,8 @@ export default function About() {
               ))}
             </div>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Button to="/company">{t('nav.companyProfile')}</Button>
-              <Button to="/vision" variant="secondary">
+              <Button to="/about">{t('nav.companyProfile')}</Button>
+              <Button to="/about" variant="secondary">
                 {t('nav.visionMission')}
               </Button>
             </div>

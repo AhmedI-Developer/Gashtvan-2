@@ -5,7 +5,9 @@ namespace Database\Seeders;
 use App\Models\Offer;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class OfferPackageSeeder extends Seeder
 {
@@ -19,6 +21,8 @@ class OfferPackageSeeder extends Seeder
             ],
         );
 
+        $this->syncSeedImages();
+
         $offers = [
             [
                 'title' => 'Istanbul Weekend Flight Special',
@@ -29,7 +33,7 @@ class OfferPackageSeeder extends Seeder
                 'description' => 'Book international tickets with Gashtvan IATA consultants. Best available fares via Amadeus GDS.',
                 'price' => 289,
                 'is_featured' => true,
-                'image_path' => 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/istanbul.jpg',
                 'sort_order' => 1,
             ],
             [
@@ -41,7 +45,7 @@ class OfferPackageSeeder extends Seeder
                 'description' => 'Access Gashtvan’s hotel network of over 10,000 properties — from resorts to city luxury hotels.',
                 'price' => 149,
                 'is_featured' => true,
-                'image_path' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/dubai-hotel.jpg',
                 'sort_order' => 2,
             ],
             [
@@ -53,7 +57,7 @@ class OfferPackageSeeder extends Seeder
                 'description' => 'Our visa team supports Schengen and worldwide applications end to end.',
                 'price' => 95,
                 'is_featured' => true,
-                'image_path' => 'https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/visa-schengen.jpg',
                 'sort_order' => 3,
             ],
             [
@@ -65,7 +69,7 @@ class OfferPackageSeeder extends Seeder
                 'description' => 'Leverage Gashtvan’s airline partnerships for competitive Amman routes.',
                 'price' => 210,
                 'is_featured' => false,
-                'image_path' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/amman.jpg',
                 'sort_order' => 4,
             ],
             [
@@ -76,7 +80,7 @@ class OfferPackageSeeder extends Seeder
                 'summary' => 'All-inclusive resort options for families and groups.',
                 'price' => 120,
                 'is_featured' => false,
-                'image_path' => 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/antalya.jpg',
                 'sort_order' => 5,
             ],
             [
@@ -90,7 +94,7 @@ class OfferPackageSeeder extends Seeder
                 'price' => 499,
                 'duration_days' => 4,
                 'is_featured' => true,
-                'image_path' => 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/istanbul.jpg',
                 'sort_order' => 6,
             ],
             [
@@ -104,7 +108,7 @@ class OfferPackageSeeder extends Seeder
                 'price' => 890,
                 'duration_days' => 5,
                 'is_featured' => true,
-                'image_path' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/dubai-city.jpg',
                 'sort_order' => 7,
             ],
             [
@@ -118,7 +122,7 @@ class OfferPackageSeeder extends Seeder
                 'price' => 650,
                 'duration_days' => 7,
                 'is_featured' => true,
-                'image_path' => 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/europe.jpg',
                 'sort_order' => 8,
             ],
             [
@@ -131,7 +135,7 @@ class OfferPackageSeeder extends Seeder
                 'price' => 720,
                 'duration_days' => 6,
                 'is_featured' => false,
-                'image_path' => 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1200&q=80',
+                'image_path' => 'offers/antalya.jpg',
                 'sort_order' => 9,
             ],
         ];
@@ -147,5 +151,20 @@ class OfferPackageSeeder extends Seeder
         }
 
         Offer::query()->where('slug', 'georgia-discovery-tour')->delete();
+    }
+
+    private function syncSeedImages(): void
+    {
+        $source = database_path('seeders/assets/offers');
+        if (! is_dir($source)) {
+            return;
+        }
+
+        Storage::disk('public')->makeDirectory('offers');
+
+        foreach (File::files($source) as $file) {
+            $target = 'offers/'.$file->getFilename();
+            Storage::disk('public')->put($target, File::get($file->getPathname()));
+        }
     }
 }

@@ -1,16 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+
+function subscribeFinePointer(onStoreChange) {
+  const mq = window.matchMedia('(pointer: fine)')
+  mq.addEventListener('change', onStoreChange)
+  return () => mq.removeEventListener('change', onStoreChange)
+}
+
+function getFinePointerSnapshot() {
+  return window.matchMedia('(pointer: fine)').matches
+}
+
+function getFinePointerServerSnapshot() {
+  return false
+}
 
 export default function CustomCursor() {
   const reduced = useReducedMotion()
+  const finePointer = useSyncExternalStore(
+    subscribeFinePointer,
+    getFinePointerSnapshot,
+    getFinePointerServerSnapshot,
+  )
+  const enabled = finePointer && !reduced
   const [pos, setPos] = useState({ x: -100, y: -100 })
   const [active, setActive] = useState(false)
-  const [enabled, setEnabled] = useState(false)
-
-  useEffect(() => {
-    const fine = window.matchMedia('(pointer: fine)').matches
-    setEnabled(fine && !reduced)
-  }, [reduced])
 
   useEffect(() => {
     if (!enabled) return undefined

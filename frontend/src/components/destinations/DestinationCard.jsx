@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight } from 'lucide-react'
-import { cityLabel, formatFromPrice } from '@/lib/destinations'
+import PriceTag from '@/components/ui/PriceTag'
+import { cityLabel, destinationPriceParts } from '@/lib/destinations'
 import { cn } from '@/lib/cn'
 
 export default function DestinationCard({ destination, className }) {
   const { t } = useTranslation()
+  const price = destinationPriceParts(destination)
 
   return (
     <Link
@@ -34,9 +36,13 @@ export default function DestinationCard({ destination, className }) {
         </span>
       </div>
 
-      <p className="mt-4 text-sm font-semibold text-[var(--text)]">
-        {formatFromPrice(destination, t)}
-      </p>
+      <PriceTag
+        className="mt-4"
+        label={price.hasPrice ? t('destinations.startingFrom') : undefined}
+        currency={price.currency}
+        amount={price.amount}
+        fallback={t('destinations.ask')}
+      />
 
       {destination.airlines?.length ? (
         <p className="mt-2 line-clamp-2 text-sm text-[var(--text-muted)]">

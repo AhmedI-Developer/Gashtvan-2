@@ -1,4 +1,5 @@
 import { api, unwrapItem, unwrapList } from '@/lib/api'
+import { mediaUrl } from '@/config/site'
 
 export const OFFER_CATEGORY_KEYS = ['ticket', 'hotel', 'visa']
 
@@ -50,8 +51,8 @@ export function mapOffer(raw) {
     destination: raw.destination,
     shortDescription: raw.summary || '',
     fullDescription: raw.description || raw.summary || '',
-    coverImage: raw.image_url || '',
-    gallery: raw.image_url ? [raw.image_url] : [],
+    coverImage: mediaUrl(raw.image_url || ''),
+    gallery: raw.image_url ? [mediaUrl(raw.image_url)] : [],
     price: raw.price,
     currency: raw.currency || 'USD',
     oldPrice: null,
@@ -119,10 +120,36 @@ export function daysUntil(date) {
   return Math.ceil((end - now) / (1000 * 60 * 60 * 24))
 }
 
-export function formatPrice(offer, contactLabel = 'Contact for price') {
-  if (offer.price == null) return contactLabel
-  const amount = new Intl.NumberFormat('en-US').format(offer.price)
-  return `${offer.currency || 'USD'} ${amount}`
+export function offerPriceParts(offer) {
+  if (offer?.price == null) {
+    return { hasPrice: false, currency: null, amount: null }
+  }
+
+  return {
+    hasPrice: true,
+    currency: offer.currency || 'USD',
+    amount: new Intl.NumberFormat('en-US').format(offer.price),
+  }
+}
+
+/**
+ * @param {object} offer
+ * @param {((key: string, opts?: object) => string)|string} [tOrContact]
+ */
+export function formatPrice(offer, tOrContact) {
+  const parts = offerPriceParts(offer)
+  if (!parts.hasPrice) {
+    if (typeof tOrContact === 'function') return tOrContact('offers.contactForPrice')
+    if (typeof tOrContact === 'string') return tOrContact
+    return 'Contact for price'
+  }
+  if (typeof tOrContact === 'function') {
+    return tOrContact('offers.fromPrice', {
+      currency: parts.currency,
+      amount: parts.amount,
+    })
+  }
+  return `Starting from ${parts.currency} ${parts.amount}`
 }
 
 export function sortOffers(offers, mode) {

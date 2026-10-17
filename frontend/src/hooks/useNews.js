@@ -15,19 +15,21 @@ export function useNews() {
 
   useEffect(() => {
     let alive = true
-    setLoading(true)
-    setError(null)
 
     ;(async () => {
+      await Promise.resolve()
+      if (!alive) return
+      setLoading(true)
+      setError(null)
+
       try {
         const data = await fetchNews({ lng: lang, region: activeRegion })
         if (!alive) return
         setItems(data)
       } catch (err) {
-        if (alive) {
-          setItems([])
-          setError(err)
-        }
+        if (!alive) return
+        setItems([])
+        setError(err)
       } finally {
         if (alive) setLoading(false)
       }

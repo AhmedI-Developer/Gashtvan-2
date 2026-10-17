@@ -106,7 +106,7 @@ export default function AboutUs() {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
       root.style.setProperty('--line', '1')
-      setActiveUntil(items.length - 1)
+      queueMicrotask(() => setActiveUntil(items.length - 1))
       return undefined
     }
 

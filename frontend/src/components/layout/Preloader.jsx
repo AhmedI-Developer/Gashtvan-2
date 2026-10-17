@@ -9,19 +9,18 @@ const SESSION_KEY = 'gashtvan-preloader-seen'
 /** Active intro: plane variant. ShapePreloader kept in ./preloaders for reuse. */
 const ACTIVE_VARIANT = 'plane'
 
+function shouldShowPreloader() {
+  try {
+    return !sessionStorage.getItem(SESSION_KEY)
+  } catch {
+    return true
+  }
+}
+
 export default function Preloader() {
   const { t } = useTranslation()
   const reduced = useReducedMotion()
-  const [show, setShow] = useState(false)
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem(SESSION_KEY)) return
-    } catch {
-      /* ignore */
-    }
-    setShow(true)
-  }, [])
+  const [show, setShow] = useState(shouldShowPreloader)
 
   const dismiss = () => {
     setShow(false)

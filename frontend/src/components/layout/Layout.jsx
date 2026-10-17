@@ -11,7 +11,13 @@ import { cn } from '@/lib/cn'
 
 /** Pages whose first section is a full-bleed hero under the fixed navbar. */
 function usesFlushHero(pathname) {
-  if (pathname === '/' || pathname === '/about' || pathname === '/contact') {
+  if (
+    pathname === '/' ||
+    pathname === '/about' ||
+    pathname === '/contact' ||
+    pathname === '/offers' ||
+    pathname === '/destinations'
+  ) {
     return true
   }
   return /^\/offers\/[^/]+$/.test(pathname)

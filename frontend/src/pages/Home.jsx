@@ -33,7 +33,6 @@ export default function Home() {
       <Destinations />
       <AirlinePartners />
       <FeaturedOffers />
-      <Quotes />
       <CtaBanner />
     </main>
   )

@@ -1,4 +1,4 @@
-import { apiBase } from '@/config/site'
+import { apiBase, mediaUrl } from '@/config/site'
 
 const TOKEN_KEY = 'gashtvan-admin-token'
 
@@ -102,21 +102,29 @@ export function logoutAdmin() {
 }
 
 /* —— Offers —— */
+function withMedia(offer) {
+  if (!offer || typeof offer !== 'object') return offer
+  return {
+    ...offer,
+    image_url: mediaUrl(offer.image_url || ''),
+  }
+}
+
 export function fetchAdminOffers() {
-  return adminRequest('/admin/offers').then(unwrapList)
+  return adminRequest('/admin/offers').then(unwrapList).then((list) => list.map(withMedia))
 }
 
 export function fetchAdminOffer(id) {
-  return adminRequest(`/admin/offers/${id}`).then(unwrapItem)
+  return adminRequest(`/admin/offers/${id}`).then(unwrapItem).then(withMedia)
 }
 
 export function createAdminOffer(formData) {
-  return adminRequest('/admin/offers', { method: 'POST', formData }).then(unwrapItem)
+  return adminRequest('/admin/offers', { method: 'POST', formData }).then(unwrapItem).then(withMedia)
 }
 
 export function updateAdminOffer(id, formData) {
   formData.append('_method', 'PUT')
-  return adminRequest(`/admin/offers/${id}`, { method: 'POST', formData }).then(unwrapItem)
+  return adminRequest(`/admin/offers/${id}`, { method: 'POST', formData }).then(unwrapItem).then(withMedia)
 }
 
 export function deleteAdminOffer(id) {

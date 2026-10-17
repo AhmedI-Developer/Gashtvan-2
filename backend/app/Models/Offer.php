@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 #[Fillable([
@@ -69,10 +68,33 @@ class Offer extends Model
         }
 
         if (Str::startsWith($this->image_path, ['http://', 'https://'])) {
+            // If an old local APP_URL was stored, keep only the path.
+            $parts = parse_url($this->image_path);
+            if (is_array($parts) && ! empty($parts['path'])) {
+                return self::toMediaApiPath($parts['path']);
+            }
+
             return $this->image_path;
         }
 
-        return url(Storage::disk('public')->url($this->image_path));
+        // Served via /api/media/... so SPA hosts cannot swallow /storage routes.
+        return self::toMediaApiPath($this->image_path);
+    }
+
+    public static function toMediaApiPath(string $path): string
+    {
+        $path = str_replace('\\', '/', $path);
+        $path = ltrim($path, '/');
+
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, strlen('storage/'));
+        }
+
+        if (str_starts_with($path, 'api/media/')) {
+            $path = substr($path, strlen('api/media/'));
+        }
+
+        return '/api/media/'.$path;
     }
 
     /**

@@ -44,5 +44,59 @@ export const site = {
   ],
 }
 
-/** Laravel API base. In dev, Vite proxies `/api` to the backend. */
-export const apiBase = import.meta.env.VITE_API_URL || '/api'
+/**
+ * Laravel API base.
+ * - Dev: `/api` (Vite proxies to local artisan — no CORS)
+ * - Prod fallback: live API host
+ * Override anytime with VITE_API_URL.
+ */
+export const apiBase =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? '/api' : 'https://gashtvan.ahmed-dev.org/api')
+
+/**
+ * Resolve offer/news media against the API host.
+ * Prefers /api/media/... (works behind SPA hosts). Also rewrites old /storage/... links.
+ */
+export function mediaUrl(path) {
+  if (!path) return ''
+
+  let pathname = path
+  if (/^https?:\/\//i.test(path)) {
+    try {
+      const absolute = new URL(path)
+      // Rewrite leftover local APP_URL links from a misconfigured backend.
+      if (
+        absolute.hostname === '127.0.0.1' ||
+        absolute.hostname === 'localhost'
+      ) {
+        pathname = absolute.pathname
+      } else if (absolute.pathname.startsWith('/api/media/')) {
+        return path
+      } else if (absolute.pathname.startsWith('/storage/')) {
+        pathname = absolute.pathname
+      } else {
+        return path
+      }
+    } catch {
+      return path
+    }
+  }
+
+  if (!pathname.startsWith('/')) pathname = `/${pathname}`
+
+  // Normalize legacy /storage/foo → /api/media/foo
+  if (pathname.startsWith('/storage/')) {
+    pathname = `/api/media/${pathname.slice('/storage/'.length)}`
+  }
+
+  if (!pathname.startsWith('/api/media/')) return pathname
+
+  try {
+    const api = new URL(apiBase, typeof window !== 'undefined' ? window.location.origin : 'http://localhost')
+    // apiBase is like https://host/api or /api — media path already includes /api/media
+    return `${api.origin}${pathname}`
+  } catch {
+    return pathname
+  }
+}

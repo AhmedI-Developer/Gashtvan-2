@@ -9,10 +9,13 @@ export function useOffers(options = {}) {
 
   useEffect(() => {
     let alive = true
-    setLoading(true)
-    setError(null)
 
     ;(async () => {
+      await Promise.resolve()
+      if (!alive) return
+      setLoading(true)
+      setError(null)
+
       try {
         let data = await fetchOffers({ featured, limit })
         let next = getActiveOffers(data)
@@ -20,7 +23,8 @@ export function useOffers(options = {}) {
           data = await fetchOffers({ limit: limit || 6 })
           next = getActiveOffers(data)
         }
-        if (alive) setOffers(next)
+        if (!alive) return
+        setOffers(next)
       } catch (err) {
         if (alive) setError(err)
       } finally {

@@ -1,17 +1,21 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Seo from '@/components/layout/Seo'
 import PageHero from '@/components/ui/PageHero'
 import Button from '@/components/ui/Button'
+import Pagination from '@/components/ui/Pagination'
 import OfferCard from '@/components/offers/OfferCard'
 import OfferFilters from '@/components/offers/OfferFilters'
 import { OfferCardSkeleton } from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
 import { useDestinations } from '@/hooks/useDestinations'
+import { usePagination } from '@/hooks/usePagination'
 import { categories as categoryKeys, filterOffers, sortOffers } from '@/lib/offers'
 import { cityLabel, formatFromPrice } from '@/lib/destinations'
 import offersHero from '@/assets/backgroundImage/airport.jpg'
+
+const PAGE_SIZE = 12
 
 export default function Offers() {
   const { t } = useTranslation()
@@ -20,6 +24,7 @@ export default function Offers() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('newest')
+  const listRef = useRef(null)
 
   const categoryParam = searchParams.get('category') || 'all'
   const category = categoryKeys.includes(categoryParam) ? categoryParam : 'all'
@@ -57,6 +62,17 @@ export default function Offers() {
     )
   }, [offers, category, query, destination, sort, t])
 
+  const resetKey = `${category}|${destination}|${query}|${sort}`
+  const { page, setPage, totalPages, pageItems, hasPagination } = usePagination(visible, {
+    pageSize: PAGE_SIZE,
+    resetKey,
+  })
+
+  useEffect(() => {
+    if (!listRef.current || page === 1) return
+    listRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [page])
+
   const selectedFare =
     destination !== 'All' ? destinations.find((item) => item.name === destination) : null
 
@@ -90,13 +106,20 @@ export default function Offers() {
           setSort={setSort}
         />
 
-        <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div
+          ref={listRef}
+          className="mt-6 grid scroll-mt-28 gap-4 sm:mt-8 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3"
+        >
           {loading
-            ? Array.from({ length: 6 }).map((_, i) => (
+            ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
                 <OfferCardSkeleton key={i} className="min-h-[320px] sm:min-h-[380px]" />
               ))
-            : visible.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
+            : pageItems.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
         </div>
+
+        {!loading && hasPagination ? (
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        ) : null}
 
         {!loading && error ? (
           <p className="mt-8 text-[var(--text-muted)]">{t('offers.loadError')}</p>

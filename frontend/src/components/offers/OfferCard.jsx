@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import GreenShape from '@/components/brand/GreenShape'
-import { daysUntil, formatPrice } from '@/lib/offers'
+import PriceTag from '@/components/ui/PriceTag'
+import { daysUntil, offerPriceParts } from '@/lib/offers'
 import { cityLabel } from '@/lib/destinations'
 import { cn } from '@/lib/cn'
 
 export default function OfferCard({ offer }) {
   const { t } = useTranslation()
   const days = daysUntil(offer.validUntil)
+  const price = offerPriceParts(offer)
   const categoryKeys = Array.isArray(offer.categories) && offer.categories.length
     ? offer.categories
     : offer.category
@@ -65,12 +67,16 @@ export default function OfferCard({ offer }) {
 
         <div className="mt-auto flex flex-col gap-3 pt-4 sm:flex-row sm:items-end sm:justify-between sm:pt-5">
           <div className="min-w-0">
-            <p className="font-display text-lg font-bold text-[var(--text)]">
-              {formatPrice(offer, t('offers.contactForPrice'))}
-            </p>
+            <PriceTag
+              label={price.hasPrice ? t('offers.startingFrom') : undefined}
+              currency={price.currency}
+              amount={price.amount}
+              fallback={t('offers.contactForPrice')}
+            />
             {offer.oldPrice ? (
-              <p className="text-xs text-[var(--text-muted)] line-through">
-                {offer.currency} {offer.oldPrice}
+              <p className="mt-0.5 text-xs text-[var(--text-muted)] line-through">
+                {offer.currency || 'USD'}{' '}
+                {new Intl.NumberFormat('en-US').format(offer.oldPrice)}
               </p>
             ) : null}
             {days != null ? (

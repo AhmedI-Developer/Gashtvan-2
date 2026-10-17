@@ -7,7 +7,8 @@ import InquirePanel from '@/components/offers/InquirePanel'
 import OfferCard from '@/components/offers/OfferCard'
 import Skeleton from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
-import { daysUntil, fetchOffer, formatPrice } from '@/lib/offers'
+import PriceTag from '@/components/ui/PriceTag'
+import { daysUntil, fetchOffer, offerPriceParts } from '@/lib/offers'
 import { cityLabel } from '@/lib/destinations'
 
 export default function OfferDetail() {
@@ -22,9 +23,11 @@ export default function OfferDetail() {
 
   useEffect(() => {
     let alive = true
-    setLoading(true)
-    setError(null)
     ;(async () => {
+      await Promise.resolve()
+      if (!alive) return
+      setLoading(true)
+      setError(null)
       try {
         const next = await fetchOffer(slug)
         if (alive) setOffer(next)
@@ -80,6 +83,7 @@ export default function OfferDetail() {
   }
 
   const days = daysUntil(offer.validUntil)
+  const price = offerPriceParts(offer)
   const includes = offer.includes || []
   const excludes = offer.excludes || []
 
@@ -130,19 +134,23 @@ export default function OfferDetail() {
 
       <div className="container-shell grid gap-8 py-8 sm:py-12 lg:grid-cols-[1.4fr_0.75fr]">
         <div className="min-w-0 space-y-6 sm:space-y-8">
-          <div className="flex flex-wrap gap-2 text-sm text-[var(--text-muted)] sm:gap-4">
-            <span className="rounded-full border border-[var(--border)] px-3 py-1">
-              {formatPrice(offer, t('offers.contactForPrice'))}
-            </span>
+          <div className="flex flex-wrap items-end gap-3 sm:gap-5">
+            <PriceTag
+              size="lg"
+              label={price.hasPrice ? t('offers.startingFrom') : undefined}
+              currency={price.currency}
+              amount={price.amount}
+              fallback={t('offers.contactForPrice')}
+            />
             {offer.durationDays ? (
-              <span className="rounded-full border border-[var(--border)] px-3 py-1">
+              <span className="rounded-full border border-[var(--border)] px-3 py-1 text-sm text-[var(--text-muted)]">
                 {t(offer.durationDays === 1 ? 'offers.durationDay' : 'offers.durationDays', {
                   count: offer.durationDays,
                 })}
               </span>
             ) : null}
             {days != null ? (
-              <span className="rounded-full border border-[var(--border)] px-3 py-1">
+              <span className="rounded-full border border-[var(--border)] px-3 py-1 text-sm text-[var(--text-muted)]">
                 {days < 0 ? t('offers.expired') : t('offers.validDays', { count: days })}
               </span>
             ) : null}

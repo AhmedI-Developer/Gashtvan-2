@@ -1,4 +1,5 @@
 import { api, unwrapList } from '@/lib/api'
+import { mediaUrl } from '@/config/site'
 
 /** Region options — Kurdistan first, then Middle East, then Europe. */
 export const newsRegions = ['Kurdistan', 'Middle East', 'Europe']
@@ -25,7 +26,7 @@ function mapNewsItem(raw) {
     title: raw.title,
     excerpt: raw.excerpt || '',
     body: raw.body || raw.excerpt || '',
-    coverImage: raw.coverImage || raw.cover_image || '',
+    coverImage: mediaUrl(raw.coverImage || raw.cover_image || ''),
     icon: raw.icon || 'Newspaper',
     date: raw.date,
     tag: raw.tag || 'Travel',

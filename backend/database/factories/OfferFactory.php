@@ -27,7 +27,7 @@ class OfferFactory extends Factory
             'description' => fake()->paragraphs(3, true),
             'price' => fake()->randomFloat(2, 80, 2500),
             'currency' => 'USD',
-            'image_path' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
+            'image_path' => 'offers/amman.jpg',
             'is_featured' => false,
             'is_active' => true,
             'sort_order' => 0,

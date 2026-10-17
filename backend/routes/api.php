@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AdminOfferController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\FlightFareController;
+use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\OfferController;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,7 @@ Route::get('/offers', [OfferController::class, 'index']);
 Route::get('/offers/{offer:slug}', [OfferController::class, 'show']);
 Route::get('/fares', [FlightFareController::class, 'index']);
 Route::get('/news', [NewsController::class, 'index']);
+Route::get('/media/{path}', [MediaController::class, 'show'])->where('path', '.*');
 Route::post('/contact', [ContactMessageController::class, 'store'])->middleware('throttle:10,1');
 
 Route::post('/admin/login', [AuthController::class, 'login']);
