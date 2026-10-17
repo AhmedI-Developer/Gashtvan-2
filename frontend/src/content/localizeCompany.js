@@ -38,6 +38,7 @@ export function localizedCompany(lng) {
       return {
         ...service,
         title: copy.title || service.title,
+        cardTitle: copy.cardTitle || service.cardTitle || copy.title || service.title,
         summary: copy.summary || service.summary,
         body: copy.body || service.body,
       }

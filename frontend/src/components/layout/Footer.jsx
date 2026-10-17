@@ -24,12 +24,20 @@ export default function Footer() {
   return (
     <footer className="bg-[var(--footer-bg)] text-white">
       <div className="container-shell grid gap-8 py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:gap-10 sm:py-14 md:grid-cols-2 lg:grid-cols-4">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Logo className="w-11 shrink-0 [&_path:first-of-type]:fill-white" />
-            <strong className="font-display text-xl">Gashtvan</strong>
+        {/*
+          Use logical start alignment so English stays left and
+          Arabic/Kurdish (html[dir=rtl]) sit on the right automatically.
+          Brand row stays LTR like the header: logo then name.
+        */}
+        <div className="flex flex-col items-start space-y-4 text-start">
+          <div dir="ltr" className="flex items-center gap-3">
+            <Logo
+              className="w-11 shrink-0 [&_path:first-of-type]:fill-white"
+              title={t('common.brandName')}
+            />
+            <strong className="font-display text-xl">{t('common.brandName')}</strong>
           </div>
-          <p className="max-w-xs text-white/75">{t('home.tagline')}</p>
+          <p className="max-w-xs text-pretty text-white/75">{t('home.tagline')}</p>
         </div>
 
         <div>

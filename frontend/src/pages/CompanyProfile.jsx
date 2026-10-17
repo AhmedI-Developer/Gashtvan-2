@@ -4,7 +4,7 @@ import Seo from '@/components/layout/Seo'
 import CountUp from '@/components/motion/CountUp'
 import GreenShape from '@/components/brand/GreenShape'
 import { useCompanyContent } from '@/hooks/useCompanyContent'
-import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
+import office from '@/assets/backgroundImage/contact/office.jpg'
 
 export default function CompanyProfile() {
   const { t } = useTranslation()
@@ -27,8 +27,8 @@ export default function CompanyProfile() {
       <section className="container-shell">
         <div className="relative overflow-hidden rounded-[28px] text-white">
           <img
-            src={kurdistanMountain}
-            alt={t('companyPage.highlandsAlt')}
+            src={office}
+            alt={t('about.images.office')}
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.35),rgba(4,32,58,0.88))]" />

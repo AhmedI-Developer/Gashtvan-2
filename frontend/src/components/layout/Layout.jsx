@@ -7,9 +7,19 @@ import WhatsAppButton from './WhatsAppButton'
 import CustomCursor from './CustomCursor'
 import SmoothScroll from '@/components/motion/SmoothScroll'
 import PageTransition from '@/components/motion/PageTransition'
+import { cn } from '@/lib/cn'
+
+/** Pages whose first section is a full-bleed hero under the fixed navbar. */
+function usesFlushHero(pathname) {
+  if (pathname === '/' || pathname === '/about' || pathname === '/contact') {
+    return true
+  }
+  return /^\/offers\/[^/]+$/.test(pathname)
+}
 
 export default function Layout() {
   const location = useLocation()
+  const flushHero = usesFlushHero(location.pathname)
 
   return (
     <SmoothScroll>
@@ -18,7 +28,9 @@ export default function Layout() {
       <Navbar />
       <AnimatePresence mode="wait">
         <PageTransition key={location.pathname}>
-          <Outlet />
+          <div className={cn(!flushHero && 'page-offset')}>
+            <Outlet />
+          </div>
         </PageTransition>
       </AnimatePresence>
       <Footer />

@@ -6,10 +6,10 @@ import Button from '@/components/ui/Button'
 import Reveal from '@/components/motion/Reveal'
 import GreenShape from '@/components/brand/GreenShape'
 import { useCompanyContent } from '@/hooks/useCompanyContent'
-import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
-import worldMap from '@/assets/backgroundImage/World_map.jpg'
-import planeWing from '@/assets/backgroundImage/Left-wing-plane.jpg'
-import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
+import globalTravels from '@/assets/backgroundImage/contact/globalTravels.jpg'
+import consultantReview from '@/assets/backgroundImage/contact/consultantReview.jpg'
+import traveler from '@/assets/backgroundImage/contact/traveler.jpg'
+import erbilSkyline from '@/assets/backgroundImage/contact/erbilSkyline.jpg'
 
 export default function VisionMission() {
   const { t } = useTranslation()
@@ -18,15 +18,15 @@ export default function VisionMission() {
     {
       ...company.vision,
       kicker: t('vision.visionKicker'),
-      image: worldMap,
-      imageAlt: t('vision.worldAlt'),
+      image: globalTravels,
+      imageAlt: t('about.images.global'),
       imageFirst: false,
     },
     {
       ...company.mission,
       kicker: t('vision.missionKicker'),
-      image: planeWing,
-      imageAlt: t('vision.wingAlt'),
+      image: consultantReview,
+      imageAlt: t('about.images.consult'),
       imageFirst: true,
     },
   ]
@@ -41,8 +41,8 @@ export default function VisionMission() {
 
       <section className="relative min-h-[78svh] overflow-hidden text-white">
         <img
-          src={globalNetwork}
-          alt={t('vision.earthAlt')}
+          src={traveler}
+          alt={t('about.images.traveler')}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.45)_0%,rgba(4,32,58,0.72)_55%,rgba(4,32,58,0.92)_100%)]" />
@@ -143,7 +143,7 @@ export default function VisionMission() {
 
       <section className="relative overflow-hidden py-16 text-white sm:py-20">
         <img
-          src={kurdistanMountain}
+          src={erbilSkyline}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
         />

@@ -1,24 +1,42 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import MagneticButton from '@/components/ui/MagneticButton'
-import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import ctaPoster from '@/assets/backgroundImage/contact/globalTravels.jpg'
+import homePageVideo from '@/assets/backgroundVdeos/homePage.mp4'
 
 export default function CtaBanner() {
   const { t } = useTranslation()
+  const reducedMotion = useReducedMotion()
+  const [videoFailed, setVideoFailed] = useState(false)
+  const showVideo = !reducedMotion && !videoFailed
+
   return (
-    <section className="relative overflow-hidden py-12 sm:py-16 md:py-20">
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'linear-gradient(120deg, #04203a 0%, #0a3358 55%, #04203a 100%)',
-        }}
-      />
-      <img
-        src={globalNetwork}
-        alt=""
-        loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
+    <section className="relative min-h-[18rem] overflow-hidden py-14 sm:min-h-0 sm:py-16 md:py-20">
+      <div className="absolute inset-0">
+        {showVideo ? (
+          <video
+            className="media-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster={ctaPoster}
+            aria-hidden="true"
+            onError={() => setVideoFailed(true)}
+          >
+            <source src={homePageVideo} type="video/mp4" />
+          </video>
+        ) : (
+          <img
+            src={ctaPoster}
+            alt=""
+            loading="lazy"
+            className="media-cover"
+          />
+        )}
+      </div>
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.62),rgba(4,32,58,0.78))]" />
       <div className="container-shell relative z-10 text-center text-white">
         <p className="eyebrow !text-[var(--accent)]">{t('home.ctaEyebrow')}</p>

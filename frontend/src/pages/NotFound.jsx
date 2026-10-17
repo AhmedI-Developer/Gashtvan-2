@@ -4,7 +4,7 @@ import Logo from '@/components/brand/Logo'
 
 export default function NotFound() {
   return (
-    <main className="container-shell flex min-h-[70svh] flex-col items-center justify-center py-28 text-center">
+    <main className="container-shell flex min-h-[70svh] flex-col items-center justify-center py-16 text-center sm:py-20">
       <Seo title="Page not found" path="/404" />
       <Logo className="mb-6 w-16 sm:w-20" />
       <p className="eyebrow">404</p>

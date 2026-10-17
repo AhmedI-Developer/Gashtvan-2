@@ -22,11 +22,6 @@ import ServicesBackgroundLine from './services/ServicesBackgroundLine'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function firstSentence(text) {
-  const match = text.match(/^[^.!?]+[.!?]?/)
-  return (match ? match[0] : text).trim()
-}
-
 export default function Services() {
   const { t } = useTranslation()
   const company = useCompanyContent()
@@ -43,8 +38,9 @@ export default function Services() {
         const fullText = localized?.body || service.fullText
         return {
           ...service,
+          cardTitle: localized?.cardTitle || service.cardTitle,
           fullTitle: localized?.title || service.fullTitle,
-          shortText: firstSentence(fullText),
+          shortText: localized?.summary || service.shortText || fullText,
           fullText,
           title: localized?.title || service.fullTitle,
         }

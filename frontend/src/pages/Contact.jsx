@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { CheckCircle2, Clock, ExternalLink, Mail, MapPin, Phone } from 'lucide-react'
+import { CheckCircle2, Clock, Mail, MapPin, Phone, Share2 } from 'lucide-react'
 import Seo from '@/components/layout/Seo'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/motion/Reveal'
 import { useTheme } from '@/hooks/useTheme'
 import { site, apiBase } from '@/config/site'
 import { cn } from '@/lib/cn'
-import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
-import worldMap from '@/assets/backgroundImage/World_map.jpg'
-import planeWing from '@/assets/backgroundImage/Left-wing-plane.jpg'
-import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
+import erbilSkyline from '@/assets/backgroundImage/contact/erbilSkyline.jpg'
+import office from '@/assets/backgroundImage/contact/office.jpg'
+import globalTravels from '@/assets/backgroundImage/contact/globalTravels.jpg'
+import consultantReview from '@/assets/backgroundImage/contact/consultantReview.jpg'
 
 const initial = { name: '', email: '', phone: '', message: '' }
 
@@ -28,6 +28,7 @@ function telHref(phone) {
 export default function Contact() {
   const { t } = useTranslation()
   const { theme, isDark } = useTheme()
+  const [mapShareNote, setMapShareNote] = useState('')
   const [form, setForm] = useState(initial)
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
@@ -92,14 +93,16 @@ export default function Contact() {
         path="/contact"
       />
 
-      <section className="relative min-h-[72svh] overflow-hidden text-white">
-        <img
-          src={kurdistanMountain}
-          alt="Mountains in the Kurdistan Region"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+      <section className="relative min-h-[70svh] overflow-hidden text-white sm:min-h-[72svh]">
+        <div className="absolute inset-0 overflow-hidden">
+          <img
+            src={erbilSkyline}
+            alt="Erbil citadel and city skyline at night"
+            className="media-cover media-cover--contact"
+          />
+        </div>
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.42)_0%,rgba(4,32,58,0.7)_58%,rgba(4,32,58,0.92)_100%)]" />
-        <div className="container-shell relative z-10 flex min-h-[72svh] flex-col justify-end pb-12 pt-28 sm:pb-16 sm:pt-32">
+        <div className="container-shell relative z-10 flex min-h-[70svh] flex-col justify-end pb-12 pt-28 sm:min-h-[72svh] sm:pb-16 sm:pt-32">
           <p className="eyebrow !text-[var(--accent)]">{t('contact.eyebrow')}</p>
           <h1 className="mt-3 max-w-3xl font-display text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl">
             {t('contact.title')}
@@ -114,8 +117,8 @@ export default function Contact() {
         <div className="container-shell grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
           <Reveal className="overflow-hidden rounded-[22px] sm:rounded-[28px]">
             <img
-              src={globalNetwork}
-              alt="Earth at night, linked by routes of light"
+              src={office}
+              alt="Gashtvan travel office desk and reception"
               className="aspect-[4/3] w-full object-cover"
             />
           </Reveal>
@@ -199,20 +202,51 @@ export default function Contact() {
                 </span>
               </li>
             </ul>
-            <a
-              href={site.mapsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] transition hover:underline"
-            >
-              {t('contact.openMap')}
-              <ExternalLink size={14} />
-            </a>
+            <div className="mt-6 flex flex-col items-start gap-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  const shareData = {
+                    title: site.location.label,
+                    text: `${site.location.label} — ${t('home.address')}`,
+                    url: site.mapsUrl,
+                  }
+                  try {
+                    if (navigator.share) {
+                      await navigator.share(shareData)
+                      return
+                    }
+                    await navigator.clipboard.writeText(site.mapsUrl)
+                    setMapShareNote(t('contact.shareMapCopied'))
+                    window.setTimeout(() => setMapShareNote(''), 2500)
+                  } catch (err) {
+                    if (err?.name === 'AbortError') return
+                    try {
+                      await navigator.clipboard.writeText(site.mapsUrl)
+                      setMapShareNote(t('contact.shareMapCopied'))
+                      window.setTimeout(() => setMapShareNote(''), 2500)
+                    } catch {
+                      setMapShareNote(t('contact.shareMapFailed'))
+                      window.setTimeout(() => setMapShareNote(''), 2500)
+                    }
+                  }
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--text)] shadow-[var(--shadow)] transition hover:border-[var(--accent)] hover:text-[var(--accent-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+              >
+                <Share2 size={16} strokeWidth={2.25} className="text-[var(--accent-text)]" />
+                {t('contact.shareMap')}
+              </button>
+              {mapShareNote ? (
+                <p className="text-xs font-medium text-[var(--text-muted)]" role="status">
+                  {mapShareNote}
+                </p>
+              ) : null}
+            </div>
           </Reveal>
           <Reveal delay={0.08} className="overflow-hidden rounded-[22px] sm:rounded-[28px]">
             <img
-              src={worldMap}
-              alt="A world map marked with connected routes"
+              src={globalTravels}
+              alt="Global travel routes connecting destinations worldwide"
               className="aspect-[4/3] w-full object-cover"
             />
           </Reveal>
@@ -320,8 +354,8 @@ export default function Contact() {
           </Reveal>
           <Reveal delay={0.08} className="overflow-hidden rounded-[22px] sm:rounded-[28px] lg:sticky lg:top-28">
             <img
-              src={planeWing}
-              alt="Airplane wing above the clouds at sunset"
+              src={consultantReview}
+              alt="Travel consultants reviewing a journey plan together"
               className="aspect-[4/3] w-full object-cover lg:aspect-[3/4]"
             />
           </Reveal>

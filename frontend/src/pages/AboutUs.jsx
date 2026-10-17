@@ -5,10 +5,17 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Seo from '@/components/layout/Seo'
 import CountUp from '@/components/motion/CountUp'
 import { useCompanyContent } from '@/hooks/useCompanyContent'
-import kurdistan from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import office from '@/assets/backgroundImage/contact/office.jpg'
+import traveler from '@/assets/backgroundImage/contact/traveler.jpg'
+import consultantReview from '@/assets/backgroundImage/contact/consultantReview.jpg'
+import erbilSkyline from '@/assets/backgroundImage/contact/erbilSkyline.jpg'
+import hotel from '@/assets/backgroundImage/services/hotel.jpg'
+import airport from '@/assets/backgroundImage/airport.jpg'
 import globalNetwork from '@/assets/backgroundImage/Global_network.jpg'
-import worldMap from '@/assets/backgroundImage/World_map.jpg'
-import planeWing from '@/assets/backgroundImage/Left-wing-plane.jpg'
+import travelDesk from '@/assets/backgroundImage/about/travel-desk.jpg'
+import destinationLake from '@/assets/backgroundImage/about/destination-lake.jpg'
+import erbilViewVideo from '@/assets/backgroundVdeos/erbilView.mp4'
 import { cn } from '@/lib/cn'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -20,14 +27,14 @@ function buildItems(company, t) {
       kicker: company.profile.eyebrow,
       title: company.profile.title,
       paragraphs: company.profile.paragraphs,
-      image: kurdistan,
-      imageAlt: t('home.aboutImageAlt'),
+      image: office,
+      imageAlt: t('about.images.office'),
     },
     {
       id: 'stats',
       stats: company.profile.stats,
-      image: planeWing,
-      imageAlt: t('home.planeAlt'),
+      image: airport,
+      imageAlt: t('about.images.airport'),
     },
     {
       id: 'vision',
@@ -35,30 +42,30 @@ function buildItems(company, t) {
       paragraphs: [company.vision.body],
       points: company.vision.points,
       image: globalNetwork,
-      imageAlt: t('vision.earthAlt'),
+      imageAlt: t('about.images.global'),
     },
     {
       id: 'mission',
       title: company.mission.title,
       paragraphs: [company.mission.body],
       points: company.mission.points,
-      image: planeWing,
-      imageAlt: t('home.planeAlt'),
+      image: consultantReview,
+      imageAlt: t('about.images.consult'),
     },
     {
       id: 'values',
       title: company.coreValues.title,
       points: company.coreValues.items.map((item) => `${item.title}. ${item.body}`),
-      image: worldMap,
-      imageAlt: t('home.mapLabel'),
+      image: hotel,
+      imageAlt: t('about.images.hospitality'),
     },
     {
       id: 'why',
       kicker: t('home.whyEyebrow'),
       title: t('home.whyTitle'),
       points: company.why.map((item) => `${item.title}. ${item.body}`),
-      image: globalNetwork,
-      imageAlt: t('vision.earthAlt'),
+      image: traveler,
+      imageAlt: t('about.images.traveler'),
     },
     {
       id: 'team',
@@ -66,21 +73,25 @@ function buildItems(company, t) {
       title: company.management.title,
       paragraphs: company.management.paragraphs,
       timeline: company.management.timeline,
-      image: planeWing,
-      imageAlt: t('home.planeAlt'),
+      image: travelDesk,
+      imageAlt: t('about.images.planning'),
     },
     {
       id: 'future',
       kicker: company.future.eyebrow,
       title: company.future.title,
       paragraphs: [company.future.body],
-      image: worldMap,
-      imageAlt: t('home.mapLabel'),
+      image: destinationLake,
+      imageAlt: t('about.images.journey'),
     },
   ]
 }
 
 export default function AboutUs() {
+  const reducedMotion = useReducedMotion()
+  const [heroVideoFailed, setHeroVideoFailed] = useState(false)
+  const showHeroVideo = !reducedMotion && !heroVideoFailed
+
   const { t } = useTranslation()
   const company = useCompanyContent()
   const items = useMemo(() => buildItems(company, t), [company, t])
@@ -137,14 +148,32 @@ export default function AboutUs() {
         path="/about"
       />
 
-      <section className="relative isolate min-h-[42vh] overflow-hidden">
-        <img
-          src={kurdistan}
-          alt={t('home.aboutImageAlt')}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+      <section className="relative isolate min-h-[56svh] overflow-hidden sm:min-h-[52svh]">
+        <div className="absolute inset-0 overflow-hidden">
+          {showHeroVideo ? (
+            <video
+              className="media-cover media-cover--erbil"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster={erbilSkyline}
+              aria-hidden="true"
+              onError={() => setHeroVideoFailed(true)}
+            >
+              <source src={erbilViewVideo} type="video/mp4" />
+            </video>
+          ) : (
+            <img
+              src={erbilSkyline}
+              alt={t('about.images.erbil')}
+              className="media-cover media-cover--erbil"
+            />
+          )}
+        </div>
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,16,32,0.35),rgba(4,16,32,0.82))]" />
-        <div className="container-shell relative flex min-h-[42vh] flex-col justify-end py-16 text-white">
+        <div className="container-shell relative z-10 flex min-h-[56svh] flex-col justify-end pb-12 pt-28 text-white sm:min-h-[52svh] sm:pb-16 sm:pt-32">
           <p className="eyebrow !text-[var(--accent)]">{t('nav.about')}</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight sm:text-5xl">
             {company.profile.title}
@@ -155,12 +184,10 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <section className="section-pad relative overflow-hidden" aria-label={t('nav.about')}>
-        <img
-          src={worldMap}
-          alt=""
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25"
-        />
+      <section
+        className="section-pad relative overflow-hidden bg-[var(--bg)]"
+        aria-label={t('nav.about')}
+      >
         <div ref={trackRef} className="container-shell relative" style={{ '--line': 0 }}>
           <div
             className="pointer-events-none absolute inset-y-0 left-4 w-px bg-[var(--border)] md:left-1/2 md:-translate-x-1/2"
@@ -210,62 +237,62 @@ export default function AboutUs() {
                     )}
                     style={live ? { borderColor: 'var(--accent)' } : undefined}
                   >
-                  <img
-                    src={item.image}
-                    alt={item.imageAlt}
-                    className={cn(
-                      'mb-4 h-40 w-full rounded-[16px] object-cover',
-                      slot === 2 && 'sm:h-56',
-                    )}
-                  />
-                  <div className="relative px-1 pb-1 sm:px-2">
-                  {item.stats ? (
-                    <dl className="grid gap-4 sm:grid-cols-3">
-                      {item.stats.map((stat) => (
-                        <div key={stat.label}>
-                          <dt className="text-sm text-[var(--text-muted)]">{stat.label}</dt>
-                          <dd className="mt-1 font-display text-3xl font-bold text-[var(--text)]">
-                            <CountUp value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : (
-                    <>
-                      {item.kicker ? <p className="eyebrow">{item.kicker}</p> : null}
-                      <h2 className="mt-2 font-display text-2xl font-bold text-[var(--text)] sm:text-3xl">
-                        {item.title}
-                      </h2>
-                      {item.paragraphs?.map((paragraph) => (
-                        <p key={paragraph} className="mt-3 max-w-3xl text-[var(--text-muted)]">
-                          {paragraph}
-                        </p>
-                      ))}
-                      {item.points ? (
-                        <ul className="mt-4 space-y-2">
-                          {item.points.map((point) => (
-                            <li key={point} className="text-[var(--text-muted)]">
-                              {point}
-                            </li>
+                    <img
+                      src={item.image}
+                      alt={item.imageAlt}
+                      className={cn(
+                        'mb-4 h-40 w-full rounded-[16px] object-cover',
+                        slot === 2 && 'sm:h-56',
+                      )}
+                    />
+                    <div className="relative px-1 pb-1 sm:px-2">
+                      {item.stats ? (
+                        <dl className="grid gap-4 sm:grid-cols-3">
+                          {item.stats.map((stat) => (
+                            <div key={stat.label}>
+                              <dt className="text-sm text-[var(--text-muted)]">{stat.label}</dt>
+                              <dd className="mt-1 font-display text-3xl font-bold text-[var(--text)]">
+                                <CountUp value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
+                              </dd>
+                            </div>
                           ))}
-                        </ul>
-                      ) : null}
-                      {item.timeline ? (
-                        <ol className="mt-5 grid gap-3 sm:grid-cols-2">
-                          {item.timeline.map((step) => (
-                            <li
-                              key={step.title}
-                              className="rounded-[18px] border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface)_82%,transparent)] p-4"
-                            >
-                              <p className="font-display font-bold text-[var(--text)]">{step.title}</p>
-                              <p className="mt-1 text-sm text-[var(--text-muted)]">{step.detail}</p>
-                            </li>
+                        </dl>
+                      ) : (
+                        <>
+                          {item.kicker ? <p className="eyebrow">{item.kicker}</p> : null}
+                          <h2 className="mt-2 font-display text-2xl font-bold text-[var(--text)] sm:text-3xl">
+                            {item.title}
+                          </h2>
+                          {item.paragraphs?.map((paragraph) => (
+                            <p key={paragraph} className="mt-3 max-w-3xl text-[var(--text-muted)]">
+                              {paragraph}
+                            </p>
                           ))}
-                        </ol>
-                      ) : null}
-                    </>
-                  )}
-                  </div>
+                          {item.points ? (
+                            <ul className="mt-4 space-y-2">
+                              {item.points.map((point) => (
+                                <li key={point} className="text-[var(--text-muted)]">
+                                  {point}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : null}
+                          {item.timeline ? (
+                            <ol className="mt-5 grid gap-3 sm:grid-cols-2">
+                              {item.timeline.map((step) => (
+                                <li
+                                  key={step.title}
+                                  className="rounded-[18px] border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface)_82%,transparent)] p-4"
+                                >
+                                  <p className="font-display font-bold text-[var(--text)]">{step.title}</p>
+                                  <p className="mt-1 text-sm text-[var(--text-muted)]">{step.detail}</p>
+                                </li>
+                              ))}
+                            </ol>
+                          ) : null}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </li>
               )

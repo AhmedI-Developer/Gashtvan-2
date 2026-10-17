@@ -4,7 +4,9 @@ import Hero from '@/components/sections/Hero'
 import TrustStrip from '@/components/sections/TrustStrip'
 import Branches from '@/components/sections/Branches'
 import Destinations from '@/components/sections/Destinations'
+import AirlinePartners from '@/components/sections/AirlinePartners'
 import FeaturedOffers from '@/components/sections/FeaturedOffers'
+import Quotes from '@/components/sections/Quotes'
 import News from '@/components/sections/News'
 import CtaBanner from '@/components/sections/CtaBanner'
 
@@ -30,7 +32,9 @@ export default function Home() {
       </Suspense>
       <Branches />
       <Destinations />
+      <AirlinePartners />
       <FeaturedOffers />
+      <Quotes />
       <CtaBanner />
     </main>
   )

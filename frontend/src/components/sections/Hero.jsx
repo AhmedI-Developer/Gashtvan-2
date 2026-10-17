@@ -1,36 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import MagneticButton from '@/components/ui/MagneticButton'
 import GreenShape from '@/components/brand/GreenShape'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useResponsiveVideo } from '@/hooks/useResponsiveVideo'
 import heroImage from '@/assets/backgroundImage/Left-wing-plane.jpg'
 import desktopVideo from '@/assets/backgroundVdeos/Lapbackground-home.mp4'
 import mobileVideo from '@/assets/backgroundVdeos/mobbackground-home.mp4'
-
-const mobileHeroQuery = '(max-width: 767px)'
-
-function useHeroVideo() {
-  const [src, setSrc] = useState(() =>
-    window.matchMedia(mobileHeroQuery).matches ? mobileVideo : desktopVideo,
-  )
-
-  useEffect(() => {
-    const media = window.matchMedia(mobileHeroQuery)
-    const update = () => setSrc(media.matches ? mobileVideo : desktopVideo)
-    update()
-    media.addEventListener('change', update)
-    return () => media.removeEventListener('change', update)
-  }, [])
-
-  return src
-}
 
 export default function Hero() {
   const { t } = useTranslation()
   const ref = useRef(null)
   const reducedMotion = useReducedMotion()
-  const videoSrc = useHeroVideo()
+  const videoSrc = useResponsiveVideo(desktopVideo, mobileVideo)
   const [videoFailed, setVideoFailed] = useState(false)
   const showVideo = !reducedMotion && !videoFailed
   const { scrollYProgress } = useScroll({
@@ -51,7 +34,7 @@ export default function Hero() {
         {showVideo ? (
           <video
             key={videoSrc}
-            className="h-full w-full object-cover"
+            className="media-cover"
             autoPlay
             muted
             loop
@@ -70,7 +53,7 @@ export default function Hero() {
             width={2000}
             height={1333}
             fetchPriority="high"
-            className="h-full w-full object-cover object-[28%_center]"
+            className="media-cover object-[28%_center]"
           />
         )}
       </motion.div>

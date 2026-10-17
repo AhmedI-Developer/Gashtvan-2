@@ -2,15 +2,16 @@ import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Seo from '@/components/layout/Seo'
-import SectionHeading from '@/components/ui/SectionHeading'
+import PageHero from '@/components/ui/PageHero'
 import Button from '@/components/ui/Button'
 import OfferCard from '@/components/offers/OfferCard'
 import OfferFilters from '@/components/offers/OfferFilters'
-import Skeleton from '@/components/ui/Skeleton'
+import { OfferCardSkeleton } from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
 import { useDestinations } from '@/hooks/useDestinations'
 import { categories as categoryKeys, filterOffers, sortOffers } from '@/lib/offers'
 import { cityLabel, formatFromPrice } from '@/lib/destinations'
+import offersHero from '@/assets/backgroundImage/airport.jpg'
 
 export default function Offers() {
   const { t } = useTranslation()
@@ -60,19 +61,22 @@ export default function Offers() {
     destination !== 'All' ? destinations.find((item) => item.name === destination) : null
 
   return (
-    <main className="section-pad pt-24 sm:pt-28">
+    <main>
       <Seo
         title={t('offers.eyebrow')}
         description={t('offers.seoDescription')}
         path="/offers"
       />
-      <div className="container-shell">
-        <SectionHeading
-          eyebrow={t('offers.eyebrow')}
-          title={t('offers.title')}
-          description={t('offers.description')}
-        />
 
+      <PageHero
+        image={offersHero}
+        imageAlt=""
+        eyebrow={t('offers.eyebrow')}
+        title={t('offers.title')}
+        description={t('offers.description')}
+      />
+
+      <div className="container-shell section-pad pt-8 sm:pt-10">
         <OfferFilters
           categories={categoryKeys}
           category={category}
@@ -89,7 +93,7 @@ export default function Offers() {
         <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-[320px] sm:h-[380px]" />
+                <OfferCardSkeleton key={i} className="min-h-[320px] sm:min-h-[380px]" />
               ))
             : visible.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
         </div>

@@ -58,7 +58,7 @@ export default function AdminLayout() {
   )
 
   return (
-    <div className="min-h-svh bg-[var(--bg)] text-[var(--text)]">
+    <div lang="en" dir="ltr" className="min-h-svh bg-[var(--bg)] text-[var(--text)]">
       <div className="mx-auto flex min-h-svh max-w-[1400px]">
         <aside className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col border-e border-[var(--border)] bg-[var(--bg-alt)] lg:flex">
           <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-5">

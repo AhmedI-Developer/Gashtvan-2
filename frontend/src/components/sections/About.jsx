@@ -3,7 +3,7 @@ import SectionHeading from '@/components/ui/SectionHeading'
 import Button from '@/components/ui/Button'
 import CountUp from '@/components/motion/CountUp'
 import { useCompanyContent } from '@/hooks/useCompanyContent'
-import kurdistanMountain from '@/assets/backgroundImage/Kurdistan-Mountain.jpg'
+import erbilSkyline from '@/assets/backgroundImage/contact/erbilSkyline.jpg'
 
 export default function About() {
   const { t } = useTranslation()
@@ -15,8 +15,8 @@ export default function About() {
         <div className="grid overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface)] lg:grid-cols-[0.92fr_1.08fr]">
           <div className="relative min-h-[280px] sm:min-h-[360px]">
             <img
-              src={kurdistanMountain}
-              alt={t('home.aboutImageAlt')}
+              src={erbilSkyline}
+              alt={t('about.images.erbil')}
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,32,58,0.05),rgba(4,32,58,0.45))]" />

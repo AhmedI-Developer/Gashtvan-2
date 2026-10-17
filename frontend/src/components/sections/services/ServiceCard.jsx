@@ -178,14 +178,14 @@ export function ServiceCard({ service, index, reduced, entered, onOpen }) {
               aria-hidden="true"
               className="absolute inset-0 bg-[linear-gradient(180deg,transparent_38%,#04203Acc_72%,#04203Af2_100%)]"
             />
-            <div className="relative z-[1] max-w-[28ch]">
+            <div className="relative z-[1] max-w-[min(100%,42ch)]">
               <h3
-                className="font-display font-semibold tracking-tight text-white"
-                style={{ fontSize: 'clamp(1.75rem, 2.8vw, 2.5rem)', lineHeight: 1.1 }}
+                className="font-display font-semibold tracking-tight text-balance text-white"
+                style={{ fontSize: 'clamp(1.75rem, 2.8vw, 2.5rem)', lineHeight: 1.15 }}
               >
                 {service.cardTitle}
               </h3>
-              <p className="mt-2.5 line-clamp-2 text-[0.95rem] leading-relaxed text-white/85 sm:text-base">
+              <p className="mt-2.5 text-[0.95rem] leading-relaxed text-pretty text-white/85 sm:text-base">
                 {service.shortText}
               </p>
               <a
@@ -209,10 +209,15 @@ export function ServiceCard({ service, index, reduced, entered, onOpen }) {
             >
               <IconBadge name={service.icon} size={isWide ? 'lg' : 'md'} />
             </div>
-            <div className={cn('relative z-[1] min-w-0 flex-1', isSmall ? 'pe-9' : 'pe-10')}>
+            <div
+              className={cn(
+                'relative z-[1] min-w-0 flex-1',
+                isSmall ? 'pb-12 pe-1' : 'pb-12 pe-2 sm:pb-0 sm:pe-12',
+              )}
+            >
               <h3
                 className={cn(
-                  'font-display font-semibold tracking-tight text-white',
+                  'font-display font-semibold tracking-tight text-balance text-white',
                   isWide && 'text-xl leading-snug sm:text-2xl',
                   isSmall && 'text-lg leading-snug sm:text-xl',
                 )}
@@ -221,9 +226,9 @@ export function ServiceCard({ service, index, reduced, entered, onOpen }) {
               </h3>
               <p
                 className={cn(
-                  'mt-1.5 leading-relaxed text-white/80',
-                  isWide && 'line-clamp-2 text-[0.95rem] sm:text-base',
-                  isSmall && 'line-clamp-2 text-sm sm:text-[0.95rem]',
+                  'mt-1.5 leading-relaxed text-pretty text-white/80',
+                  isWide && 'text-[0.95rem] sm:text-base',
+                  isSmall && 'text-sm sm:text-[0.95rem]',
                 )}
               >
                 {service.shortText}
@@ -231,9 +236,9 @@ export function ServiceCard({ service, index, reduced, entered, onOpen }) {
             </div>
             <span
               aria-hidden="true"
-              className="absolute bottom-5 end-5 z-[1] inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/80 text-white transition duration-300 group-hover:border-[var(--accent)] group-hover:bg-[var(--accent)] group-hover:text-[var(--navy)]"
+              className="absolute bottom-5 end-5 z-[1] inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/80 text-white transition duration-300 group-hover:border-[var(--accent)] group-hover:bg-[var(--accent)] group-hover:text-[var(--navy)]"
             >
-              <ArrowRight size={18} strokeWidth={2} />
+              <ArrowRight size={18} strokeWidth={2} className="rtl:rotate-180" />
             </span>
           </>
         )}

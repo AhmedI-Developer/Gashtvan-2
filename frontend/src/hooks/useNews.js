@@ -1,57 +1,49 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchNews, localizeNews, newsByRegion, newsRegions } from '@/lib/news'
-
-const REGION_DELAY_MS = 700
+import { fetchNews, newsLocale, newsRegions } from '@/lib/news'
 
 /**
- * Loads news in regional order: Kurdistan → Middle East → Europe.
- * Each region unlocks after a short delay so the UI can reveal progressively.
+ * Loads live travel news for the active region, translated to the UI language.
  */
 export function useNews() {
   const { i18n } = useTranslation()
-  const [allNews, setAllNews] = useState([])
-  const [unlockedRegions, setUnlockedRegions] = useState([])
+  const lang = newsLocale(i18n.language)
+  const [items, setItems] = useState([])
   const [activeRegion, setActiveRegion] = useState(newsRegions[0])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     let alive = true
-    const timers = []
+    setLoading(true)
+    setError(null)
 
     ;(async () => {
-      const data = await fetchNews()
-      if (!alive) return
-      setAllNews(data)
-
-      newsRegions.forEach((region, index) => {
-        const timer = setTimeout(() => {
-          if (!alive) return
-          setUnlockedRegions((prev) =>
-            prev.includes(region) ? prev : [...prev, region],
-          )
-          if (index === 0) setLoading(false)
-        }, index * REGION_DELAY_MS)
-        timers.push(timer)
-      })
+      try {
+        const data = await fetchNews({ lng: lang, region: activeRegion })
+        if (!alive) return
+        setItems(data)
+      } catch (err) {
+        if (alive) {
+          setItems([])
+          setError(err)
+        }
+      } finally {
+        if (alive) setLoading(false)
+      }
     })()
 
     return () => {
       alive = false
-      timers.forEach(clearTimeout)
     }
-  }, [])
-
-  const articles = localizeNews(allNews, i18n.language)
-  const regionReady = unlockedRegions.includes(activeRegion)
-  const items = regionReady ? newsByRegion(articles, activeRegion) : []
+  }, [lang, activeRegion])
 
   return {
     items,
-    articles,
-    loading: loading || !regionReady,
+    articles: items,
+    loading,
+    error,
     regions: newsRegions,
-    unlockedRegions,
     activeRegion,
     setActiveRegion,
   }

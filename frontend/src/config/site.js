@@ -9,8 +9,7 @@ export const site = {
   whatsapp: '+9647501234567',
   phones: ['+964 750 123 4567', '+964 770 987 6543'],
   emails: ['info@gashtvan-travel.com', 'sales@gashtvan-travel.com'],
-  address:
-    '5th Floor, Empire Business Tower, 100m Road, Erbil, Kurdistan Region, Iraq',
+  address: 'House No. 168 English Village - Erbil - Iraq',
   hours: 'Sat–Thu, 9:00 AM – 6:00 PM',
   mapsUrl: 'https://maps.app.goo.gl/PMConNsqqukvrXaG8',
   location: {
@@ -37,6 +36,7 @@ export const site = {
   ],
   nav: [
     { key: 'home', href: '/#home' },
+    { key: 'destinations', href: '/destinations' },
     { key: 'offers', href: '/offers' },
     { key: 'news', href: '/#news' },
     { key: 'contact', href: '/contact' },

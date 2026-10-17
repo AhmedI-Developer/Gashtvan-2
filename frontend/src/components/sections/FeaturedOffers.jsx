@@ -4,15 +4,18 @@ import { useTranslation } from 'react-i18next'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Button from '@/components/ui/Button'
 import OfferCard from '@/components/offers/OfferCard'
-import Skeleton from '@/components/ui/Skeleton'
+import { OfferCardSkeleton } from '@/components/ui/Skeleton'
 import { useOffers } from '@/hooks/useOffers'
 
 export default function FeaturedOffers() {
   const { t } = useTranslation()
-  const { offers, loading, error } = useOffers()
+  const { offers, loading, error } = useOffers({
+    featured: true,
+    limit: 6,
+    fallbackAll: true,
+  })
   const scroller = useRef(null)
-  const featuredSource = offers.filter((offer) => offer.isFeatured)
-  const featured = (featuredSource.length ? featuredSource : offers).slice(0, 6)
+  const featured = offers.slice(0, 6)
 
   return (
     <section id="featured-offers" className="section-pad bg-[var(--bg)]">
@@ -35,10 +38,12 @@ export default function FeaturedOffers() {
         >
           {loading
             ? Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton
+                <div
                   key={i}
-                  className="h-[340px] w-[min(280px,78vw)] shrink-0 sm:h-[380px] sm:w-[min(320px,85vw)]"
-                />
+                  className="w-[min(280px,78vw)] shrink-0 sm:w-[min(320px,85vw)]"
+                >
+                  <OfferCardSkeleton className="h-[340px] sm:h-[380px]" />
+                </div>
               ))
             : featured.map((offer) => (
                 <div

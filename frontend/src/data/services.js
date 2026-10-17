@@ -1,7 +1,7 @@
 /**
  * Homepage Services — bento grid data.
  *
- * Swap images: edit `image` (card), optional `imageOpen` (modal), `imageAlt`, `imageCredit`.
+ * Swap images: edit `image` (card), optional `imageOpen` (modal), `imageAlt`.
  * Keep `id` in sync with `company.services` for localized full titles/bodies.
  *
  * Grid spans: `gridClass` below + `.services-bento` in Services.jsx.
@@ -10,6 +10,10 @@
 
 import airTicketImage from '@/assets/backgroundImage/services/airTicket.jpg'
 import airTicketOpenImage from '@/assets/backgroundImage/services/airTicketOpen.jpg'
+import miceImage from '@/assets/backgroundImage/services/MICE.jpg'
+import hotelImage from '@/assets/backgroundImage/services/hotel.jpg'
+import corporateImage from '@/assets/backgroundImage/services/corparate.jpg'
+import visaImage from '@/assets/backgroundImage/services/visa.jpg'
 import teamTrainingImage from '@/assets/backgroundImage/services/teamTraining.jpg'
 
 const bodies = {
@@ -42,7 +46,6 @@ export const services = [
     image: airTicketImage,
     imageOpen: airTicketOpenImage,
     imageAlt: 'Airplane wing and winglet above clouds at sunset',
-    imageCredit: '',
     gridClass:
       'order-1 col-span-1 min-h-[320px] sm:col-span-2 sm:min-h-[340px] lg:col-span-5 lg:row-span-3 lg:min-h-0',
   },
@@ -53,10 +56,8 @@ export const services = [
     fullText: bodies.mice,
     icon: 'Handshake',
     layout: 'wide',
-    image:
-      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Conference hall with a stage and blue lighting',
-    imageCredit: 'Unsplash',
+    image: miceImage,
+    imageAlt: 'Conference and events gathering',
     gridClass:
       'order-2 col-span-1 min-h-[160px] sm:col-span-1 sm:min-h-[180px] lg:order-none lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:min-h-0',
   },
@@ -67,10 +68,8 @@ export const services = [
     fullText: bodies['hospitality-tours'],
     icon: 'Hotel',
     layout: 'wide',
-    image:
-      'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Luxury hotel lobby with warm lighting',
-    imageCredit: 'Unsplash',
+    image: hotelImage,
+    imageAlt: 'Hotel stay and hospitality',
     gridClass:
       'order-3 col-span-1 min-h-[160px] sm:col-span-1 sm:min-h-[180px] lg:order-none lg:col-span-5 lg:col-start-8 lg:row-start-2 lg:min-h-0',
   },
@@ -81,10 +80,8 @@ export const services = [
     fullText: bodies.corporate,
     icon: 'Briefcase',
     layout: 'small',
-    image:
-      'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Business traveler walking through an airport terminal',
-    imageCredit: 'Unsplash',
+    image: corporateImage,
+    imageAlt: 'Corporate travel and business journey',
     gridClass:
       'order-4 col-span-1 min-h-[160px] sm:col-span-1 sm:min-h-[180px] lg:order-none lg:col-span-2 lg:col-start-6 lg:row-start-3 lg:min-h-0',
   },
@@ -95,10 +92,8 @@ export const services = [
     fullText: bodies['visa-admissions'],
     icon: 'FileCheck',
     layout: 'small',
-    image:
-      'https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Passport, boarding pass, and a globe on a desk',
-    imageCredit: 'Unsplash',
+    image: visaImage,
+    imageAlt: 'Visa and travel documents',
     gridClass:
       'order-5 col-span-1 min-h-[160px] sm:col-span-1 sm:min-h-[180px] lg:order-none lg:col-span-2 lg:col-start-8 lg:row-start-3 lg:min-h-0',
   },
@@ -111,7 +106,6 @@ export const services = [
     layout: 'small',
     image: teamTrainingImage,
     imageAlt: 'Gashtvan team training session around a conference table',
-    imageCredit: '',
     gridClass:
       'order-6 col-span-1 min-h-[160px] sm:col-span-2 sm:min-h-[180px] lg:order-none lg:col-span-3 lg:col-start-10 lg:row-start-3 lg:min-h-0',
   },

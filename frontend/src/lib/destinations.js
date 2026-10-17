@@ -1,11 +1,9 @@
-import { apiBase } from '@/config/site'
+import { api, unwrapList } from '@/lib/api'
 
 /** Unique flight destinations from `/api/fares`, cheapest fare first per city. */
 export async function fetchDestinations() {
-  const res = await fetch(`${apiBase}/fares`)
-  if (!res.ok) throw new Error('Failed to fetch destinations')
-  const payload = await res.json()
-  const fares = Array.isArray(payload) ? payload : payload.data || []
+  const { data: payload } = await api.get('/fares')
+  const fares = unwrapList(payload)
   const grouped = new Map()
 
   for (const fare of fares) {

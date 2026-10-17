@@ -56,7 +56,7 @@ export default function OfferDetail() {
 
   if (loading) {
     return (
-      <main className="container-shell section-pad pt-28">
+      <main className="container-shell section-pad">
         <Skeleton className="mb-6 h-72 w-full" />
         <Skeleton className="h-40 w-full max-w-xl" />
       </main>
@@ -65,7 +65,7 @@ export default function OfferDetail() {
 
   if (!offer) {
     return (
-      <main className="container-shell section-pad pt-28 text-center">
+      <main className="container-shell section-pad text-center">
         <h1 className="font-display text-3xl font-bold text-[var(--text)]">
           {error ? t('offers.loadError') : t('offers.notFound')}
         </h1>

@@ -61,7 +61,7 @@ export default function ServiceImagePanel({
         <ArrowUpRight
           size={22}
           strokeWidth={2.25}
-          className="transition-transform duration-300 group-hover:rotate-45"
+          className="transition-transform duration-300 group-hover:rotate-45 rtl:-scale-x-100 rtl:group-hover:-rotate-45"
         />
       </button>
     </div>

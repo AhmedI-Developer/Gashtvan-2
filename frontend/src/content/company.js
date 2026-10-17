@@ -70,6 +70,7 @@ export const company = {
     {
       id: 'air-ticketing',
       title: 'Air Ticketing',
+      cardTitle: 'Air Ticketing',
       summary:
         'International and regional air ticketing supported by IATA membership and major GDS platforms.',
       body: 'Gashtvan provides professional air ticketing services as an IATA Member, with distribution through Amadeus and proficiency in Galileo and Sabre. As Royal Jordanian Airlines – GSA Kurdistan, the team supports seamless connections through trusted airline partnerships for leisure and business travelers.',
@@ -78,6 +79,7 @@ export const company = {
     {
       id: 'mice',
       title: 'MICE',
+      cardTitle: 'MICE',
       summary:
         'Meetings, incentives, conferences, and exhibitions planned with precision.',
       body: 'Gashtvan designs and coordinates MICE programs — meetings, incentives, conferences, and exhibitions — combining venue insight, travel logistics, and on-ground support so corporate and institutional events run with clarity from brief to close.',
@@ -86,6 +88,7 @@ export const company = {
     {
       id: 'hospitality-tours',
       title: 'Hotels, Lodge Reservations, Tours, Car Rental & Transfers',
+      cardTitle: 'Hotels, Tours & Car Rental',
       summary:
         'End-to-end ground arrangements for leisure and business journeys.',
       body: 'From hotel and lodge reservations to curated tours, car rental, and transfers, Gashtvan arranges the ground experience around each itinerary — so arrival, movement, and stay feel connected rather than fragmented.',
@@ -94,6 +97,7 @@ export const company = {
     {
       id: 'corporate',
       title: 'Corporate Travel Management',
+      cardTitle: 'Corporate Travel',
       summary:
         'Structured travel programs for organizations that need control and care.',
       body: 'Gashtvan supports corporate travel management with policy-aware booking, multi-GDS capability, and responsive coordination — helping companies move teams efficiently while maintaining service quality and cost visibility.',
@@ -102,6 +106,7 @@ export const company = {
     {
       id: 'visa-admissions',
       title: 'Visa Services & Academic Admissions',
+      cardTitle: 'Visa Services',
       summary:
         'Guidance for visas and academic admissions pathways abroad.',
       body: 'Gashtvan assists travelers and students with visa services and academic admissions support, helping prepare documentation pathways and travel timing so study and mobility plans stay on track.',
@@ -110,6 +115,7 @@ export const company = {
     {
       id: 'training',
       title: 'Travel & Tourism Training (GDS training)',
+      cardTitle: 'Training',
       summary:
         'Professional training focused on Amadeus, Galileo, and Sabre.',
       body: 'Gashtvan delivers travel and tourism training with a focus on GDS proficiency — Amadeus, Galileo, and Sabre — preparing professionals with practical skills that mirror real booking and operations workflows.',

@@ -93,6 +93,7 @@ export default function Navbar() {
 
   return (
     <header
+      dir="ltr"
       className={cn(
         'fixed inset-x-0 top-0 z-50 transition-all duration-300',
         onHero
@@ -105,13 +106,14 @@ export default function Navbar() {
         <Link
           to="/"
           className="group flex min-w-0 items-center gap-2 transition-transform duration-300 hover:-translate-y-0.5 sm:gap-3"
-          aria-label="Gashtvan home"
+          aria-label={t('common.brandHome')}
         >
           <Logo
             className={cn(
               'w-8 shrink-0 transition-[fill,color] duration-300 sm:w-10',
               lightOnHero && '[&_path:first-of-type]:fill-white',
             )}
+            title={t('common.brandName')}
           />
           <span
             className={cn(
@@ -121,7 +123,7 @@ export default function Navbar() {
               lightOnHero && 'group-hover:text-[var(--accent)]',
             )}
           >
-            Gashtvan
+            {t('common.brandName')}
           </span>
         </Link>
 

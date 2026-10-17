@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'news' => [
+        // Set NEWS_SSL_VERIFY=true in production when a CA bundle is available.
+        'verify_ssl' => env('NEWS_SSL_VERIFY'),
+    ],
+
 ];

@@ -1,4 +1,4 @@
-import { apiBase } from '@/config/site'
+import { api, unwrapItem, unwrapList } from '@/lib/api'
 
 export const OFFER_CATEGORY_KEYS = ['ticket', 'hotel', 'visa']
 
@@ -68,31 +68,24 @@ export function mapOffer(raw) {
   }
 }
 
-async function readOfferPage(url) {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error('Failed to fetch offers')
-  const payload = await res.json()
-  const rows = Array.isArray(payload) ? payload : payload.data || payload.offers || []
-  return {
-    rows,
-    lastPage: payload.meta?.last_page || 1,
-    paginated: Boolean(payload.meta),
-  }
-}
-
-/** Load every active offer. Follows API pages so nothing past the first page is dropped. */
-export async function fetchOffers({ featured = false } = {}) {
+/** Load active offers from the Laravel API via Axios. */
+export async function fetchOffers({ featured = false, limit } = {}) {
   const rows = []
   let page = 1
   let lastPage = 1
 
   while (page <= lastPage && page <= 50) {
-    const params = new URLSearchParams({ page: String(page) })
-    if (featured) params.set('featured', '1')
-    const result = await readOfferPage(`${apiBase}/offers?${params}`)
-    rows.push(...result.rows)
-    if (!result.paginated) break
-    lastPage = result.lastPage
+    const params = { page }
+    if (featured) params.featured = 1
+    if (limit) params.limit = limit
+
+    const { data: payload } = await api.get('/offers', { params })
+    const pageRows = unwrapList(payload)
+    rows.push(...pageRows)
+
+    const metaLast = payload?.meta?.last_page
+    if (!metaLast || limit) break
+    lastPage = metaLast
     page += 1
   }
 
@@ -100,11 +93,13 @@ export async function fetchOffers({ featured = false } = {}) {
 }
 
 export async function fetchOffer(slug) {
-  const res = await fetch(`${apiBase}/offers/${encodeURIComponent(slug)}`)
-  if (res.status === 404) return null
-  if (!res.ok) throw new Error('Failed to fetch offer')
-  const payload = await res.json()
-  return mapOffer(payload.data ?? payload)
+  try {
+    const { data: payload } = await api.get(`/offers/${encodeURIComponent(slug)}`)
+    return mapOffer(unwrapItem(payload))
+  } catch (err) {
+    if (err?.response?.status === 404) return null
+    throw err
+  }
 }
 
 export function isOfferActive(offer, now = new Date()) {

@@ -3,18 +3,18 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Modal from '@/components/ui/Modal'
-import Skeleton from '@/components/ui/Skeleton'
+import { NewsCardSkeleton } from '@/components/ui/Skeleton'
 import NewsCard from '@/components/news/NewsCard'
+import NewsRegionPicker from '@/components/news/NewsRegionPicker'
 import { useNews } from '@/hooks/useNews'
 import { formatNewsDate } from '@/lib/news'
-import { cn } from '@/lib/cn'
 
 export default function News() {
   const {
     items,
     loading,
+    error,
     regions,
-    unlockedRegions,
     activeRegion,
     setActiveRegion,
     articles,
@@ -28,51 +28,25 @@ export default function News() {
       <div className="container-shell">
         <div className="mx-auto mb-6 flex max-w-3xl flex-col items-center text-center sm:mb-8">
           <SectionHeading
-            className="mb-4"
+            className="mb-5"
             align="center"
             eyebrow={t('news.eyebrow')}
             title={t('news.title')}
           />
 
-          <div
-            className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] p-1.5 shadow-[var(--shadow)]"
-            role="tablist"
-            aria-label={t('news.regionsLabel')}
-          >
-            {regions.map((region) => {
-              const unlocked = unlockedRegions.includes(region)
-              const selected = activeRegion === region
-              return (
-                <button
-                  key={region}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  disabled={!unlocked}
-                  onClick={() => unlocked && setActiveRegion(region)}
-                  className={cn(
-                    'rounded-full px-3.5 py-1.5 text-xs font-semibold transition duration-300 sm:px-4 sm:text-sm',
-                    selected
-                      ? 'bg-[var(--accent)] text-[var(--navy)] shadow-sm'
-                      : unlocked
-                        ? 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
-                        : 'cursor-not-allowed text-[var(--text-muted)] opacity-45',
-                  )}
-                >
-                  {t(`news.regions.${region}`)}
-                  {!unlocked ? (
-                    <span className="ms-1 text-xs font-medium opacity-80">…</span>
-                  ) : null}
-                </button>
-              )
-            })}
-          </div>
+          <NewsRegionPicker
+            regions={regions}
+            value={activeRegion}
+            onChange={setActiveRegion}
+            disabled={loading}
+          />
         </div>
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={loading ? `loading-${activeRegion}` : `${activeRegion}-${i18n.language}`}
-            role="tabpanel"
+            key={loading ? `loading-${activeRegion}` : `${activeRegion}-${items.length}-${i18n.language}`}
+            role="region"
+            aria-label={t(`news.regions.${activeRegion}`)}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
@@ -81,12 +55,10 @@ export default function News() {
           >
             <div className="grid w-full grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {loading
-                ? Array.from({ length: 4 }).map((_, i) => (
-                    <Skeleton key={i} className="aspect-[3/4] w-full rounded-[22px]" />
-                  ))
+                ? Array.from({ length: 4 }).map((_, i) => <NewsCardSkeleton key={i} />)
                 : items.map((item) => (
                     <NewsCard
-                      key={item.id}
+                      key={`${item.id}-${i18n.language}`}
                       item={item}
                       onOpen={(story) => setActiveId(story.id)}
                     />
@@ -95,7 +67,13 @@ export default function News() {
           </motion.div>
         </AnimatePresence>
 
-        {!loading && !items.length ? (
+        {!loading && error ? (
+          <p className="mt-6 text-center text-sm text-[var(--text-muted)]">
+            {t('news.loadError')}
+          </p>
+        ) : null}
+
+        {!loading && !error && !items.length ? (
           <p className="mt-6 text-center text-sm text-[var(--text-muted)]">
             {t('news.empty')}
           </p>
@@ -120,12 +98,24 @@ export default function News() {
               <span>{t(`news.regions.${active.region}`)}</span>
               <span aria-hidden="true">·</span>
               <span>{formatNewsDate(active.date, i18n.language)}</span>
-              <span aria-hidden="true">·</span>
-              <span>{active.tag}</span>
+              {active.tag ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span className="normal-case tracking-normal">{active.tag}</span>
+                </>
+              ) : null}
             </div>
-            <p className="text-[var(--text-muted)] leading-relaxed">
-              {active.body}
-            </p>
+            <p className="text-[var(--text-muted)] leading-relaxed">{active.body}</p>
+            {active.url ? (
+              <a
+                href={active.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--navy)] transition hover:bg-[var(--accent-hover)]"
+              >
+                {t('news.readFull')}
+              </a>
+            ) : null}
           </div>
         ) : null}
       </Modal>

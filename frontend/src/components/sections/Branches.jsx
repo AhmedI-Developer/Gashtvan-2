@@ -6,8 +6,7 @@ import PlaneIcon from '@/components/layout/preloaders/PlaneIcon'
 const branches = [
   {
     id: 'gashtvan',
-    nameKey: null,
-    nameFallback: 'Gashtvan',
+    nameKey: 'common.brandName',
     kind: 'logo',
   },
   {
@@ -50,9 +49,7 @@ export default function Branches() {
 
         <div className="mx-auto grid max-w-4xl gap-5 sm:grid-cols-2 sm:gap-6">
           {branches.map((branch) => {
-            const name = branch.nameKey
-              ? t(branch.nameKey)
-              : branch.nameFallback
+            const name = t(branch.nameKey)
             return (
               <article
                 key={branch.id}
